@@ -1,0 +1,12 @@
+{
+  "name": "manifest-worker",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": { "start": "node run.mjs", "test": "node --test" },
+  "dependencies": {
+    "imapflow": "1.0.164",
+    "mailparser": "3.7.1",
+    "nodemailer": "6.9.16"
+  }
+}

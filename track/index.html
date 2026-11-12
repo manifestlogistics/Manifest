@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shipment status | Manifest</title><meta name="robots" content="noindex"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cpolygon points='200,50 330,125 200,200 70,125' fill='%23DCEAFF'/%3E%3Cpolygon points='70,125 200,200 200,350 70,275' fill='%232F6BF0'/%3E%3Cpolygon points='200,200 330,125 330,275 200,350' fill='%230F2A5E'/%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F8FAFC;--card:#fff;--line:#E2E8F0;--tx:#0F172A;--mute:#64748B;--accent:#2563EB;--accent2:#1D4ED8}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#111A2C;--line:#1F2A40;--tx:#E6ECF7;--mute:#93A1BA;--accent:#3B6FE8;--accent2:#5B8CFF}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:15px;text-transform:uppercase;text-decoration:none;color:var(--tx)}
+.brand svg{width:26px;height:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:10px;font:600 15px Inter,system-ui,sans-serif;text-decoration:none;border:1px solid var(--line);color:var(--tx);background:var(--card);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.btn.pri:hover{background:var(--accent2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.mute{color:var(--mute)}
+</style>
+<style>
+.box{max-width:480px;margin:0 auto;padding:22px 16px 40px}
+.top{display:flex;justify-content:center;padding:6px 0 18px}
+h1{font-size:24px;margin:0 0 2px;letter-spacing:-.01em}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:12px 0}
+.pill i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.g{background:#DCFCE7;color:#166534}.b{background:#DBEAFE;color:#1E40AF}.a{background:#FEF3C7;color:#92400E}.r{background:#FEE2E2;color:#991B1B}.n{background:#E2E8F0;color:#334155}
+dl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0 0}dt{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}dd{margin:2px 0 0;font-weight:600}
+</style></head><body><div class="box"><div class="top"><span class="brand"><svg viewBox="0 0 400 400" aria-hidden="true"><g stroke-width="9" stroke-linejoin="round" stroke="var(--card)"><polygon points="200,50 330,125 200,200 70,125" fill="#9CC2FF"/><polygon points="70,125 200,200 200,350 70,275" fill="#2F6BF0"/><polygon points="200,200 330,125 330,275 200,350" fill="#0F2A5E"/></g></svg>Manifest</span></div>
+<div class="card" id="c"><p class="mute">Loading…</p></div>
+<p class="mute" style="text-align:center;font-size:12px;margin-top:16px">Status updates come from the transporter. Freight, accounted for.</p></div>
+<script>
+const URL_='https://ohrixskulpuqifnbbaxl.supabase.co',KEY='sb_publishable_GLesO6o8yG9QXfELQl1lUg_1sKfI40c';
+const L={pending:['Waiting for an update','n'],in_transit:['On the way','b'],customs_hold:['Held at customs','a'],delayed:['Delayed','r'],delivered:['Delivered','g'],cancelled:['Cancelled','n']};
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const c=document.getElementById('c'),t=new URLSearchParams(location.search).get('t')||'';
+function bad(m){c.innerHTML='<h1>We could not find this shipment</h1><p class="mute">'+esc(m||'The link may be incomplete or the shipment may have been removed. Please ask the sender for a new link.')+'</p>'}
+if(!/^[a-f0-9]{20,64}$/i.test(t))bad();else fetch(URL_+'/rest/v1/rpc/get_tracking',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({t})})
+.then(r=>r.json()).then(j=>{if(!j||!j.ref)return bad();const s=L[j.status]||L.pending;
+ const lu=j.last_reply?new Date(j.last_reply).toLocaleString(undefined,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'No update yet';
+ c.innerHTML='<div class="mute" style="font-size:13px">'+esc(j.business||'Your supplier')+'</div><h1>'+esc(j.ref)+'</h1><span class="pill '+s[1]+'"><i></i>'+s[0]+'</span><dl><div><dt>From</dt><dd>'+esc(j.origin||'Not added')+'</dd></div><div><dt>To</dt><dd>'+esc(j.destination||'Not added')+'</dd></div><div><dt>Last update</dt><dd>'+esc(lu)+'</dd></div></dl>'})
+.catch(()=>bad('We could not reach the server. Please check your internet and try again.'));
+</script></body></html>

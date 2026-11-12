@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thank you | Manifest</title><meta name="robots" content="noindex"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cpolygon points='200,50 330,125 200,200 70,125' fill='%23DCEAFF'/%3E%3Cpolygon points='70,125 200,200 200,350 70,275' fill='%232F6BF0'/%3E%3Cpolygon points='200,200 330,125 330,275 200,350' fill='%230F2A5E'/%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F8FAFC;--card:#fff;--line:#E2E8F0;--tx:#0F172A;--mute:#64748B;--accent:#2563EB;--accent2:#1D4ED8}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#111A2C;--line:#1F2A40;--tx:#E6ECF7;--mute:#93A1BA;--accent:#3B6FE8;--accent2:#5B8CFF}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:15px;text-transform:uppercase;text-decoration:none;color:var(--tx)}
+.brand svg{width:26px;height:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:10px;font:600 15px Inter,system-ui,sans-serif;text-decoration:none;border:1px solid var(--line);color:var(--tx);background:var(--card);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.btn.pri:hover{background:var(--accent2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.mute{color:var(--mute)}
+</style>
+<style>.box{max-width:460px;margin:0 auto;padding:22px 16px 40px}.top{display:flex;justify-content:center;padding:6px 0 18px}h1{font-size:24px;margin:0 0 6px}
+.opts{display:grid;gap:10px;margin-top:16px}</style></head><body><div class="box"><div class="top"><span class="brand"><svg viewBox="0 0 400 400" aria-hidden="true"><g stroke-width="9" stroke-linejoin="round" stroke="var(--card)"><polygon points="200,50 330,125 200,200 70,125" fill="#9CC2FF"/><polygon points="70,125 200,200 200,350 70,275" fill="#2F6BF0"/><polygon points="200,200 330,125 330,275 200,350" fill="#0F2A5E"/></g></svg>Manifest</span></div>
+<div class="card" id="c"><p class="mute">Saving your answer…</p></div></div>
+<script>
+const URL_='https://ohrixskulpuqifnbbaxl.supabase.co',KEY='sb_publishable_GLesO6o8yG9QXfELQl1lUg_1sKfI40c';
+const O={moving:'On the way',customs:'Held at customs',delayed:'Delayed',delivered:'Delivered'};
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const q=new URLSearchParams(location.search),t=q.get('t')||'',c=document.getElementById('c');
+function send(s){c.innerHTML='<p class="mute">Saving your answer…</p>';
+ fetch(URL_+'/rest/v1/rpc/submit_update',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({t,s})}).then(r=>r.json()).then(j=>{
+  if(!j||!j.ok){c.innerHTML='<h1>This link is not working</h1><p class="mute">It may be old or the shipment may be closed. You can just reply to the email instead. Thank you!</p>';return}
+  c.innerHTML='<h1>Thank you!</h1><p>We told <b>'+esc(j.business||'the sender')+'</b> that order <b>'+esc(j.ref)+'</b> is <b>'+esc(j.label)+'</b>.</p><p class="mute" style="font-size:14px">Tapped the wrong one? Choose again:</p><div class="opts">'+Object.entries(O).map(([k,v])=>'<button class="btn" data-s="'+k+'">'+v+'</button>').join('')+'</div>';
+  c.querySelectorAll('button').forEach(b=>b.onclick=()=>send(b.dataset.s))}).catch(()=>{c.innerHTML='<h1>We could not save that</h1><p class="mute">Please check your internet and tap the button in the email again.</p>'})}
+if(!/^[a-f0-9]{20,64}$/i.test(t)||!O[q.get('s')])c.innerHTML='<h1>This link is not working</h1><p class="mute">Please use the buttons in the original email, or just reply to it.</p>';else send(q.get('s'));
+</script></body></html>
