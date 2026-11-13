@@ -425,6 +425,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 #welcome.bk input::placeholder{color:#52525B}
 #welcome.bk input:focus,#welcome.bk select:focus{outline:2px solid rgba(255,255,255,.35);outline-offset:1px;border-color:#fff}
 #welcome.bk input.bad,#welcome.bk select.bad{border-color:#F87171}
+#welcome .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 #welcome .ferr{color:#F87171;font-size:12.5px}
 .bk-pri{width:100%;min-height:48px;border-radius:10px;background:#fff;color:#000;border:0;font:inherit;font-weight:600;font-size:15px;cursor:pointer}
 .bk-pri:hover{background:#E4E4E7}.bk-pri:disabled{opacity:.5;cursor:not-allowed}
@@ -725,10 +726,12 @@ function bkHelp(){openModal(`<div style="display:flex;justify-content:space-betw
 function bkFine(){return`<p class="bk-fine">By clicking Create Account, you agree to the <button type="button" onclick="legal('terms')">Terms</button> and <button type="button" onclick="legal('privacy')">Privacy Policy</button>, and to receive marketing emails from Manifest.<br>Unsubscribe anytime.</p>`}
 function bkTail(fine){return`<p class="bk-help"><button type="button" onclick="bkHelp()">Need help?</button></p>${fine?bkFine():''}`}
 function bkSteps(n){return`<div class="bk-steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div><div class="bk-stl">Step ${n} of 3 · ${['','Your account','Your business','Choose a plan'][n]}</div>`}
-function bkEntry(){return`<div class="bk-card"><h1>Create your Manifest account</h1><p class="bk-sub">Free to start. No card needed.</p>
- <button class="bk-pri" type="button" onclick="bkGo(1)">Continue with email</button>
+function bkEntry(){return`<form class="bk-card" novalidate onsubmit="return bkEmailGo(event)"><h1>Continue with email</h1>
+ <div class="bk-f" style="margin-top:18px"><label for="e-email" class="sr">Email</label><input id="e-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" value="${esc((AUTH.w&&AUTH.w.email)||'')}" placeholder="Write your email"></div>
+ <button class="bk-pri" type="submit">Continue</button>
  <div class="bk-or"></div><p class="bk-orl">Or continue with</p>${bkOauth()}
- <p class="bk-toggle">Already have a Manifest account? <button type="button" onclick="authTab('signin')">Log in</button></p></div>${bkTail(true)}`}
+ <p class="bk-toggle">Already have a Manifest account? <button type="button" onclick="authTab('signin')">Log in</button></p></form>${bkTail(true)}`}
+function bkEmailGo(e){e.preventDefault();const v=$('#e-email').value.trim();if(!fieldErr('e-email',vEmail(v)))return false;AUTH.w={...(AUTH.w||{}),email:v};bkGo(1);return false}
 function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return signin(event)"><h1>Welcome back</h1><p class="bk-sub">Log in to your Manifest account.</p>
  <div class="bk-f"><label for="si-email">Email</label><input id="si-email" type="email" autocomplete="email" inputmode="email" required></div>
  <div class="bk-f"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
