@@ -31,12 +31,18 @@ export async function main(env, deps) {
   const stat = { replies: 0, bounces: 0, silent: 0, sent: 0, tickets: 0, errors: 0 };
   const emails = {};
   const ownerEmail = async id => { if (!(id in emails)) { try { emails[id] = ((await db.user(id)) || {}).email || ''; } catch (e) { emails[id] = ''; } } return emails[id]; };
+  const extra = {};
+  const alertTo = async id => {
+    const list = [await ownerEmail(id)];
+    try { if (!(id in extra)) { const p = (await db.get(`profiles?select=settings&id=eq.${id}`)) || []; const st = p[0] && p[0].settings && p[0].settings.settings; extra[id] = Array.isArray(st && st.alertEmails) ? st.alertEmails : []; } list.push(...extra[id]); } catch (e) { /* the account email still gets it */ }
+    return [...new Set(list.map(x => String(x || '').trim()).filter(x => /^[^@\s,;]+@[^@\s,;]+\.[^@\s,;]+$/.test(x)))].slice(0, 6);
+  };
   const sendMail = async m => { if (env.DRY_RUN) { log('[dry run] would email', m.to, '|', m.subject); return; } await mailer.send(m); };
   const alertOwner = async (ship, kind, key, subject, text) => {
     // Each alert is only ever sent once, because the database refuses a duplicate.
     const made = await db.post('alerts?on_conflict=shipment_id,kind,text', { owner: ship.owner, shipment_id: ship.id, kind, text: key }, 'resolution=ignore-duplicates,return=representation');
     if (!made || !made.length) return false;
-    const to = await ownerEmail(ship.owner);
+    const to = (await alertTo(ship.owner)).join(', ');
     if (to) await sendMail({ from: { name: 'Manifest alerts', address: gmail }, to, subject, text: text + `\n\nOpen Manifest: ${site}/app/\n\nYou are getting this because you track shipments with Manifest.` });
     return true;
   };

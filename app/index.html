@@ -404,6 +404,58 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .clist li.cur{font-weight:700;color:var(--accent)}
 .clist .gh{cursor:default;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.04em;padding:8px 10px 2px}.clist .gh:hover{background:none}
 .clist .none{cursor:default;color:var(--mute);justify-content:center}
+/* ---- black welcome / sign-up ---- */
+#welcome.bk{background:#000;color:#fff;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;place-items:normal;color-scheme:dark}
+#welcome.bk *{box-sizing:border-box}
+.bk-top{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;width:100%;max-width:1200px;margin:0 auto}
+.bk-top .brand{color:#fff;font-weight:800;letter-spacing:.14em;font-size:14px;text-transform:uppercase;display:flex;align-items:center;gap:10px;text-decoration:none}
+.bk-top .brand svg{width:24px;height:24px}
+.bk-top .lnk{color:#A1A1AA;font-size:14px;font-weight:500;text-decoration:none;background:none;border:0;cursor:pointer;padding:8px 0}
+.bk-top .lnk:hover{color:#fff}
+.bk-main{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 16px 40px}
+.bk-box{width:100%;max-width:440px}.bk-box.wide{max-width:760px}
+.bk-card{background:#141414;border:1px solid #262626;border-radius:16px;padding:28px 24px}
+.bk-card h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px;color:#fff;line-height:1.25}
+.bk-sub{color:#A1A1AA;font-size:14px;margin:0 0 20px;line-height:1.5}
+.bk-f{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.bk-f>label,.bk-lbl{font-size:13px;font-weight:600;color:#A1A1AA}
+.bk-f small{color:#71717A;font-size:12px;line-height:1.4}
+#welcome.bk input,#welcome.bk select{width:100%;background:#000;border:1px solid #2E2E2E;color:#fff;border-radius:10px;min-height:46px;padding:0 12px;font:inherit;font-size:15px;box-shadow:none}
+#welcome.bk select{-webkit-appearance:none;appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23A1A1AA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+#welcome.bk input::placeholder{color:#52525B}
+#welcome.bk input:focus,#welcome.bk select:focus{outline:2px solid rgba(255,255,255,.35);outline-offset:1px;border-color:#fff}
+#welcome.bk input.bad,#welcome.bk select.bad{border-color:#F87171}
+#welcome .ferr{color:#F87171;font-size:12.5px}
+.bk-pri{width:100%;min-height:48px;border-radius:10px;background:#fff;color:#000;border:0;font:inherit;font-weight:600;font-size:15px;cursor:pointer}
+.bk-pri:hover{background:#E4E4E7}.bk-pri:disabled{opacity:.5;cursor:not-allowed}
+.bk-ghost{background:none;border:0;color:#A1A1AA;font:inherit;font-size:14px;cursor:pointer;padding:10px 0;width:100%}.bk-ghost:hover{color:#fff}
+.bk-or{border-top:1px solid #262626;margin:22px 0 10px}
+.bk-orl{text-align:center;color:#71717A;font-size:12px;margin:0 0 12px}
+.bk-oauth{display:flex;gap:10px}
+.bk-oauth button{flex:1;min-height:48px;background:#000;border:1px solid #2E2E2E;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+.bk-oauth button:hover{border-color:#52525B}
+.bk-oauth svg{width:20px;height:20px}
+.bk-toggle{text-align:center;color:#A1A1AA;font-size:14px;margin:20px 0 0}
+#welcome.bk a,.bk-toggle button{color:#fff}
+.bk-toggle button,.bk-lk{background:none;border:0;font:inherit;font-weight:600;cursor:pointer;padding:0;color:#fff;text-decoration:none}
+.bk-help{text-align:center;margin:18px 0 8px;font-size:14px}.bk-help button{color:#A1A1AA;background:none;border:0;font:inherit;cursor:pointer;text-decoration:underline}
+.bk-fine{text-align:center;color:#71717A;font-size:12px;line-height:1.55;margin:0 auto;max-width:380px}
+.bk-fine button{background:none;border:0;font:inherit;color:#A1A1AA;text-decoration:underline;cursor:pointer;padding:0}
+.bk-err{color:#F87171;font-size:13px;min-height:20px;margin-bottom:6px}
+.bk-note{background:#141414;border:1px solid #262626;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px;color:#D4D4D8}
+.bk-steps{display:flex;gap:6px;margin-bottom:6px}.bk-steps i{flex:1;height:3px;border-radius:2px;background:#262626}.bk-steps i.on{background:#fff}
+.bk-stl{color:#71717A;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.bk-types{display:grid;gap:8px}
+.bk-type,.bk-plan{text-align:left;background:#000;border:1px solid #2E2E2E;border-radius:12px;padding:12px 14px;color:#fff;font:inherit;cursor:pointer;width:100%}
+.bk-type b,.bk-plan b{display:block;font-size:15px}.bk-type span{color:#A1A1AA;font-size:13px}
+.bk-type.on,.bk-plan.on{border-color:#fff;background:#0D0D0D}
+.bk-row{display:grid;grid-template-columns:120px 1fr;gap:8px}
+.bk-two{display:grid;gap:0 12px}@media(min-width:560px){.bk-two{grid-template-columns:1fr 1fr}}
+.bk-plans{display:grid;gap:10px;margin-bottom:18px}@media(min-width:700px){.bk-plans{grid-template-columns:repeat(3,1fr)}}
+.bk-plan{cursor:default;display:flex;flex-direction:column;gap:6px;padding:16px}
+.bk-plan.free{cursor:pointer}.bk-plan .pr{font-size:26px;font-weight:700;letter-spacing:-.02em}.bk-plan .pr small{font-size:13px;color:#A1A1AA;font-weight:500}
+.bk-plan ul{margin:4px 0 0;padding-left:18px;color:#D4D4D8;font-size:13px;display:grid;gap:3px}
+.bk-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:#fff;color:#000;align-self:flex-start}.bk-tag.soon{background:#262626;color:#A1A1AA}
 </style>
 </head>
 <body>
@@ -661,38 +713,114 @@ function skelShow(){const m=$('#main');if(m)m.innerHTML=skel();setTimeout(()=>{i
 
 /* ============ welcome ============ */
 async function hashPw_unused(t){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('manifest:'+t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;for(const c of 'manifest:'+t)h=((h<<5)+h+c.charCodeAt(0))|0;return 'x'+h}}
+/* ============ welcome: black landing-style sign in, sign up and setup ============ */
+const CTRY=[['Pakistan','PK','PKR','Asia/Karachi','Karachi','92'],['India','IN','INR','Asia/Kolkata','Mumbai','91'],['Bangladesh','BD','BDT','Asia/Dhaka','Dhaka','880'],['Sri Lanka','LK','LKR','Asia/Colombo','Colombo','94'],['Nepal','NP','NPR','Asia/Kathmandu','Kathmandu','977'],['China','CN','CNY','Asia/Shanghai','Shanghai','86'],['Hong Kong','HK','HKD','Asia/Hong_Kong','Hong Kong','852'],['Japan','JP','JPY','Asia/Tokyo','Tokyo','81'],['South Korea','KR','KRW','Asia/Seoul','Seoul','82'],['Singapore','SG','SGD','Asia/Singapore','Singapore','65'],['Malaysia','MY','MYR','Asia/Kuala_Lumpur','Kuala Lumpur','60'],['Thailand','TH','THB','Asia/Bangkok','Bangkok','66'],['Indonesia','ID','IDR','Asia/Jakarta','Jakarta','62'],['Vietnam','VN','VND','Asia/Ho_Chi_Minh','Ho Chi Minh City','84'],['Philippines','PH','PHP','Asia/Manila','Manila','63'],['Turkey','TR','TRY','Europe/Istanbul','Istanbul','90'],['United Arab Emirates','AE','AED','Asia/Dubai','Dubai','971'],['Saudi Arabia','SA','SAR','Asia/Riyadh','Riyadh','966'],['Qatar','QA','QAR','Asia/Qatar','Doha','974'],['Kuwait','KW','KWD','Asia/Kuwait','Kuwait City','965'],['Oman','OM','OMR','Asia/Muscat','Muscat','968'],['Bahrain','BH','BHD','Asia/Bahrain','Manama','973'],['Jordan','JO','JOD','Asia/Amman','Amman','962'],['Israel','IL','ILS','Asia/Jerusalem','Jerusalem','972'],['Egypt','EG','EGP','Africa/Cairo','Cairo','20'],['South Africa','ZA','ZAR','Africa/Johannesburg','Johannesburg','27'],['Nigeria','NG','NGN','Africa/Lagos','Lagos','234'],['Kenya','KE','KES','Africa/Nairobi','Nairobi','254'],['Ghana','GH','GHS','Africa/Accra','Accra','233'],['Morocco','MA','MAD','Africa/Casablanca','Casablanca','212'],['United Kingdom','GB','GBP','Europe/London','London','44'],['Ireland','IE','EUR','Europe/Dublin','Dublin','353'],['Germany','DE','EUR','Europe/Berlin','Berlin','49'],['France','FR','EUR','Europe/Paris','Paris','33'],['Spain','ES','EUR','Europe/Madrid','Madrid','34'],['Italy','IT','EUR','Europe/Rome','Rome','39'],['Netherlands','NL','EUR','Europe/Amsterdam','Amsterdam','31'],['Belgium','BE','EUR','Europe/Brussels','Brussels','32'],['Portugal','PT','EUR','Europe/Lisbon','Lisbon','351'],['Greece','GR','EUR','Europe/Athens','Athens','30'],['Poland','PL','PLN','Europe/Warsaw','Warsaw','48'],['Czechia','CZ','CZK','Europe/Prague','Prague','420'],['Romania','RO','RON','Europe/Bucharest','Bucharest','40'],['Hungary','HU','HUF','Europe/Budapest','Budapest','36'],['Sweden','SE','SEK','Europe/Stockholm','Stockholm','46'],['Norway','NO','NOK','Europe/Oslo','Oslo','47'],['Denmark','DK','DKK','Europe/Copenhagen','Copenhagen','45'],['Switzerland','CH','CHF','Europe/Zurich','Zurich','41'],['Russia','RU','RUB','Europe/Moscow','Moscow','7'],['Ukraine','UA','UAH','Europe/Kyiv','Kyiv','380'],['United States','US','USD','America/New_York','New York','1'],['Canada','CA','CAD','America/Toronto','Toronto','1'],['Mexico','MX','MXN','America/Mexico_City','Mexico City','52'],['Brazil','BR','BRL','America/Sao_Paulo','Sao Paulo','55'],['Argentina','AR','ARS','America/Argentina/Buenos_Aires','Buenos Aires','54'],['Chile','CL','CLP','America/Santiago','Santiago','56'],['Colombia','CO','COP','America/Bogota','Bogota','57'],['Peru','PE','PEN','America/Lima','Lima','51'],['Australia','AU','AUD','Australia/Sydney','Sydney','61'],['New Zealand','NZ','NZD','Pacific/Auckland','Auckland','64']];
+const TZX=[['America/Chicago','Chicago'],['America/Denver','Denver'],['UTC','Universal']];
+const G_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+const A_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>';
+function bkOn(){document.documentElement.dataset.theme='dark';const w=$('#welcome');w.classList.remove('hide');w.classList.add('bk')}
+function bkLogo(){return LOGO.replace('var(--card)','#000')}
+function bkOauth(){return`<div class="bk-oauth"><button type="button" aria-label="Continue with Google" onclick="oauth('google')">${G_ICON}</button><button type="button" aria-label="Continue with Apple" onclick="oauth('apple')">${A_ICON}</button></div>`}
+function bkHelp(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2>Need help?</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><p class="mute" style="line-height:1.55">Email us at <a href="mailto:manifesttracking.updates@gmail.com" style="color:var(--accent);font-weight:600">manifesttracking.updates@gmail.com</a>. Tell us what you were trying to do and we will get back to you, our aim is within 48 hours.</p>`)}
+function bkFine(){return`<p class="bk-fine">By clicking Create Account, you agree to the <button type="button" onclick="legal('terms')">Terms</button> and <button type="button" onclick="legal('privacy')">Privacy Policy</button>, and to receive marketing emails from Manifest.<br>Unsubscribe anytime.</p>`}
+function bkTail(fine){return`<p class="bk-help"><button type="button" onclick="bkHelp()">Need help?</button></p>${fine?bkFine():''}`}
+function bkSteps(n){return`<div class="bk-steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div><div class="bk-stl">Step ${n} of 3 · ${['','Your account','Your business','Choose a plan'][n]}</div>`}
+function bkEntry(){return`<div class="bk-card"><h1>Create your Manifest account</h1><p class="bk-sub">Free to start. No card needed.</p>
+ <button class="bk-pri" type="button" onclick="bkGo(1)">Continue with email</button>
+ <div class="bk-or"></div><p class="bk-orl">Or continue with</p>${bkOauth()}
+ <p class="bk-toggle">Already have a Manifest account? <button type="button" onclick="authTab('signin')">Log in</button></p></div>${bkTail(true)}`}
+function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return signin(event)"><h1>Welcome back</h1><p class="bk-sub">Log in to your Manifest account.</p>
+ <div class="bk-f"><label for="si-email">Email</label><input id="si-email" type="email" autocomplete="email" inputmode="email" required></div>
+ <div class="bk-f"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
+ <div id="si-err" class="bk-err" role="alert"></div>
+ <button class="bk-pri" id="si-btn">Log in</button>
+ <p class="bk-toggle" style="margin-top:12px"><button type="button" onclick="forgot()">Forgot your password?</button></p>
+ <div class="bk-or"></div><p class="bk-orl">Or continue with</p>${bkOauth()}
+ <p class="bk-toggle">New to Manifest? <button type="button" onclick="authTab('signup')">Create an account</button></p></form>${bkTail(false)}`}
+function bkCreds(){const w=AUTH.w||{};return`<form class="bk-card" novalidate onsubmit="return bkSignup(event)">${bkSteps(1)}<h1>Create your account</h1><p class="bk-sub">You will use these to log in.</p>
+ <div class="bk-f"><label for="c-email">Email</label><input id="c-email" type="email" autocomplete="email" inputmode="email" value="${esc(w.email||'')}" placeholder="you@company.com"></div>
+ <div class="bk-f"><label for="c-user">Username</label><input id="c-user" type="text" autocomplete="username" autocapitalize="none" value="${esc(w.user||'')}" placeholder="yourname"><small>3 to 20 letters, numbers, dots or underscores.</small></div>
+ <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><small>At least 8 characters, with a letter and a number.</small></div>
+ <div id="c-err" class="bk-err" role="alert"></div>
+ <button class="bk-pri" id="c-btn">Continue</button><button type="button" class="bk-ghost" onclick="bkGo(0)">Back</button></form>${bkTail(true)}`}
+async function bkSignup(e){e.preventDefault();
+ const email=$('#c-email').value.trim(),un=$('#c-user').value.trim(),pw=$('#c-pw').value;AUTH.w={...(AUTH.w||{}),email,user:un};
+ const ok=[fieldErr('c-email',vEmail(email)),fieldErr('c-user',/^[A-Za-z0-9_.]{3,20}$/.test(un)?'':'Use 3 to 20 letters, numbers, dots or underscores.'),fieldErr('c-pw',vPass(pw))];
+ if(ok.includes(false)){const f=document.querySelector('#welcome .bad');if(f)f.focus();return false}
+ const er=$('#c-err'),btn=$('#c-btn');er.textContent='';btn.disabled=true;btn.textContent='Creating your account…';
+ try{const j=await gotrue('/signup',{body:{email,password:pw,data:{name:un,business:''}}});
+  if(!j.access_token){AUTH.mode='signin';AUTH.step=0;showWelcome('Almost there. We sent a link to '+email+'. Open it to confirm your address, then log in.');return false}
+  setSess(j);await loadCloud();S.user.name=un;S.user.username=un.toLowerCase();S.settings.setup=false;save();await flush();AUTH.step=2;showWelcome()}
+ catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Continue';if(SESS&&!S){SESS=null;sessSave()}}
+ return false}
+function bkGuess(){let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}const reg=((navigator.language||'').split('-')[1]||'').toUpperCase();
+ return (CTRY.find(c=>c[1]===reg)||CTRY.find(c=>c[3]===z)||CTRY[0])}
+function bkTzList(){const seen=new Set(),out=[];CTRY.forEach(c=>{if(!seen.has(c[3])){seen.add(c[3]);out.push([c[3],c[4]])}});TZX.forEach(x=>{if(!seen.has(x[0])){seen.add(x[0]);out.push(x)}});return out}
+function bkBiz(){const c=bkGuess();const w=AUTH.w=Object.assign({biz:S.settings.biz||'',iso:c[1],tz:c[3],cur:c[2],type:S.settings.shipTypes||'import',alerts:S.user.email||'',dial:c[5],wa:''},AUTH.w||{});
+ const ty=[['import','Ocean / International Freight','Goods coming from other countries'],['local','Local Deliveries','Trucks and couriers inside your country'],['both','Both','International and local shipments']];
+ return`<form class="bk-card" novalidate onsubmit="return bkSaveBiz(event)">${bkSteps(2)}<h1>Set up your business</h1><p class="bk-sub">This tunes Manifest to how you ship. You can change all of it later in Settings.</p>
+ <div class="bk-f"><label for="b-biz">Business name</label><input id="b-biz" type="text" autocomplete="organization" value="${esc(w.biz)}" placeholder="Your business name"></div>
+ <div class="bk-two"><div class="bk-f"><label for="b-ctry">Country</label><select id="b-ctry" onchange="bkCountry(this.value)">${CTRY.map(x=>`<option value="${x[1]}" ${x[1]===w.iso?'selected':''}>${esc(x[0])}</option>`).join('')}</select></div>
+ <div class="bk-f"><label for="b-cur">Display currency</label><select id="b-cur">${CURDEF.map(x=>`<option value="${x[0]}" ${x[0]===w.cur?'selected':''}>${x[0]} · ${esc(x[1])}</option>`).join('')}</select></div></div>
+ <div class="bk-f"><label for="b-tz">Timezone</label><select id="b-tz">${bkTzList().map(([z,n])=>`<option value="${z}" ${z===w.tz?'selected':''}>${esc(n)} (${tzOff([z,z])})</option>`).join('')}</select><small>Set from your country. Change it if you work in another timezone.</small></div>
+ <div class="bk-f"><span class="bk-lbl">Primary shipment type</span><div class="bk-types" id="b-type">${ty.map(([k,t,d])=>`<button type="button" class="bk-type ${w.type===k?'on':''}" data-k="${k}" aria-pressed="${w.type===k}" onclick="bkType(this)"><b>${t}</b><span>${d}</span></button>`).join('')}</div></div>
+ <div class="bk-f"><label for="b-al">Operations alert email(s)</label><input id="b-al" type="text" inputmode="email" autocapitalize="none" value="${esc(w.alerts)}" placeholder="ops@company.com, you@company.com"><small>Late shipment and silent transporter alerts go here. Separate several with commas.</small></div>
+ <div class="bk-f"><label for="b-wa">WhatsApp number (optional)</label><div class="bk-row"><select id="b-dial" aria-label="Country code">${CTRY.map(x=>`<option value="${x[1]}" ${x[1]===w.dial?'selected':''}>${x[1]} +${x[5]}</option>`).join('')}</select><input id="b-wa" type="tel" inputmode="tel" value="${esc(w.wa)}" placeholder="300 1234567"></div><small>We will use this for WhatsApp updates once they open. Email works today.</small></div>
+ <div id="b-err" class="bk-err" role="alert"></div>
+ <button class="bk-pri" id="b-btn">Continue</button></form>${bkTail(false)}`}
+function bkCountry(iso){const c=CTRY.find(x=>x[1]===iso);if(!c)return;$('#b-tz').value=c[3];$('#b-cur').value=c[2];$('#b-dial').value=iso}
+function bkType(b){[...b.parentElement.children].forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)})}
+function bkSaveBiz(e){e.preventDefault();
+ const biz=$('#b-biz').value.trim(),al=$('#b-al').value,wa=$('#b-wa').value.replace(/[\s\-()]/g,''),er=$('#b-err');er.textContent='';
+ const list=[...new Set(al.split(/[,;\s]+/).map(x=>x.trim()).filter(Boolean))];
+ const badMail=list.find(x=>vEmail(x));
+ const ok=[fieldErr('b-biz',vBiz(biz)),fieldErr('b-al',!list.length?'Please add at least one email for alerts.':list.length>5?'Please use up to 5 emails.':badMail?'"'+badMail+'" does not look right.':''),fieldErr('b-wa',wa&&!/^\d{6,14}$/.test(wa)?'Use digits only, without the country code.':'')];
+ if(ok.includes(false)){const f=document.querySelector('#welcome .bad');if(f)f.focus();return false}
+ const iso=$('#b-ctry').value,tz=$('#b-tz').value,cur=$('#b-cur').value,type=$('#b-type .on').dataset.k,dial=$('#b-dial').value;
+ const dc=(CTRY.find(x=>x[1]===dial)||[])[5]||'';
+ let t=TZS.find(x=>x[1]===tz);if(!t){const c=CTRY.find(x=>x[3]===tz)||TZX.find(x=>x[0]===tz);t=[(c&&(c[4]||c[1]))||tz,tz,(c&&(c[4]||c[1]))||tz];TZS.push(t)}
+ Object.assign(S.settings,{biz,country:iso,tz:t[0],cur,mode:type==='local'?'local':'import',shipTypes:type,alertEmails:list,wa:wa?'+'+dc+wa:''});
+ if(wa&&!S.user.phone)S.user.phone='+'+dc+wa;
+ AUTH.w={...AUTH.w,biz,iso,tz,cur,type,alerts:list.join(', '),dial,wa:$('#b-wa').value};
+ save();bkGo(3);return false}
+function bkPlan(){const P=[['Starter','$0','/mo','Solo shops and small sellers',['Up to 5 shipments a month','Email updates','Late alerts'],true],['Growth','$49','/mo','Local shops and growing businesses',['Up to 50 shipments a month','Email and WhatsApp updates','3 people on your team'],false],['Pro / Fleet','$149','/mo','Busy teams with lots of shipments',['Up to 250 shipments a month','Your own email address','10 people on your team'],false]];
+ return`<div class="bk-card">${bkSteps(3)}<h1>Choose a plan</h1><p class="bk-sub">Start free. Paid plans are opening soon, and you will be able to upgrade from Settings.</p>
+ <div class="bk-plans">${P.map(([n,p,u,d,f,free])=>`<div class="bk-plan ${free?'free on':''}">${free?'<span class="bk-tag">Selected</span>':'<span class="bk-tag soon">Opening soon</span>'}<b>${n}</b><div class="pr">${p}<small>${u}</small></div><span style="color:#A1A1AA;font-size:13px">${d}</span><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>
+ <div id="p-err" class="bk-err" role="alert"></div>
+ <button class="bk-pri" id="p-btn" onclick="bkFinish()">Complete Setup</button><button type="button" class="bk-ghost" onclick="bkGo(2)">Back</button></div>${bkTail(false)}`}
+async function bkFinish(){const b=$('#p-btn');b.disabled=true;b.textContent='Setting things up…';
+ try{S.settings.setup=true;save();await flush();AUTH.step=0;AUTH.w=null;enter()}catch(e){S.settings.setup=false;b.disabled=false;b.textContent='Complete Setup';$('#p-err').textContent='We could not save. Please try again.'}}
+function bkGo(n){AUTH.step=n;showWelcome();window.scrollTo(0,0)}
+async function oauth(p){let ok=false;
+ try{const r=await fetch(SB_URL+'/auth/v1/settings',{headers:{apikey:SB_KEY}});const j=await r.json();ok=!!(j&&j.external&&j.external[p])}catch(e){toast('We could not reach Manifest. Please check your internet and try again.');return}
+ if(!ok){toast((p==='google'?'Google':'Apple')+' sign-in is coming soon. Please continue with email for now.');return}
+ location.href=SB_URL+'/auth/v1/authorize?provider='+p+'&redirect_to='+encodeURIComponent(location.origin+'/app/')}
+async function oauthReturn(h){
+ SESS={access_token:h.get('access_token'),refresh_token:h.get('refresh_token')||'',expires_at:Math.floor(Date.now()/1000)+(+h.get('expires_in')||3600),user:{id:'',email:''}};
+ history.replaceState(null,'',location.pathname);
+ const u=await gotrue('/user',{method:'GET',auth:true});SESS.user={id:u.id,email:u.email};sessSave();
+ await loadCloud();
+ const fresh=u.created_at&&u.last_sign_in_at&&Math.abs(Date.parse(u.last_sign_in_at)-Date.parse(u.created_at))<120000;
+ if(fresh&&S.settings.setup===undefined){const m=u.user_metadata||{};S.user.name=m.full_name||m.name||uname(u.email);S.user.username=uname(u.email);S.settings.setup=false;save();await flush()}
+ enter()}
 function showWelcome(msg){
- $('#app').classList.add('hide');const w=$('#welcome');w.classList.remove('hide');
- const si=AUTH.mode==='signin';
- const note=msg?`<div class="card" style="margin-bottom:14px;padding:12px 14px" role="status"><span class="sm">${esc(msg)}</span></div>`:'';
- const lk='style="color:var(--accent);font-weight:600"';
- w.innerHTML=`<div class="wl"><aside class="wl-side"><div class="brand" style="color:#fff;margin-bottom:36px">${LOGO}Manifest</div><h2 class="hero">Know where every shipment is, without chasing anyone.</h2><p class="mute" style="font-size:16px;line-height:1.55;max-width:440px">We ask your transporters for updates, keep their replies in one place, and tell you the moment something is late.</p>
- <ul class="wl-perks"><li><i>1</i><div><b>Updates by email</b><span>Sent for you, on a schedule you choose</span></div></li><li><i>2</i><div><b>Late alerts</b><span>Know the moment a reply goes quiet</span></div></li><li><i>3</i><div><b>Everything in one place</b><span>Every reply, kept with its shipment</span></div></li></ul></aside>
- <main class="wl-main"><div class="wl-top"><div class="brand wl-m">${LOGO}Manifest</div></div><div class="wl-form"><div style="height:10px"></div>${note}
- ${si?`<form class="card auth" novalidate onsubmit="return signin(event)"><h1>Welcome back</h1><p class="sm mute" style="margin-bottom:16px">Sign in to your Manifest account</p>
-  <div class="field"><label for="si-email">Email</label><input id="si-email" type="email" autocomplete="email" required></div>
-  <div class="field"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
-  <div id="si-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div>
-  <button class="btn pri" id="si-btn" style="width:100%">Sign in</button><p class="sm center" style="margin-top:12px"><a href="#" onclick="forgot();return false" ${lk}>Forgot your password?</a></p></form>
-  <p class="sm mute center" style="margin-top:16px">New here? <a href="#" onclick="authTab('signup');return false" ${lk}>Create an account</a></p>`:
- `<form class="card auth" novalidate onsubmit="return signup(event)"><h1>Create your account</h1><p class="sm mute" style="margin-bottom:16px">Free to start. No card needed.</p>
-  <div class="field"><label for="su-biz">Business name</label><input id="su-biz" type="text" autocomplete="organization" required placeholder="Your business name"></div>
-  <div class="field"><label for="su-name">Your name</label><input id="su-name" type="text" autocomplete="name" required></div>
-  <div class="field"><label for="su-email">Work email</label><input id="su-email" type="email" autocomplete="email" required></div>
-  <div class="field"><label for="su-pw">Password</label><input id="su-pw" type="password" autocomplete="new-password" minlength="8" required><span class="xs mute">At least 8 characters, with a letter and a number.</span></div>
-  <div class="field"><span class="lbl">What do you ship?</span><div class="seg" id="su-mode"><button type="button" class="on" data-m="import" onclick="pickMode(this)">Goods from other countries</button><button type="button" data-m="local" onclick="pickMode(this)">Local deliveries</button></div></div>
-  <div id="su-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div>
-  <button class="btn pri" id="su-btn" style="width:100%">Create account</button>
-  <p class="xs mute center" style="margin-top:10px">By creating an account you agree to our <a href="#" onclick="legal('terms');return false" ${lk}>Terms</a> and <a href="#" onclick="legal('privacy');return false" ${lk}>Privacy Policy</a>.</p></form>
-  <p class="sm mute center" style="margin-top:16px">Already have an account? <a href="#" onclick="authTab('signin');return false" ${lk}>Sign in</a></p>`}<ul class="wl-perks wl-m"><li><i>1</i><div><b>Updates by email</b><span>Sent for you, on a schedule you choose</span></div></li><li><i>2</i><div><b>Late alerts</b><span>Know the moment a reply goes quiet</span></div></li><li><i>3</i><div><b>Everything in one place</b><span>Every reply, kept with its shipment</span></div></li></ul></div><div class="wl-foot">Manifest · Freight, accounted for</div></main></div>`;
-}
+ $('#app').classList.add('hide');bkOn();const w=$('#welcome');
+ const setup=!!(SESS&&S&&S.settings&&S.settings.setup===false);
+ const note=msg?`<div class="bk-note" role="status">${esc(msg)}</div>`:'';
+ let body,wide=false,link;
+ if(setup){body=AUTH.step===3?bkPlan():bkBiz();wide=AUTH.step===3;link=`<button class="lnk" onclick="signOut()">Log out</button>`}
+ else if(AUTH.mode==='signin'){body=bkLogin();link=`<button class="lnk" onclick="authTab('signup')">Sign up</button>`}
+ else{body=AUTH.step===1?bkCreds():bkEntry();link=`<button class="lnk" onclick="authTab('signin')">Log in</button>`}
+ w.innerHTML=`<header class="bk-top"><a class="brand" href="/">${bkLogo()}Manifest</a>${link}</header><main class="bk-main"><div class="bk-box ${wide?'wide':''}">${note}${body}</div></main>`;
+ w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>{el.classList.remove('bad');const e=el.parentElement.querySelector('.ferr');if(e)e.textContent=''}));
+ const f=w.querySelector('input');if(f&&!msg&&!('ontouchstart' in window))f.focus()}
 function ensure(){S.user.username=S.user.username||uname(S.user.email);S.user.phone=S.user.phone||'';S.user.photo=S.user.photo||'';S.invoices=S.invoices||[];
  const fx=t=>String(t||'').replace('Check-in sent by email','Asked for an update by email').replace('Status set to Customs hold from reply','Status changed to Held at customs, based on the reply').replace('Marked Delayed from the transporter reply','Marked as Delayed, based on the reply').replace('Marked Delivered','Marked as Delivered').replace('Triggered','Started');
  (S.shipments||[]).forEach(s=>(s.tl||[]).forEach(e=>e.text=fx(e.text)));S.tickets=S.tickets||[];S.health=S.health||'ok';
  S.sec=S.sec||{}}
 let _cb=null;
 function ask(title,msg,label,cb){_cb=cb;openModal(`<h2>${esc(title)}</h2><p class="mute" style="margin:8px 0 16px">${esc(msg)}</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Cancel</button><button class="btn dng" style="flex:1" onclick="closeModal();_cb&&_cb()">${esc(label)}</button></div>`)}
-function enter(){ensure();const st=S.settings;if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();render()}
+function enter(){ensure();const st=S.settings;if(st.setup===false){AUTH.step=AUTH.step>=2?AUTH.step:2;showWelcome();return}$('#welcome').classList.remove('bk');if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();render()}
 function purgeTrash(){const c=Date.now()-30*DAY;S.shipments=S.shipments.filter(s=>!(s.deletedAt&&s.deletedAt<c));save()}
 
 /* ============ theme ============ */
@@ -1227,16 +1355,16 @@ async function pollCloud(){if(!S||!SESS||PUSH.busy||PUSH.dirty||document.hidden)
   if(!$('#modal').classList.contains('show')&&!typing&&!$('#app').classList.contains('hide'))render()}catch(e){}}
 setInterval(pollCloud,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollCloud()});
 /* ---- sign in, sign up, sign out ---- */
-function showLoading(){$('#app').classList.add('hide');const w=$('#welcome');w.classList.remove('hide');w.innerHTML='<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><div style="text-align:center"><div class="brand" style="justify-content:center;margin-bottom:14px">'+LOGO+'Manifest</div><p class="mute">Loading your shipments…</p></div></div>'}
+function showLoading(){$('#app').classList.add('hide');bkOn();const w=$('#welcome');w.innerHTML='<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><div style="text-align:center"><div class="brand" style="justify-content:center;margin-bottom:14px">'+LOGO+'Manifest</div><p class="mute">Loading your shipments…</p></div></div>'}
 function pickMode(b){[...b.parentElement.children].forEach(x=>x.classList.toggle('on',x===b))}
-function authTab(m){AUTH.mode=m;showWelcome()}
+function authTab(m){AUTH.mode=m;AUTH.step=0;showWelcome()}
 function uname(e){return String(e||'user').split('@')[0].toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,20)||'user'}
 async function signin(e){e.preventDefault();const er=$('#si-err'),btn=$('#si-btn');er.textContent='';
  const email=$('#si-email').value.trim(),pw=$('#si-pw').value;
  if(!email||!pw){er.textContent='Please enter your email and password.';return false}
- btn.disabled=true;btn.textContent='Signing in…';
+ btn.disabled=true;btn.textContent='Logging in…';
  try{const j=await gotrue('/token?grant_type=password',{body:{email,password:pw}});setSess(j);await loadCloud();enter()}
- catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Sign in';if(SESS&&!S){SESS=null;sessSave()}}
+ catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Log in';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
 async function signup(e){e.preventDefault();
  const bad=[fieldErr('su-biz',vBiz($('#su-biz').value)),fieldErr('su-name',vName($('#su-name').value,'your name')),fieldErr('su-email',vEmail($('#su-email').value)),fieldErr('su-pw',vPass($('#su-pw').value))];
@@ -1253,12 +1381,12 @@ function forgot(){const v=($('#si-email')&&$('#si-email').value||'').trim();
 async function sendReset(){const em=$('#fg-e').value.trim(),m=$('#fg-m');if(vEmail(em)){m.style.color='var(--red-tx)';m.textContent=vEmail(em);return}
  try{await gotrue('/recover?redirect_to='+encodeURIComponent(location.origin+location.pathname),{body:{email:em}});m.style.color='var(--green-tx,inherit)';m.textContent='If that email has an account, a reset link is on its way. It can take a few minutes.'}
  catch(e){m.style.color='var(--red-tx)';m.textContent=authMsg(e)}}
-function showReset(msg){$('#app').classList.add('hide');const w=$('#welcome');w.classList.remove('hide');
+function showReset(msg){$('#app').classList.add('hide');bkOn();const w=$('#welcome');
  w.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><form class="card auth" novalidate onsubmit="return doReset(event)" style="width:100%;max-width:400px"><h1>Choose a new password</h1><p class="sm mute" style="margin-bottom:16px">Use at least 8 characters, with a letter and a number.</p><div class="field"><label for="rs-pw">New password</label><input id="rs-pw" type="password" autocomplete="new-password"></div><div id="rs-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert">${esc(msg||'')}</div><button class="btn pri" style="width:100%">Save password</button></form></div>`}
 async function doReset(e){e.preventDefault();const pw=$('#rs-pw').value,er=$('#rs-err');const v=vPass(pw);if(v){er.textContent=v;return false}
  try{await gotrue('/user',{method:'PUT',auth:true,body:{password:pw}});SESS=null;sessSave();AUTH.mode='signin';showWelcome('Your password is updated. Please sign in.')}
  catch(err){er.textContent=authMsg(err)}return false}
-async function signOut(){try{await flush()}catch(e){}try{await gotrue('/logout',{auth:true})}catch(e){}
+async function signOut(){AUTH.w=null;AUTH.step=0;try{await flush()}catch(e){}try{await gotrue('/logout',{auth:true})}catch(e){}
  SESS=null;sessSave();S=null;PUSH.dirty=false;V={tab:'dashboard',filter:'all',q:'',sel:new Set(),selMode:false,open:null,hist:'archive',hq:'',set:'profile'};AUTH.mode='signin';showWelcome()}
 async function signOutAll(){try{await flush();await gotrue('/logout?scope=global',{auth:true})}catch(e){}SESS=null;sessSave();S=null;AUTH.mode='signin';showWelcome('You were signed out of every device.')}
 function doDelete(){closeModal();
@@ -1282,8 +1410,10 @@ function planInterest(k){closeModal();ticket('Plan interest: '+PLANS[k].name,'Bi
  applyTheme();
  const h=new URLSearchParams(location.hash.replace(/^#/,''));
  if(h.get('access_token')&&h.get('type')==='recovery'){SESS={access_token:h.get('access_token'),refresh_token:h.get('refresh_token')||'',expires_at:Math.floor(Date.now()/1000)+3000,user:{id:'',email:''}};history.replaceState(null,'',location.pathname);showReset();return}
+ if(h.get('error_description')){history.replaceState(null,'',location.pathname);sessLoad();AUTH.mode='signin';showWelcome(h.get('error_description').replace(/\+/g,' '));return}
+ if(h.get('access_token')&&!h.get('type')){try{await oauthReturn(h);return}catch(e){SESS=null;sessSave();S=null;AUTH.mode='signin';showWelcome(e.net?e.message:'We could not finish signing you in. Please try again.');return}}
  sessLoad();
- if(!SESS){AUTH.mode='signup';showWelcome();return}
+ if(!SESS){AUTH.mode=/[?&]mode=signin/.test(location.search)?'signin':'signup';AUTH.step=0;showWelcome();return}
  showLoading();
  try{if(SESS.expires_at-60<Date.now()/1000)await refreshSess();await loadCloud();enter()}
  catch(e){if(e.net){showWelcome('We could not reach Manifest. Please check your internet, then reload this page.')}else{SESS=null;sessSave();AUTH.mode='signin';showWelcome()}}
