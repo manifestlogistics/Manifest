@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manifest Freight Tracking</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cpolygon points='200,50 330,125 200,200 70,125' fill='%23DCEAFF'/%3E%3Cpolygon points='70,125 200,200 200,350 70,275' fill='%232F6BF0'/%3E%3Cpolygon points='200,200 330,125 330,275 200,350' fill='%230F2A5E'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F8FAFC;--card:#FFFFFF;--line:#E2E8F0;--text:#0F172A;--mute:#64748B;--accent:#2563EB;--accent-h:#1D4ED8;--soft:#F1F5F9;
 --blue-bg:#EFF6FF;--blue-tx:#1D4ED8;--red-bg:#FEF2F2;--red-tx:#B91C1C;--green-bg:#ECFDF5;--green-tx:#047857;--amber-bg:#FFFBEB;--amber-tx:#B45309;--gray-bg:#F1F5F9;--gray-tx:#475569;
@@ -415,7 +415,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .bk-main{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 16px 40px}
 .bk-box{width:100%;max-width:440px}.bk-box.wide{max-width:760px}
 .bk-card{background:#141414;border:1px solid #262626;border-radius:16px;padding:28px 24px}
-.bk-card h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 6px;color:#fff;line-height:1.25}
+.bk-card h1{font-family:'Instrument Serif',Georgia,'Times New Roman',serif;font-size:32px;font-weight:400;letter-spacing:-.01em;margin:0 0 6px;color:#fff;line-height:1.15}
 .bk-sub{color:#A1A1AA;font-size:14px;margin:0 0 20px;line-height:1.5}
 .bk-f{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .bk-f>label,.bk-lbl{font-size:13px;font-weight:600;color:#A1A1AA}
@@ -439,6 +439,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .bk-toggle{text-align:center;color:#A1A1AA;font-size:14px;margin:20px 0 0}
 #welcome.bk a,.bk-toggle button{color:#fff}
 .bk-toggle button,.bk-lk{background:none;border:0;font:inherit;font-weight:600;cursor:pointer;padding:0;color:#fff;text-decoration:none}
+.bk-forgot{margin:0 0 14px}.bk-forgot button{background:none;border:0;padding:0;font:inherit;font-size:13px;color:#A1A1AA;cursor:pointer;text-decoration:underline}.bk-forgot button:hover{color:#fff}
 .bk-help{text-align:center;margin:18px 0 8px;font-size:14px}.bk-help button{color:#A1A1AA;background:none;border:0;font:inherit;cursor:pointer;text-decoration:underline}
 .bk-fine{text-align:center;color:#71717A;font-size:12px;line-height:1.55;margin:0 auto;max-width:380px}
 .bk-fine button{background:none;border:0;font:inherit;color:#A1A1AA;text-decoration:underline;cursor:pointer;padding:0}
@@ -721,23 +722,23 @@ const G_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d
 const A_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>';
 function bkOn(){document.documentElement.dataset.theme='dark';const w=$('#welcome');w.classList.remove('hide');w.classList.add('bk')}
 function bkLogo(){return LOGO.replace('var(--card)','#000')}
-function bkOauth(){return`<div class="bk-oauth"><button type="button" aria-label="Continue with Google" onclick="oauth('google')">${G_ICON}</button><button type="button" aria-label="Continue with Apple" onclick="oauth('apple')">${A_ICON}</button></div>`}
+function bkOauth(){return`<div class="bk-oauth"><button type="button" aria-label="Continue with Google" onclick="oauth('google')">${G_ICON}</button></div>`}
 function bkHelp(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2>Need help?</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><p class="mute" style="line-height:1.55">Email us at <a href="mailto:manifesttracking.updates@gmail.com" style="color:var(--accent);font-weight:600">manifesttracking.updates@gmail.com</a>. Tell us what you were trying to do and we will get back to you, our aim is within 48 hours.</p>`)}
 function bkFine(){return`<p class="bk-fine">By clicking Create Account, you agree to the <button type="button" onclick="legal('terms')">Terms</button> and <button type="button" onclick="legal('privacy')">Privacy Policy</button>, and to receive marketing emails from Manifest.<br>Unsubscribe anytime.</p>`}
 function bkTail(fine){return`<p class="bk-help"><button type="button" onclick="bkHelp()">Need help?</button></p>${fine?bkFine():''}`}
 function bkSteps(n){return`<div class="bk-steps" aria-hidden="true">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div><div class="bk-stl">Step ${n} of 3 · ${['','Your account','Your business','Choose a plan'][n]}</div>`}
-function bkEntry(){return`<form class="bk-card" novalidate onsubmit="return bkEmailGo(event)"><h1>Continue with email</h1>
+function bkEntry(){return`<form class="bk-card" novalidate onsubmit="return bkEmailGo(event)"><h1>Create your account on Manifest</h1>
  <div class="bk-f" style="margin-top:18px"><label for="e-email" class="sr">Email</label><input id="e-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" value="${esc((AUTH.w&&AUTH.w.email)||'')}" placeholder="Write your email"></div>
- <button class="bk-pri" type="submit">Continue</button>
+ <button class="bk-pri" type="submit">Continue with email</button>
  <div class="bk-or"></div><p class="bk-orl">Or continue with</p>${bkOauth()}
  <p class="bk-toggle">Already have a Manifest account? <button type="button" onclick="authTab('signin')">Log in</button></p></form>${bkTail(true)}`}
 function bkEmailGo(e){e.preventDefault();const v=$('#e-email').value.trim();if(!fieldErr('e-email',vEmail(v)))return false;AUTH.w={...(AUTH.w||{}),email:v};bkGo(1);return false}
 function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return signin(event)"><h1>Welcome back</h1><p class="bk-sub">Log in to your Manifest account.</p>
- <div class="bk-f"><label for="si-email">Email</label><input id="si-email" type="email" autocomplete="email" inputmode="email" required></div>
- <div class="bk-f"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
+ <div class="bk-f"><label for="si-email">Username or email</label><input id="si-email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+ <div class="bk-f" style="margin-bottom:6px"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
+ <p class="bk-forgot"><button type="button" onclick="forgot()">Forgot password?</button></p>
  <div id="si-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="si-btn">Log in</button>
- <p class="bk-toggle" style="margin-top:12px"><button type="button" onclick="forgot()">Forgot your password?</button></p>
  <div class="bk-or"></div><p class="bk-orl">Or continue with</p>${bkOauth()}
  <p class="bk-toggle">New to Manifest? <button type="button" onclick="authTab('signup')">Create an account</button></p></form>${bkTail(false)}`}
 function bkCreds(){const w=AUTH.w||{};return`<form class="bk-card" novalidate onsubmit="return bkSignup(event)">${bkSteps(1)}<h1>Create your account</h1><p class="bk-sub">You will use these to log in.</p>
@@ -751,7 +752,9 @@ async function bkSignup(e){e.preventDefault();
  const ok=[fieldErr('c-email',vEmail(email)),fieldErr('c-user',/^[A-Za-z0-9_.]{3,20}$/.test(un)?'':'Use 3 to 20 letters, numbers, dots or underscores.'),fieldErr('c-pw',vPass(pw))];
  if(ok.includes(false)){const f=document.querySelector('#welcome .bad');if(f)f.focus();return false}
  const er=$('#c-err'),btn=$('#c-btn');er.textContent='';btn.disabled=true;btn.textContent='Creating your account…';
- try{const j=await gotrue('/signup',{body:{email,password:pw,data:{name:un,business:''}}});
+ try{let tk=false;try{tk=await api('rpc/username_taken',{method:'POST',body:{u:un}})}catch(x){}
+  if(tk===true){fieldErr('c-user','That username is taken. Please choose another.');btn.disabled=false;btn.textContent='Continue';return false}
+  const j=await gotrue('/signup',{body:{email,password:pw,data:{name:un,business:''}}});
   if(!j.access_token){AUTH.mode='signin';AUTH.step=0;showWelcome('Almost there. We sent a link to '+email+'. Open it to confirm your address, then log in.');return false}
   setSess(j);await loadCloud();S.user.name=un;S.user.username=un.toLowerCase();S.settings.setup=false;save();await flush();AUTH.step=2;showWelcome()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Continue';if(SESS&&!S){SESS=null;sessSave()}}
@@ -1363,10 +1366,13 @@ function pickMode(b){[...b.parentElement.children].forEach(x=>x.classList.toggle
 function authTab(m){AUTH.mode=m;AUTH.step=0;showWelcome()}
 function uname(e){return String(e||'user').split('@')[0].toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,20)||'user'}
 async function signin(e){e.preventDefault();const er=$('#si-err'),btn=$('#si-btn');er.textContent='';
- const email=$('#si-email').value.trim(),pw=$('#si-pw').value;
- if(!email||!pw){er.textContent='Please enter your email and password.';return false}
+ let email=$('#si-email').value.trim();const pw=$('#si-pw').value;
+ if(!email||!pw){er.textContent='Please enter your username and password.';return false}
  btn.disabled=true;btn.textContent='Logging in…';
- try{const j=await gotrue('/token?grant_type=password',{body:{email,password:pw}});setSess(j);await loadCloud();enter()}
+ try{
+  if(!email.includes('@')){let em=null;try{em=await api('rpc/login_email',{method:'POST',body:{u:email}})}catch(x){er.textContent=x.net?'We could not reach Manifest. Please check your internet and try again.':'Logging in with a username is not switched on yet. Please use your email for now.';btn.disabled=false;btn.textContent='Log in';return false}
+   if(!em){er.textContent='That username or password is not right. You can also log in with your email.';btn.disabled=false;btn.textContent='Log in';return false}email=em}
+const j=await gotrue('/token?grant_type=password',{body:{email,password:pw}});setSess(j);await loadCloud();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Log in';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
 async function signup(e){e.preventDefault();
@@ -1379,7 +1385,7 @@ async function signup(e){e.preventDefault();
   setSess(j);await loadCloud();S.user.name=name;S.user.username=uname(email);S.settings.biz=biz;S.settings.mode=m;save();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Create account';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
-function forgot(){const v=($('#si-email')&&$('#si-email').value||'').trim();
+function forgot(){let v=($('#si-email')&&$('#si-email').value||'').trim();if(!v.includes('@'))v='';
  openModal(`<h2>Reset your password</h2><p class="mute" style="margin:8px 0 12px">Enter your email and we will send you a link to choose a new password.</p><div class="field"><label for="fg-e">Email</label><input id="fg-e" type="email" autocomplete="email" value="${esc(v)}"></div><div id="fg-m" class="sm" style="min-height:18px" role="alert"></div><button class="btn pri" style="width:100%" onclick="sendReset()">Send reset link</button>`)}
 async function sendReset(){const em=$('#fg-e').value.trim(),m=$('#fg-m');if(vEmail(em)){m.style.color='var(--red-tx)';m.textContent=vEmail(em);return}
  try{await gotrue('/recover?redirect_to='+encodeURIComponent(location.origin+location.pathname),{body:{email:em}});m.style.color='var(--green-tx,inherit)';m.textContent='If that email has an account, a reset link is on its way. It can take a few minutes.'}
