@@ -13,16 +13,7 @@ var FS='#version 300 es\nprecision highp float;precision highp sampler2D;\n'+
 'const float PI=3.14159265;\n'+
 'float h21(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}\n'+
 'float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}\n'+
-'vec3 sky(vec2 p,vec2 fc){\n'+
-' vec3 c=vec3(0.);\n'+
-' vec2 g=floor(fc/1.0/ (res.y>900.?2.:1.)*0.5);float h=h21(g);\n'+
-' float st=step(.9972,h);float tw=.65+.35*sin(t*(1.+h*5.)+h*60.);\n'+
-' c+=vec3(.85,.9,1.)*st*tw*(.45+.55*h21(g+7.));\n'+
-' vec2 q=vec2(dot(p,vec2(.62,-.78)),dot(p,vec2(.78,.62)));\n'+
-' float band=exp(-pow(q.x+.3,2.)*6.);\n'+
-' float n=vn(q*2.2+3.)*.55+vn(q*5.5)*.3+vn(q*14.)*.15;\n'+
-' c+=vec3(.5,.46,.58)*band*n*n*.55;\n'+
-' return c;}\n'+
+'vec3 sky(vec2 p,vec2 fc){return vec3(0.);}\n'+
 'void main(){\n'+
 ' vec2 fc=gl_FragCoord.xy;vec2 p=(2.*fc-res)/res.x;\n'+
 ' float F=1.5,R=3.4,D=4.2;float ytop=(2.*hz-1.)*res.y/res.x;float cy=R-ytop*D/F;\n'+
@@ -62,7 +53,7 @@ function size(){var w=hero.clientWidth,h=hero.clientHeight,s=scale;
  var px=w*h*s*s,cap=small?1100000:2200000;if(px>cap)s*=Math.sqrt(cap/px);
  cv.width=Math.max(2,Math.round(w*s));cv.height=Math.max(2,Math.round(h*s));gl.viewport(0,0,cv.width,cv.height)}
 function draw(now){var t=(now-t0)/1000;
- gl.uniform2f(U.res,cv.width,cv.height);gl.uniform1f(U.t,t);var P=window.__GP||{};gl.uniform1f(U.hz,P.hz||.45);gl.uniform1f(U.tilt,P.tilt!=null?P.tilt:.38);gl.uniform1f(U.spin,(P.spin!=null?P.spin:-.25)+(reduce?0:t*.012));
+ gl.uniform2f(U.res,cv.width,cv.height);gl.uniform1f(U.t,t);var P=window.__GP||{};gl.uniform1f(U.hz,P.hz||.52);gl.uniform1f(U.tilt,P.tilt!=null?P.tilt:.38);gl.uniform1f(U.spin,(P.spin!=null?P.spin:-.25)+(reduce?0:t*.012));
  gl.drawArrays(gl.TRIANGLES,0,3)}
 function loop(now){if(!run)return;requestAnimationFrame(loop);
  if(now-last<33)return;var dt=now-last;last=now;
@@ -78,7 +69,7 @@ function start(){
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
   gl.uniform1i(U.tN,0);size();ready=true;draw(performance.now());cv.classList.add('on');go()};
- img.src='/assets/earth-night.jpg?v=3'}
+ img.src='/assets/earth-night.jpg?v=4'}
 if('ResizeObserver' in window)new ResizeObserver(function(){if(ready){size();draw(performance.now())}}).observe(hero);
 if('IntersectionObserver' in window)new IntersectionObserver(function(e){vis=e[0].isIntersecting;vis?go():stop()}).observe(hero);
 document.addEventListener('visibilitychange',function(){document.hidden?stop():go()});
