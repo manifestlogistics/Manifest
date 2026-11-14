@@ -69,7 +69,7 @@ function start(){
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
   gl.uniform1i(U.tN,0);size();ready=true;draw(performance.now());cv.classList.add('on');go()};
- img.src='/assets/earth-night.jpg?v=5'}
+ img.src='/assets/earth-night.jpg?v=7'}
 if('ResizeObserver' in window)new ResizeObserver(function(){if(ready){size();draw(performance.now())}}).observe(hero);
 if('IntersectionObserver' in window)new IntersectionObserver(function(e){vis=e[0].isIntersecting;vis?go():stop()}).observe(hero);
 document.addEventListener('visibilitychange',function(){document.hidden?stop():go()});
