@@ -1386,10 +1386,10 @@ async function signup(e){e.preventDefault();
   setSess(j);await loadCloud();S.user.name=name;S.user.username=uname(email);S.settings.biz=biz;S.settings.mode=m;save();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Create account';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
-function forgot(){AUTH.mode='forgot';AUTH.fp={step:1,email:($('#si-email')&&$('#si-email').value.includes('@')?$('#si-email').value.trim():'')};showWelcome()}
+function forgot(){AUTH.mode='forgot';AUTH.fp={step:1,email:''};showWelcome()}
 function bkForgot(){const f=AUTH.fp||{step:1};
  if(f.step===1)return`<form class="bk-card" novalidate onsubmit="return fpSend(event)"><h1>Reset your password</h1><p class="bk-sub">Write your email address linked to your Manifest account.</p>
- <div class="bk-f"><label for="fp-e" class="sr">Email</label><input id="fp-e" type="email" autocomplete="email" inputmode="email" autocapitalize="none" value="${esc(f.email||'')}" placeholder="you@company.com"></div>
+ <div class="bk-f"><label for="fp-e" class="sr">Email</label><input id="fp-e" type="email" autocomplete="off" inputmode="email" autocapitalize="none" value="${esc(f.email||'')}" placeholder="you@company.com"></div>
  <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Send code</button><button type="button" class="bk-ghost" onclick="authTab('signin')">Back to log in</button></form>${bkTail(false)}`;
  if(f.step===2)return`<form class="bk-card" novalidate onsubmit="return fpVerify(event)"><h1>Check your email</h1><p class="bk-sub">We sent a one-time code to ${esc(f.email)}. Enter it below.</p>
  <div class="bk-f"><label for="fp-o" class="sr">One-time code</label><input id="fp-o" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Enter the code"></div>
