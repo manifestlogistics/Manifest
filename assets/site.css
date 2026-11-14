@@ -33,8 +33,8 @@ p{margin:0}
 .dp .bot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
 .dp .bot .pill{width:100%;min-height:52px;font-size:16px}
 /* hero */
-.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:left;padding:96px 20px 96px;overflow:hidden;background:#000}
-.hbg{position:absolute;inset:0;background:#000 url(/assets/earth.webp) center 42%/cover no-repeat;z-index:0}
+.hero{position:relative;min-height:clamp(560px,88svh,860px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:left;padding:96px 20px 96px;overflow:hidden;background:#000}
+.hbg{position:absolute;inset:0;background:#000 url(/assets/earth.webp) center 42%/cover no-repeat;z-index:0;opacity:0}.hero.still .hbg{opacity:1}
 #globe{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;transition:opacity 1.2s ease;display:block}
 #globe.on{opacity:1}
 .hshade{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 70%,#000 100%)}
