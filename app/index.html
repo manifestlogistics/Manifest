@@ -505,8 +505,8 @@ function fdate(ts){return new Date(ts).toLocaleDateString(undefined,{day:'numeri
 const KEY='manifest_v2';
 const PLANS={
  starter:{name:'Starter',amt:0,price:'$0',per:'/mo',who:'Solo shops and small sellers',limit:5,seats:1,wa:false,domain:false,feat:['Up to 5 shipments a month','We ask for updates by email','Just you (one person)','Manifest name on messages']},
- growth:{name:'Growth',amt:49,price:'$49',per:'/mo',who:'Local shops and growing businesses',limit:50,seats:3,wa:true,domain:false,feat:['Up to 50 shipments a month','Email and WhatsApp updates','3 people on your team','Help within 24 hours']},
- pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'Busy teams with lots of shipments',limit:250,seats:10,wa:true,domain:true,api:true,feat:['Up to 250 shipments a month','Send from your own email address','Connect Google Sheets, Slack and more','Reads your emails and PDFs for you','See which suppliers are late most','10 people on your team','Priority help when you need it']},
+ growth:{name:'Growth',amt:69,price:'$69',per:'/mo',who:'Local shops and growing businesses',limit:100,seats:1,wa:true,domain:true,feat:['Up to 100 active shipments','Email and WhatsApp updates','Send from your own email','Help within 24 hours']},
+ pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'Busy teams with lots of shipments',limit:500,seats:10,wa:true,domain:true,api:true,feat:['Up to 500 active shipments','Send from your own email address','Connect Google Sheets, Slack and more','Reads your emails and PDFs for you','See which suppliers are late most','10 people on your team','Priority help when you need it']},
  enterprise:{name:'Enterprise',amt:399,price:'Custom',per:'From $399/mo',who:'Big fleets and freight agents',limit:Infinity,seats:999,wa:true,domain:true,api:true,feat:['Unlimited shipments','Integrations built for you','Guaranteed reply times','Your own WhatsApp line','Different access for each person','Your own account manager']}
 };
 const ST={in_transit:['On the way','b-blue'],delayed:['Delayed','b-red'],customs_hold:['Held at customs','b-amber'],delivered:['Delivered','b-green'],pending:['Waiting for reply','b-gray'],cancelled:['Cancelled','b-gray']};
@@ -618,7 +618,7 @@ function vName(t,what){t=String(t||'').trim();if(!t)return'Please add '+what+'.'
 function vBiz(t){t=String(t||'').trim();if(!t)return'Please add your business name.';if(!RX.biz.test(t))return'Business names can use letters, numbers and & . , \' ( ) -';if(gib(t))return'That does not look like a real business name. Please check it.';return''}
 function vEmail(t){t=String(t||'').trim();return RX.email.test(t)?'':'That email does not look right. It should look like name@company.com'}
 function vPhone(t){t=String(t||'').trim();return !t||RX.phone.test(t)?'':'Phone numbers use digits, spaces, + and dashes, for example +92 300 1234567'}
-function vPass(t){return t.length<8?'Please use at least 8 characters.':!/[A-Za-z]/.test(t)||!/[0-9]/.test(t)?'Please include at least one letter and one number.':''}
+function vPass(t){return/[A-Z]/.test(t)&&(t.match(/[a-z]/g)||[]).length>=4&&/[0-9]/.test(t)&&/[^A-Za-z0-9]/.test(t)?'':'Use 1 capital letter, at least 4 small letters, 1 number and 1 symbol. Example: Logec2#'}
 function fieldErr(id,msg){const el=$('#'+id);if(!el)return;el.classList.toggle('bad',!!msg);let e=el.parentElement.querySelector('.ferr');if(!e){e=document.createElement('span');e.className='ferr';el.parentElement.appendChild(e)}e.textContent=msg||'';return !msg}
 /* sparklines and trends */
 function buckets(pred,days){const out=Array(days).fill(0),st=new Date().setHours(0,0,0,0);active().forEach(sh=>sh.tl.forEach(e=>{if(!pred(e,sh))return;const a=Math.floor((st+DAY-1-e.ts)/DAY);if(a>=0&&a<days)out[days-1-a]++}));return out}
@@ -744,7 +744,7 @@ function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return sign
 function bkCreds(){const w=AUTH.w||{};return`<form class="bk-card" novalidate onsubmit="return bkSignup(event)">${bkSteps(1)}<h1>Create your account</h1><p class="bk-sub">You will use these to log in.</p>
  <div class="bk-f"><label for="c-email">Email</label><input id="c-email" type="email" autocomplete="email" inputmode="email" value="${esc(w.email||'')}" placeholder="you@company.com"></div>
  <div class="bk-f"><label for="c-user">Username</label><input id="c-user" type="text" autocomplete="username" autocapitalize="none" value="${esc(w.user||'')}" placeholder="yourname"><small>3 to 20 letters, numbers, dots or underscores.</small></div>
- <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><small>At least 8 characters, with a letter and a number.</small></div>
+ <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><small>1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</small></div>
  <div id="c-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="c-btn">Continue</button><button type="button" class="bk-ghost" onclick="bkGo(0)">Back</button></form>${bkTail(true)}`}
 async function bkSignup(e){e.preventDefault();
@@ -789,7 +789,7 @@ function bkSaveBiz(e){e.preventDefault();
  if(wa&&!S.user.phone)S.user.phone='+'+dc+wa;
  AUTH.w={...AUTH.w,biz,iso,tz,cur,type,alerts:list.join(', '),dial,wa:$('#b-wa').value};
  save();bkGo(3);return false}
-function bkPlan(){const P=[['Starter','$0','/mo','Solo shops and small sellers',['Up to 5 shipments a month','Email updates','Late alerts'],true],['Growth','$49','/mo','Local shops and growing businesses',['Up to 50 shipments a month','Email and WhatsApp updates','3 people on your team'],false],['Pro / Fleet','$149','/mo','Busy teams with lots of shipments',['Up to 250 shipments a month','Your own email address','10 people on your team'],false]];
+function bkPlan(){const P=[['Starter','$0','/mo','Solo shops and small sellers',['Up to 5 shipments a month','Email updates','Late alerts'],true],['Growth','$69','/mo','Local shops and growing businesses',['Up to 100 active shipments','Email and WhatsApp updates','Send from your own email'],false],['Pro / Fleet','$149','/mo','Busy teams with lots of shipments',['Up to 250 shipments a month','Your own email address','10 people on your team'],false]];
  return`<div class="bk-card">${bkSteps(3)}<h1>Choose a plan</h1><p class="bk-sub">Start free. Paid plans are opening soon, and you will be able to upgrade from Settings.</p>
  <div class="bk-plans">${P.map(([n,p,u,d,f,free])=>`<div class="bk-plan ${free?'free on':''}">${free?'<span class="bk-tag">Selected</span>':'<span class="bk-tag soon">Opening soon</span>'}<b>${n}</b><div class="pr">${p}<small>${u}</small></div><span style="color:#A1A1AA;font-size:13px">${d}</span><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>
  <div id="p-err" class="bk-err" role="alert"></div>
@@ -815,6 +815,7 @@ function showWelcome(msg){
  const note=msg?`<div class="bk-note" role="status">${esc(msg)}</div>`:'';
  let body,wide=false,link;
  if(setup){body=AUTH.step===3?bkPlan():bkBiz();wide=AUTH.step===3;link=`<button class="lnk" onclick="signOut()">Log out</button>`}
+ else if(AUTH.mode==='forgot'){body=bkForgot();link=`<button class="lnk" onclick="authTab('signin')">Log in</button>`}
  else if(AUTH.mode==='signin'){body=bkLogin();link=`<button class="lnk" onclick="authTab('signup')">Sign up</button>`}
  else{body=AUTH.step===1?bkCreds():bkEntry();link=`<button class="lnk" onclick="authTab('signin')">Log in</button>`}
  w.innerHTML=`<header class="bk-top"><a class="brand" href="/">${bkLogo()}Manifest</a>${link}</header><main class="bk-main"><div class="bk-box ${wide?'wide':''}">${note}${body}</div></main>`;
@@ -1385,13 +1386,35 @@ async function signup(e){e.preventDefault();
   setSess(j);await loadCloud();S.user.name=name;S.user.username=uname(email);S.settings.biz=biz;S.settings.mode=m;save();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Create account';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
-function forgot(){let v=($('#si-email')&&$('#si-email').value||'').trim();if(!v.includes('@'))v='';
- openModal(`<h2>Reset your password</h2><p class="mute" style="margin:8px 0 12px">Enter your email and we will send you a link to choose a new password.</p><div class="field"><label for="fg-e">Email</label><input id="fg-e" type="email" autocomplete="email" value="${esc(v)}"></div><div id="fg-m" class="sm" style="min-height:18px" role="alert"></div><button class="btn pri" style="width:100%" onclick="sendReset()">Send reset link</button>`)}
-async function sendReset(){const em=$('#fg-e').value.trim(),m=$('#fg-m');if(vEmail(em)){m.style.color='var(--red-tx)';m.textContent=vEmail(em);return}
- try{await gotrue('/recover?redirect_to='+encodeURIComponent(location.origin+location.pathname),{body:{email:em}});m.style.color='var(--green-tx,inherit)';m.textContent='If that email has an account, a reset link is on its way. It can take a few minutes.'}
- catch(e){m.style.color='var(--red-tx)';m.textContent=authMsg(e)}}
+function forgot(){AUTH.mode='forgot';AUTH.fp={step:1,email:($('#si-email')&&$('#si-email').value.includes('@')?$('#si-email').value.trim():'')};showWelcome()}
+function bkForgot(){const f=AUTH.fp||{step:1};
+ if(f.step===1)return`<form class="bk-card" novalidate onsubmit="return fpSend(event)"><h1>Reset your password</h1><p class="bk-sub">Write your email address linked to your Manifest account.</p>
+ <div class="bk-f"><label for="fp-e" class="sr">Email</label><input id="fp-e" type="email" autocomplete="email" inputmode="email" autocapitalize="none" value="${esc(f.email||'')}" placeholder="you@company.com"></div>
+ <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Send code</button><button type="button" class="bk-ghost" onclick="authTab('signin')">Back to log in</button></form>${bkTail(false)}`;
+ if(f.step===2)return`<form class="bk-card" novalidate onsubmit="return fpVerify(event)"><h1>Check your email</h1><p class="bk-sub">We sent a one-time code to ${esc(f.email)}. Enter it below.</p>
+ <div class="bk-f"><label for="fp-o" class="sr">One-time code</label><input id="fp-o" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Enter the code"></div>
+ <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Continue</button><button type="button" class="bk-ghost" onclick="fpSend()">Send a new code</button></form>${bkTail(false)}`;
+ return`<form class="bk-card" novalidate onsubmit="return fpChange(event)"><h1>Choose a new password</h1><p class="bk-sub">1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</p>
+ <div class="bk-f"><label for="fp-p1">New password</label><input id="fp-p1" type="password" autocomplete="new-password"></div>
+ <div class="bk-f"><label for="fp-p2">Confirm password</label><input id="fp-p2" type="password" autocomplete="new-password"></div>
+ <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Change password</button></form>${bkTail(false)}`}
+async function fpSend(e){if(e)e.preventDefault();const f=AUTH.fp;const em=(f.step===1?$('#fp-e').value:f.email).trim();const er=$('#fp-err'),btn=$('#fp-btn');
+ if(vEmail(em)){er.textContent=vEmail(em);return false}er.textContent='';btn.disabled=true;
+ try{let ex=true;try{ex=await api('rpc/email_exists',{method:'POST',body:{e:em}})}catch(x){}
+  if(ex===false){er.textContent='Wrong email address or no account found';btn.disabled=false;return false}
+  await gotrue('/recover',{body:{email:em}});f.email=em;f.step=2;showWelcome()}
+ catch(x){er.textContent=authMsg(x);btn.disabled=false}return false}
+async function fpVerify(e){e.preventDefault();const t=$('#fp-o').value.replace(/\s/g,''),er=$('#fp-err'),btn=$('#fp-btn');
+ if(t.length<4){er.textContent='Please enter the code from your email.';return false}er.textContent='';btn.disabled=true;
+ try{const j=await gotrue('/verify',{body:{type:'recovery',email:AUTH.fp.email,token:t}});AUTH.fp.tok=j.access_token;AUTH.fp.step=3;showWelcome()}
+ catch(x){er.textContent='That code is wrong or has expired. Please try again.';btn.disabled=false}return false}
+async function fpChange(e){e.preventDefault();const p1=$('#fp-p1').value,p2=$('#fp-p2').value,er=$('#fp-err'),btn=$('#fp-btn');
+ const v=vPass(p1);if(v){er.textContent=v;return false}if(p1!==p2){er.textContent='The two passwords do not match.';return false}
+ er.textContent='';btn.disabled=true;
+ try{await gotrue('/user',{method:'PUT',token:AUTH.fp.tok,body:{password:p1}});AUTH.fp=null;AUTH.mode='signin';showWelcome('Your password is changed. Please log in.')}
+ catch(x){er.textContent=authMsg(x);btn.disabled=false}return false}
 function showReset(msg){$('#app').classList.add('hide');bkOn();const w=$('#welcome');
- w.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><form class="card auth" novalidate onsubmit="return doReset(event)" style="width:100%;max-width:400px"><h1>Choose a new password</h1><p class="sm mute" style="margin-bottom:16px">Use at least 8 characters, with a letter and a number.</p><div class="field"><label for="rs-pw">New password</label><input id="rs-pw" type="password" autocomplete="new-password"></div><div id="rs-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert">${esc(msg||'')}</div><button class="btn pri" style="width:100%">Save password</button></form></div>`}
+ w.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><form class="card auth" novalidate onsubmit="return doReset(event)" style="width:100%;max-width:400px"><h1>Choose a new password</h1><p class="sm mute" style="margin-bottom:16px">Use 1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</p><div class="field"><label for="rs-pw">New password</label><input id="rs-pw" type="password" autocomplete="new-password"></div><div id="rs-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert">${esc(msg||'')}</div><button class="btn pri" style="width:100%">Save password</button></form></div>`}
 async function doReset(e){e.preventDefault();const pw=$('#rs-pw').value,er=$('#rs-err');const v=vPass(pw);if(v){er.textContent=v;return false}
  try{await gotrue('/user',{method:'PUT',auth:true,body:{password:pw}});SESS=null;sessSave();AUTH.mode='signin';showWelcome('Your password is updated. Please sign in.')}
  catch(err){er.textContent=authMsg(err)}return false}
