@@ -25,25 +25,24 @@ p{margin:0}
 .burger svg{width:20px;height:20px}
 .drawer{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .2s}
 .drawer.on{opacity:1;pointer-events:auto}
-.dp{position:absolute;top:0;right:0;bottom:0;width:min(86%,360px);background:#0A0A0B;border-left:1px solid var(--line);padding:18px 20px 24px;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
-.drawer.on .dp{transform:none}
+.dp{position:absolute;inset:0;background:#000;padding:14px 20px 28px;display:flex;flex-direction:column;transform:translateY(-12px);opacity:0;transition:transform .25s,opacity .25s}
+.drawer.on .dp{transform:none;opacity:1}
 .dp .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .dp nav{display:flex;flex-direction:column}
-.dp nav a{padding:16px 4px;border-bottom:1px solid var(--line);font-size:17px;font-weight:550;text-decoration:none}
+.dp nav{margin-top:24px}.dp nav a{padding:22px 4px;border-bottom:1px solid var(--line);font-size:clamp(22px,6vw,30px);font-weight:600;letter-spacing:-.02em;text-decoration:none}
 .dp .bot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
-.dp .bot .pill{width:100%}
+.dp .bot .pill{width:100%;min-height:52px;font-size:16px}
 /* hero */
 .hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:96px 20px 14vh;overflow:hidden;background:#000}
-.hbg{position:absolute;inset:-6%;background:#000 url(/assets/earth.webp) center 42%/cover no-repeat;transform:scale(1.04);transform-origin:50% 70%;animation:drift 70s ease-in-out infinite alternate;will-change:transform;z-index:0}
-.hstars{position:absolute;inset:0 0 50% 0;z-index:1;pointer-events:none;background:radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1.2px 1.2px at 28% 38%,#fff,transparent),radial-gradient(1.6px 1.6px at 46% 12%,#fff,transparent),radial-gradient(1.2px 1.2px at 63% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1.2px 1.2px at 90% 36%,#fff,transparent),radial-gradient(1.3px 1.3px at 36% 8%,#fff,transparent),radial-gradient(1.3px 1.3px at 70% 6%,#fff,transparent);animation:tw 5s ease-in-out infinite alternate}
-@keyframes drift{from{transform:scale(1.04) translate3d(0,0,0)}to{transform:scale(1.2) translate3d(-2.5%,-3%,0)}}
-@keyframes tw{from{opacity:.15}to{opacity:.85}}
+.hbg{position:absolute;inset:0;background:#000 url(/assets/earth.webp) center 42%/cover no-repeat;z-index:0}
+#globe{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;transition:opacity 1.2s ease;display:block}
+#globe.on{opacity:1}
 .hshade{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 70%,#000 100%)}
 .hero h1{font-size:clamp(30px,6.2vw,60px);line-height:1.08;font-weight:700;max-width:14em;margin:0 auto 16px;text-shadow:0 2px 30px rgba(0,0,0,.7)}
 .hero p.sub{color:#D4D4D8;font-size:clamp(15px,2vw,18px);max-width:30em;margin:0 auto 28px;text-shadow:0 1px 18px rgba(0,0,0,.8)}
 .hero .pill{min-width:min(78%,260px);min-height:52px;font-size:16px}
 .hero .in{position:relative;z-index:3}
-@media (prefers-reduced-motion:reduce){.hbg,.hstars{animation:none}*{scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 /* sections */
 section.s{padding:84px 0;border-top:1px solid #111}
 .sec-h{margin-bottom:36px;max-width:640px}
@@ -196,3 +195,5 @@ details p{padding:0 4px 18px;color:var(--mu)}
  .sec-h.r{text-align:left;margin-left:0}
  .node{font-size:11px;padding:10px 4px}
 }
+
+section.s{content-visibility:auto;contain-intrinsic-size:auto 720px}
