@@ -463,6 +463,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 @keyframes drin{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
 .mlist{margin-top:14px}.mdrawer .mrow2{padding:22px 4px;font-size:20px}.plusbtn{width:44px;height:44px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.mrow2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line,#E4E4E7);background:none;font:600 16px/1.2 inherit;color:inherit;text-align:left;cursor:pointer}.mrow2 span{color:var(--mute,#71717A);font-size:20px}
 .metric.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}.metric.tap:hover{transform:translateY(-1px)}.metric.tap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sugg{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.12);margin-top:4px;overflow:hidden}.sugg button{display:flex;flex-direction:column;align-items:flex-start;width:100%;padding:10px 14px;border:0;background:none;text-align:left;font:inherit;cursor:pointer}.sugg button:hover{background:var(--bg2,#F1F5F9)}.sugg[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -1064,23 +1065,36 @@ function editShip(id,pre){
  <div class="row2">${f('ref','Order number',s.ref||'','PO-5530')}${f('supplier','Supplier',s.supplier||'','Supplier name')}</div>
  ${L?`<div class="row2">${f('vehicle','Truck number',s.vehicle||'','LEA-1234')}${f('driver','Driver name',s.driver||'','')}</div>${f('zone','Delivering to',s.zone||'','Lahore, Zone 3')}`:
  `<div class="row2">${f('containerId','Container number',s.containerId||'','MSKU1234567')}${f('bol','Shipping document number',s.bol||'','')}</div><div class="row2">${f('origin','Shipped from',s.origin||'','Shenzhen')}${f('dest','Arriving at',s.dest||'','Karachi')}</div>`}
- <div class="row2">${f('tname','Transporter name',t.name,'Company or contact')}${f('temail','Transporter email',t.email,'name@transporter.com','email')}</div>
+ <div class="field" style="position:relative"><label for="f-tname">Transporter's name</label><input id="f-tname" autocomplete="off" value="${esc(t.name)}" placeholder="Start typing a saved contact" oninput="tpSug(1)" onfocus="tpSug()"><div id="tp-sug" class="sugg" hidden></div><div id="tp-note" class="xs mute" style="margin-top:4px"></div></div>
+ <div id="tp-new" style="display:none"><div class="row2">${f('temail','Email',t.email,'name@transporter.com','email')}${f('tphone','Phone (with country code)',t.phone||'','+92 300 1234567','tel')}</div><div class="field"><label for="f-tlang">Language we write to them in</label>${combo('f-tlang','lang',t.lang||S.settings.lang,'cbNoop')}</div></div>
  <div class="row2"><div class="field"><label for="f-freq">How often should we ask?</label><select id="f-freq">${Object.entries(FREQ).map(([k,l])=>`<option value="${k}" ${s.freq===k?'selected':''}>${l}</option>`).join('')}</select></div>
  <div class="field"><label for="f-wa">How should we reach them?</label><select id="f-wa"><option value="email">Email</option><option value="both" ${plan().wa?'':'disabled'}>Email and WhatsApp${plan().wa?'':' (Growth plan)'}</option></select></div></div>
  <div id="f-err" class="sm" style="color:var(--red-tx);min-height:20px" role="alert"></div>
  <button class="btn pri" style="width:100%" onclick="saveShip(${id||0})">${id?'Save changes':'Start tracking'}</button>`);
- $('#f-mode').dataset.m=s.mode;if(s.channel==='both')$('#f-wa').value='both';
+ $('#f-mode').dataset.m=s.mode;if(s.channel==='both')$('#f-wa').value='both';tpSug();
 }
+function tpMatch(){const n=($('#f-tname').value||'').trim().toLowerCase();return n?S.dir.find(d=>d.name.toLowerCase()===n):null}
+function tpSug(typed){const inp=$('#f-tname');if(!inp)return;const q=inp.value.trim().toLowerCase(),box=$('#tp-sug'),nw=$('#tp-new'),note=$('#tp-note');
+ const ms=q?S.dir.filter(d=>d.name.toLowerCase().includes(q)&&d.name.toLowerCase()!==q).slice(0,5):S.dir.slice(0,5);
+ box.hidden=!ms.length||(!typed&&document.activeElement!==inp);box.innerHTML=ms.map(d=>`<button type="button" onmousedown="event.preventDefault()" onclick="tpPick('${d.id}')"><b>${esc(d.name)}</b><span class="xs mute">${esc(d.email||'No email yet')}</span></button>`).join('');
+ const ex=tpMatch();
+ if(ex){if(ex.email){$('#f-temail').value=ex.email}nw.style.display=ex.email?'none':'block';note.textContent=ex.email?'Saved contact: '+ex.email:'This contact has no email yet. Add one below.'}
+ else{nw.style.display=q?'block':'none';note.textContent=q?'New contact. Add their details below and we will save them.':''}}
+function tpPick(id){const d=S.dir.find(x=>x.id===id);if(!d)return;$('#f-tname').value=d.name;$('#f-temail').value=d.email||'';$('#f-tphone').value=d.phone||'';const l=$('#f-tlang');if(l)l.value=d.lang||S.settings.lang;$('#tp-sug').hidden=true;tpSug()}
+
 function flip(m,id){const g=k=>{const e=$('#f-'+k);return e?e.value.trim():''};
  if($('#f-mode').dataset.m===m)return;
  editShip(id,{mode:m,ref:g('ref'),supplier:g('supplier'),freq:g('freq'),channel:g('wa'),_t:{name:g('tname'),email:g('temail'),phone:'',lang:S.settings.lang}})}
 function saveShip(id){
  const g=k=>{const e=$('#f-'+k);return e?e.value.trim():''},m=$('#f-mode').dataset.m,err=$('#f-err');
- const email=g('temail').toLowerCase();
+ const email=g('temail').toLowerCase(),nm=g('tname'),ex=tpMatch();
  if(!g('ref')){err.textContent='Please add an order number.';return}
- if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent="Please add the transporter's email so we can reach them.";return}
- let d=S.dir.find(x=>x.email.toLowerCase()===email);
- if(!d){d={id:'t'+Date.now(),kind:'transporter',name:g('tname')||email,email,phone:'',lang:S.settings.lang};S.dir.push(d)}else if(g('tname'))d.name=g('tname');
+ if(!nm){err.textContent="Please add the transporter's name.";return}
+ if(!ex||!ex.email){if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent="Please add the transporter's email so we can reach them.";return}
+  if(!g('tlang')){err.textContent='Please choose the language we write to them in.';return}}
+ let d=ex||S.dir.find(x=>x.email&&x.email.toLowerCase()===email);
+ if(!d){d={id:'t'+Date.now(),kind:'transporter',name:nm,email,phone:g('tphone'),lang:g('tlang')||S.settings.lang};S.dir.push(d)}
+ else if(!d.email){d.email=email;if(g('tphone'))d.phone=g('tphone');if(g('tlang'))d.lang=g('tlang')}
  const base={ref:g('ref'),supplier:g('supplier'),mode:m,transporter:d.id,freq:g('freq'),channel:'email',
   vehicle:g('vehicle'),driver:g('driver'),zone:g('zone'),containerId:g('containerId'),bol:g('bol'),origin:g('origin'),dest:g('dest')};
  if(id){Object.assign(byId(id),base);byId(id).tl.unshift({ts:Date.now(),type:'rep',text:'Details changed by '+S.user.name})}
