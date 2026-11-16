@@ -66,7 +66,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 .side{display:none}
 .main{padding:18px 16px calc(var(--nav-h) + 28px);max-width:1200px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.bnav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.bnav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
 .bnav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--mute)}
 .bnav button.on{color:var(--accent)}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -82,8 +82,8 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
  .main{padding:28px 32px 48px}
 }
 /* metrics */
-.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
-@media(min-width:900px){.metrics{grid-template-columns:repeat(4,1fr)}}
+.metrics{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px}
+
 .metric .n{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-top:4px}
 /* shipments layout */
 .split{display:block}
@@ -459,9 +459,9 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .bk-plan ul{margin:4px 0 0;padding-left:18px;color:#D4D4D8;font-size:13px;display:grid;gap:3px}
 .bk-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:#fff;color:#000;align-self:flex-start}.bk-tag.soon{background:#262626;color:#A1A1AA}
 
-#sheet.mdrawer{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(360px,88vw);max-width:none;max-height:none;height:100%;border-radius:0;margin:0;padding:18px 18px 24px;overflow:auto;animation:drin .22s ease}
-@keyframes drin{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
-.mlist{margin-top:14px}.mrow2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line,#E4E4E7);background:none;font:600 16px/1.2 inherit;color:inherit;text-align:left;cursor:pointer}.mrow2 span{color:var(--mute,#71717A);font-size:20px}
+#sheet.mdrawer{position:fixed;inset:0;width:100%;max-width:none;max-height:none;height:100%;border-radius:0;margin:0;padding:18px 18px 24px;overflow:auto;animation:drin .22s ease}
+@keyframes drin{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+.mlist{margin-top:14px}.mdrawer .mrow2{padding:22px 4px;font-size:20px}.plusbtn{width:44px;height:44px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.mrow2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line,#E4E4E7);background:none;font:600 16px/1.2 inherit;color:inherit;text-align:left;cursor:pointer}.mrow2 span{color:var(--mute,#71717A);font-size:20px}
 .metric.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}.metric.tap:hover{transform:translateY(-1px)}.metric.tap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -667,7 +667,7 @@ window.cbSetLang=v=>{setv('lang',v);render()};window.cbSetCur=v=>{setv('cur',v);
 let CMD={i:0,items:[]};
 function cmdItems(q){q=q.trim().toLowerCase();const o=[];const has=t=>!q||t.toLowerCase().includes(q);
  const pages=[['Dashboard',"go('dashboard')"],['Shipments',"go('shipments')"],['History',"go('history')"],['Contacts',"go('directory')"]].concat(STABS.map(([k,l])=>['Settings: '+l,"V.set='"+k+"';go('settings')"]));
- const acts=[['Add a shipment',"editShip()"],['Paste an email',"fwdMail()"],['Open Help',"openHelp()"],['Switch view to board',"setView('board');go('shipments')"],['Switch view to table',"setView('table');go('shipments')"]];
+ const acts=[['Add a shipment',"editShip()"],['Paste from email',"fwdMail()"],['Open Help',"openHelp()"]];
  active().filter(x=>has([x.ref,x.supplier,ident(x),x.bol,x.driver,x.origin,x.dest,x.zone,tp(x).name].join(' '))).slice(0,q?8:4).forEach(x=>o.push({g:'Shipments',t:x.ref+' · '+x.supplier,d:(ident(x)?ident(x)+' · ':'')+route(x),i:'shipments',run:`go('shipments');V.open=${x.id};render()`,b:ST[x.status][0]}));
  if(q)S.dir.filter(d=>has([d.name,d.email,d.phone].join(' '))).slice(0,5).forEach(d=>o.push({g:'Transporters',t:d.name,d:d.email||'No email added',i:'directory',run:"go('directory')"}));
  pages.filter(x=>has(x[0])).slice(0,q?6:5).forEach(x=>o.push({g:'Go to',t:x[0],d:'',i:'dashboard',run:x[1]}));
@@ -870,6 +870,8 @@ function kpi(k){const act=countedActive(),all=active();let h='';
  else{const mc=monthCount(),lim=plan().limit,list=all.filter(s=>s.status!=='archived');
   h=`<h2>Shipments this month</h2><div class="n tnum" style="font-size:28px;margin:6px 0">${mc}${lim===Infinity?'':' / '+lim}</div><p class="sm mute">${esc(plan().name)} plan${lim===Infinity?'':': '+mc+' of '+lim+' shipments used'}</p><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin:10px 0 14px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div>`+kpiList(list)}
  openModal(`<div style="display:flex;justify-content:flex-end"><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>`+h)}
+
+function addMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Add a shipment</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div class="mlist" style="margin-top:0"><button class="mrow2" onclick="closeModal();editShip()">Type it in<span>›</span></button><button class="mrow2" onclick="closeModal();fwdMail()">Paste from email<span>›</span></button></div>`)}
 function render(){
  $('#side').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="side-tools"><button class="icon-btn" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${tzb()}${HAM}</div><button class="cmdbtn" onclick="openCmd()" aria-label="Search or jump to">${icon('search')}Search or jump to<span class="kbd">Ctrl K</span></button>`+TABS.map(([k,l])=>`<button class="nav ${V.tab===k?'on':''}" onclick="go('${k}')">${icon(k)}${l}</button>`).join('')+`<div class="who"><button class="btn sm" style="margin-bottom:8px;width:100%" onclick="openHelp()">Help</button><button class="who-card" onclick="profile()" aria-label="Your profile">${av(36)}<span style="min-width:0"><span style="display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.user.name)}</span><span class="xs mute" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.settings.biz)}</span></span></button>${sysStrip()}</div>`;
  $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${HAM2}</div>`;
@@ -902,7 +904,6 @@ function vDash(){
  const feed=all.flatMap(s=>s.tl.map(e=>({...e,ref:s.ref,id:s.id}))).sort((a,b)=>b.ts-a.ts).slice(0,6);
  const sum=act.length?`${act.length} shipment${act.length===1?'':'s'} in progress${need.length?`. ${need.length} ${need.length===1?'needs':'need'} your attention.`:'. Nothing needs you right now.'}`:'No shipments in progress yet.';
  return`<div class="hello" style="margin-bottom:14px"><h1>${g}, ${first}</h1><div class="sm mute" style="margin-top:2px">${sum} ${tzb()}</div></div>
- <div class="btnrow" style="margin-bottom:18px"><button class="btn pri" onclick="editShip()">${icon('plus')}Add shipment</button><button class="btn" onclick="go('shipments')">See all shipments</button></div>
  <div class="metrics">
   <div class="card metric tap" role="button" tabindex="0" onclick="kpi('prog')"><div class="lab">Shipments in progress</div><div class="mrow"><div class="n tnum">${act.length}</div>${spark(actv.slice(7),'#2563EB')}</div>${trend(actv.slice(7).reduce((x,y)=>x+y,0),actv.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
   <div class="card metric tap" role="button" tabindex="0" onclick="kpi('late')"><div class="lab">Running late</div><div class="mrow"><div class="n tnum" style="color:${pct>=40?'var(--red-tx)':pct>=20?'var(--amber-tx)':'inherit'}">${delayed}</div>${spark(wrn.slice(7),pct>=40?'#DC2626':pct>=20?'#F59E0B':'#10B981')}</div><div class="risk" title="Risk level">${[1,2,3,4,5].map(i=>`<i class="${pct>=i*20-19?(pct>=40?'r':pct>=20?'a':'g'):''}"></i>`).join('')}</div>${trend(wrn.slice(7).reduce((x,y)=>x+y,0),wrn.slice(0,7).reduce((x,y)=>x+y,0),false)}</div>
@@ -939,13 +940,13 @@ function bulkFreq(){if(blocked())return;openModal(`<h2>Change how often we ask</
 function applyFreq(){const v=$('#bf').value,ids=[...V.sel];ids.forEach(i=>{const x=byId(i);x.freq=v;x.tl.unshift({ts:Date.now(),type:'rep',text:'Check-ins set to '+FREQ[v].toLowerCase()+' by '+S.user.name})});V.sel=new Set();save();closeModal();toast('Updated '+ids.length+' shipment'+(ids.length===1?'':'s'));render()}
 function vShip(){
  if(!V.view){try{V.view=localStorage.getItem('manifest_view')||'table'}catch(e){V.view='table'}}
- const list=filtered(),L=mode()==='local',board=V.view==='board';
+ const list=filtered(),L=mode()==='local',board=false;
  const th=`<thead><tr><th style="width:36px"><input type="checkbox" aria-label="Select all" onchange="selAll(this.checked)" ${list.length&&list.every(s=>V.sel.has(s.id))?'checked':''}></th><th>Order</th><th>${L?'Vehicle':'Container'}</th><th>Transporter</th><th>Status</th><th>Next ask</th><th style="width:44px"></th></tr></thead>`;
  const rows=list.map(s=>`<tr class="rw ${V.open===s.id?'act':''}" onclick="openShip(${s.id})"><td onclick="event.stopPropagation()"><input type="checkbox" aria-label="Select ${esc(s.ref)}" ${V.sel.has(s.id)?'checked':''} onchange="tog(${s.id})"></td><td><b>${esc(s.ref)}</b><div class="xs mute">${esc(s.supplier)}</div></td><td class="id">${esc(ident(s))}<div class="xs mute">${esc(route(s))}</div></td><td>${esc(tp(s).name)}</td><td>${badge(s.status)}</td><td class="sm mute">${s.status==='delivered'?'Done':ago(nextCheck(s))}</td><td onclick="event.stopPropagation()"><button class="icon-btn" aria-label="Actions for ${esc(s.ref)}" onclick="menu(${s.id})">${icon('more')}</button></td></tr>`).join('');
  const cards=list.map(s=>`<div class="swipe" data-id="${s.id}"><div class="bgl">Check in now</div><div class="bgr">Archive</div><div class="scard ${V.open===s.id?'act':''}" data-id="${s.id}"><div class="top"><div style="min-width:0;display:flex;gap:10px">${V.selMode?`<input type="checkbox" aria-label="Select ${esc(s.ref)}" style="margin-top:3px" ${V.sel.has(s.id)?'checked':''} onchange="tog(${s.id})">`:''}<div class="mtile">${icon(s.mode==='local'?'truck':'ship')}</div><div style="min-width:0"><div style="font-weight:650">${esc(s.ref)}</div><div class="sm mute">${esc(s.supplier)}</div></div></div><div style="display:flex;gap:6px;align-items:center">${badge(s.status)}<button class="icon-btn" style="width:34px;height:34px;border:0;box-shadow:none" aria-label="Actions for ${esc(s.ref)}" data-menu="${s.id}">${icon('more')}</button></div></div>${prog(s)}<div class="sm mute tnum" style="margin-top:10px;display:flex;justify-content:space-between;gap:10px"><span style="overflow:hidden;text-overflow:ellipsis">${esc(ident(s))}</span><span>${s.status==='delivered'?'Delivered':'Next: '+ago(nextCheck(s))}</span></div></div></div>`).join('');
  const empty=`<div class="empty"><b>${V.q||fcount()?'Nothing matches that':'No shipments here yet'}</b>${V.q||fcount()?'Try different words, or change your filters.':"Let's add your first one! You can type it in, or paste a shipping email and we'll fill it in."}</div>`;
  const body=!list.length?`<div class="card">${empty}</div>`:board?kanban(list):`<div class="card" style="padding:0;overflow:hidden"><div class="tblwrap"><table class="tbl">${th}<tbody>${rows}</tbody></table></div><div class="cards" style="padding:10px">${cards}</div></div>`;
- return`<div class="topbar stack"><h1>Shipments</h1><div class="btnrow" style="align-items:center"><div class="vswitch" role="group" aria-label="View"><button class="${!board?'on':''}" onclick="setView('table')">${icon('list')}Table</button><button class="${board?'on':''}" onclick="setView('board')">${icon('board')}Board</button></div><button class="btn pri" onclick="editShip()">${icon('plus')}Add shipment</button><button class="btn" onclick="fwdMail()">Paste an email</button></div></div>
+ return`<div class="topbar"><h1>Shipments</h1><button class="btn pri plusbtn" aria-label="Add a shipment" onclick="addMenu()">${icon('plus')}</button></div>
  <div class="split"><div>
   <div style="display:flex;gap:8px;margin-bottom:10px"><input type="search" placeholder="Search shipments" aria-label="Search shipments" value="${esc(V.q)}" oninput="V.q=this.value;rerenderList(this)"><button class="btn mobfilter" onclick="openFilters()">${icon('filter')}Filters${fcount()?' ('+fcount()+')':''}</button><button class="btn mobfilter" style="${innerWidth>=900?'display:none':''}" onclick="V.selMode=!V.selMode;if(!V.selMode)V.sel=new Set();render()">${V.selMode?'Done':'Select'}</button></div>
   ${fbarHtml()}
