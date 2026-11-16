@@ -458,6 +458,11 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .bk-plan.free{cursor:pointer}.bk-plan .pr{font-size:26px;font-weight:700;letter-spacing:-.02em}.bk-plan .pr small{font-size:13px;color:#A1A1AA;font-weight:500}
 .bk-plan ul{margin:4px 0 0;padding-left:18px;color:#D4D4D8;font-size:13px;display:grid;gap:3px}
 .bk-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;background:#fff;color:#000;align-self:flex-start}.bk-tag.soon{background:#262626;color:#A1A1AA}
+
+#sheet.mdrawer{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(360px,88vw);max-width:none;max-height:none;height:100%;border-radius:0;margin:0;padding:18px 18px 24px;overflow:auto;animation:drin .22s ease}
+@keyframes drin{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+.mlist{margin-top:14px}.mrow2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line,#E4E4E7);background:none;font:600 16px/1.2 inherit;color:inherit;text-align:left;cursor:pointer}.mrow2 span{color:var(--mute,#71717A);font-size:20px}
+.metric.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}.metric.tap:hover{transform:translateY(-1px)}.metric.tap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -630,11 +635,13 @@ function trend(cur,prev,upGood,what){let c='flat',t;if(!cur&&!prev)t='No change 
 const NMETA={reply:['Transporter replied','reply'],sent:['Update request sent','sent'],warn:['Needs attention','warn']};
 function notifList(){const o=[];active().forEach(sh=>sh.tl.forEach(e=>{if(NMETA[e.type]&&Date.now()-e.ts<14*DAY)o.push({...e,id:sh.id,ref:sh.ref})}));return o.sort((a,b)=>b.ts-a.ts).slice(0,40)}
 function unreadN(){const seen=S.notifSeen||0;return notifList().filter(e=>e.ts>seen&&e.type!=='sent').length}
-function openNotifs(f){if(f===undefined){V.seenPrev=S.notifSeen||0;S.notifSeen=Date.now();save();render();f='all'}
- let l=notifList();if(f==='reply')l=l.filter(e=>e.type==='reply');if(f==='warn')l=l.filter(e=>e.type==='warn');if(f==='sent')l=l.filter(e=>e.type==='sent');
- const sp=V.seenPrev||0;
+function openNotifs(f,q){if(f===undefined){V.seenPrev=S.notifSeen||0;S.notifSeen=Date.now();save();render();f='both';V.nq=''}
+ if(q!==undefined)V.nq=q;q=(V.nq||'').toLowerCase();
+ let l=notifList();if(f==='reply')l=l.filter(e=>e.type==='reply');if(f==='sent')l=l.filter(e=>e.type==='sent');
+ if(q)l=l.filter(e=>[e.ref,e.text].join(' ').toLowerCase().includes(q));
+ const sp=V.seenPrev||0,fl={both:'Both',reply:'Replies',sent:'Emails sent'};
  openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="display:flex;gap:8px;align-items:center"><h2>Notifications</h2>${tzb()}</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
- <div class="seg" style="margin-bottom:6px">${[['all','All'],['reply','Replies'],['sent','Emails sent'],['warn','Exceptions']].map(([k,t])=>`<button class="${f===k?'on':''}" onclick="openNotifs('${k}')">${t}</button>`).join('')}</div>
+ <div style="display:flex;gap:8px;margin-bottom:10px"><input id="nq" type="search" placeholder="Search updates" value="${esc(V.nq||'')}" style="flex:1" oninput="clearTimeout(window._nt);window._nt=setTimeout(()=>{const v=document.getElementById('nq').value;openNotifs('${f}',v);const e=document.getElementById('nq');e.focus();e.setSelectionRange(v.length,v.length)},250)"><select aria-label="Filter" onchange="openNotifs(this.value)" style="width:auto">${Object.entries(fl).map(([k,t])=>`<option value="${k}" ${f===k?'selected':''}>${t}</option>`).join('')}</select></div>
  ${l.length?l.map(e=>`<div class="nrow ${e.ts>sp&&e.type!=='sent'?'unread':''}" onclick="closeModal();go('shipments');V.open=${e.id};render()"><div class="ni" style="${e.type==='warn'?'background:var(--amber-bg);color:var(--amber-tx)':e.type==='reply'?'background:var(--blue-bg);color:var(--blue-tx)':''}">${icon(e.type==='warn'?'x':e.type==='reply'?'history':'ship')}</div><div style="min-width:0;flex:1"><div class="sm"><b>${esc(e.ref)}</b> · ${NMETA[e.type][0]}</div><div class="sm mute" style="word-break:break-word">${esc(e.text)}</div><div class="xs mute tnum">${fts(e.ts)} · ${ago(e.ts)}</div></div>${e.ts>sp&&e.type!=='sent'?'<span class="ud"></span>':''}</div>`).join(''):'<div class="empty" style="padding:24px 8px"><b>You are all caught up</b>Replies, emails we send and late shipments will show up here.</div>'}`)}
 /* global search */
 
@@ -838,14 +845,34 @@ function applyTheme(){
 matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S)applyTheme()});
 
 /* ============ shell ============ */
-const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['history','History'],['directory','Contacts'],['settings','Settings']];
+const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['directory','Contacts']];
+const MENU=[['Profile','profile'],['Business Profile','org'],['Plan and Billing','billing'],['Security','security'],['Workspace Plan','team'],['History','hist'],['Trash','trash']];
 function go(t){V.tab=t;V.open=null;V.sel=new Set();V.selMode=false;render();window.scrollTo(0,0)}
 function av(sz,cls){const u=S.user,ini=(u.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
  return`<span class="av ${cls||''}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.38)}px">${u.photo?`<img src="${u.photo}" alt="">`:esc(ini)}</span>`}
 function profile(){V.set='profile';go('settings')}
+
+const HAM=`<button class="icon-btn" aria-label="Menu" onclick="openMenu()">${'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'}</button>`;
+const HAM2=`<button class="icon-btn" style="border:0;box-shadow:none" aria-label="Menu" onclick="openMenu()">${'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'}</button>`;
+function isTeamPlan(){return plan().seats>1&&curRole()==='owner'||curRole()==='admin'}
+function openMenu(){const items=MENU.filter(m=>m[1]!=='team'||isTeamPlan());
+ openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="brand">${LOGO}Manifest</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
+ <div class="mlist">${items.map(([l,k])=>`<button class="mrow2" onclick="menuGo('${k}')">${l}<span>›</span></button>`).join('')}</div>`);
+ $('#sheet').classList.add('mdrawer')}
+function menuGo(k){closeModal();if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
+
+function kpiList(l){return l.length?`<div class="list">${l.map(s=>`<div class="li" style="cursor:pointer" onclick="closeModal();go('shipments');V.open=${s.id};render()"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)} · ${esc(route(s))}</div></div></div>`).join('')}</div>`:'<div class="empty"><b>Nothing here</b>No shipments match right now.</div>'}
+function kpi(k){const act=countedActive(),all=active();let h='';
+ if(k==='prog')h=`<h2>Shipments in progress</h2><p class="sm mute" style="margin:4px 0 8px">${act.length} active</p>`+kpiList(act);
+ else if(k==='late')h=`<h2>Running late</h2><p class="sm mute" style="margin:4px 0 8px">Delayed, held at customs, or not replying.</p>`+kpiList(act.filter(s=>['delayed','customs_hold'].includes(s.status)||(s.status==='pending'&&Date.now()-s.last>DAY)));
+ else if(k==='reply'){const m={};all.filter(s=>s.respHrs!=null).forEach(s=>{const n=tp(s).name;(m[n]=m[n]||[]).push(s.respHrs)});const rows=Object.entries(m).map(([n,a])=>[n,a.reduce((x,y)=>x+y,0)/a.length,a.length]).sort((x,y)=>x[1]-y[1]);
+  h=`<h2>Reply time by transporter</h2><p class="sm mute" style="margin:4px 0 8px">Average time each one takes to answer.</p>`+(rows.length?`<div class="list">${rows.map(([n,v,c])=>`<div class="li"><div style="font-weight:600">${esc(n)}</div><div class="sm mute tnum">${v<1?'Under 1 hour':(Math.round(v*10)/10)+' hours'} · ${c} repl${c===1?'y':'ies'}</div></div>`).join('')}</div>`:'<div class="empty"><b>No replies yet</b>Reply times appear after your transporters answer.</div>')}
+ else{const mc=monthCount(),lim=plan().limit,list=all.filter(s=>s.status!=='archived');
+  h=`<h2>Shipments this month</h2><div class="n tnum" style="font-size:28px;margin:6px 0">${mc}${lim===Infinity?'':' / '+lim}</div><p class="sm mute">${esc(plan().name)} plan${lim===Infinity?'':': '+mc+' of '+lim+' shipments used'}</p><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin:10px 0 14px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div>`+kpiList(list)}
+ openModal(`<div style="display:flex;justify-content:flex-end"><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>`+h)}
 function render(){
- $('#side').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="side-tools"><button class="icon-btn" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${tzb()}</div><button class="cmdbtn" onclick="openCmd()" aria-label="Search or jump to">${icon('search')}Search or jump to<span class="kbd">Ctrl K</span></button>`+TABS.map(([k,l])=>`<button class="nav ${V.tab===k?'on':''}" onclick="go('${k}')">${icon(k)}${l}</button>`).join('')+`<div class="who"><button class="btn sm" style="margin-bottom:8px;width:100%" onclick="openHelp()">Help</button><button class="who-card" onclick="profile()" aria-label="Your profile">${av(36)}<span style="min-width:0"><span style="display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.user.name)}</span><span class="xs mute" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.settings.biz)}</span></span></button>${sysStrip()}</div>`;
- $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button><button class="av" style="width:36px;height:36px;font-size:14px;padding:0" onclick="profile()" aria-label="Your profile">${S.user.photo?`<img src="${S.user.photo}" alt="">`:esc((S.user.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</button></div>`;
+ $('#side').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="side-tools"><button class="icon-btn" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${tzb()}${HAM}</div><button class="cmdbtn" onclick="openCmd()" aria-label="Search or jump to">${icon('search')}Search or jump to<span class="kbd">Ctrl K</span></button>`+TABS.map(([k,l])=>`<button class="nav ${V.tab===k?'on':''}" onclick="go('${k}')">${icon(k)}${l}</button>`).join('')+`<div class="who"><button class="btn sm" style="margin-bottom:8px;width:100%" onclick="openHelp()">Help</button><button class="who-card" onclick="profile()" aria-label="Your profile">${av(36)}<span style="min-width:0"><span style="display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.user.name)}</span><span class="xs mute" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.settings.biz)}</span></span></button>${sysStrip()}</div>`;
+ $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${HAM2}</div>`;
  $('#bnav').innerHTML=TABS.map(([k,l])=>`<button class="${V.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">${icon(k)}${l}</button>`).join('');
  const m=$('#main');
  m.innerHTML=banner()+({dashboard:vDash,shipments:vShip,history:vHist,directory:vDir,settings:vSet})[V.tab]();
@@ -877,14 +904,13 @@ function vDash(){
  return`<div class="hello" style="margin-bottom:14px"><h1>${g}, ${first}</h1><div class="sm mute" style="margin-top:2px">${sum} ${tzb()}</div></div>
  <div class="btnrow" style="margin-bottom:18px"><button class="btn pri" onclick="editShip()">${icon('plus')}Add shipment</button><button class="btn" onclick="go('shipments')">See all shipments</button></div>
  <div class="metrics">
-  <div class="card metric"><div class="lab">Shipments in progress</div><div class="mrow"><div class="n tnum">${act.length}</div>${spark(actv.slice(7),'#2563EB')}</div>${trend(actv.slice(7).reduce((x,y)=>x+y,0),actv.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
-  <div class="card metric"><div class="lab">Running late</div><div class="mrow"><div class="n tnum" style="color:${pct>=40?'var(--red-tx)':pct>=20?'var(--amber-tx)':'inherit'}">${pct}%</div>${spark(wrn.slice(7),pct>=40?'#DC2626':pct>=20?'#F59E0B':'#10B981')}</div><div class="risk" title="Risk level">${[1,2,3,4,5].map(i=>`<i class="${pct>=i*20-19?(pct>=40?'r':pct>=20?'a':'g'):''}"></i>`).join('')}</div>${trend(wrn.slice(7).reduce((x,y)=>x+y,0),wrn.slice(0,7).reduce((x,y)=>x+y,0),false)}</div>
-  <div class="card metric"><div class="lab">Usually replies in</div><div class="mrow"><div class="n tnum" style="font-size:${avg==null?'16px':'24px'}">${avg==null?'No replies yet':avg<1?'Under 1 hour':(Math.round(avg*10)/10)+' hours'}</div>${spark(rpl.slice(7),'#2563EB')}</div>${trend(rpl.slice(7).reduce((x,y)=>x+y,0),rpl.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
-  <div class="card metric"><div class="lab">${esc(plan().name)} plan, this month</div><div class="mrow"><div class="n tnum">${mc}${lim===Infinity?'':' of '+lim}</div></div><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin-top:12px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div></div>
+  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('prog')"><div class="lab">Shipments in progress</div><div class="mrow"><div class="n tnum">${act.length}</div>${spark(actv.slice(7),'#2563EB')}</div>${trend(actv.slice(7).reduce((x,y)=>x+y,0),actv.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
+  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('late')"><div class="lab">Running late</div><div class="mrow"><div class="n tnum" style="color:${pct>=40?'var(--red-tx)':pct>=20?'var(--amber-tx)':'inherit'}">${delayed}</div>${spark(wrn.slice(7),pct>=40?'#DC2626':pct>=20?'#F59E0B':'#10B981')}</div><div class="risk" title="Risk level">${[1,2,3,4,5].map(i=>`<i class="${pct>=i*20-19?(pct>=40?'r':pct>=20?'a':'g'):''}"></i>`).join('')}</div>${trend(wrn.slice(7).reduce((x,y)=>x+y,0),wrn.slice(0,7).reduce((x,y)=>x+y,0),false)}</div>
+  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('reply')"><div class="lab">Usually replies in</div><div class="mrow"><div class="n tnum" style="font-size:${avg==null?'16px':'24px'}">${avg==null?'No replies yet':avg<1?'Under 1 hour':(Math.round(avg*10)/10)+' hours'}</div>${spark(rpl.slice(7),'#2563EB')}</div>${trend(rpl.slice(7).reduce((x,y)=>x+y,0),rpl.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
+  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('month')"><div class="lab">Total shipments this month</div><div class="mrow"><div class="n tnum">${mc}</div></div></div>
  </div>
  <div class="card" style="margin-bottom:14px"><h2 style="margin-bottom:4px">Needs your attention</h2><p class="sm mute" style="margin-bottom:6px">Late shipments, shipments held at customs, and transporters who haven't replied.</p>
- ${need.length?`<div class="list">${need.map(s=>`<div class="li"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)}${s.status==='pending'?' · no reply for '+ago(s.last).replace(' ago',''):''}</div></div><div style="display:flex;gap:8px"><button class="btn sm" onclick="checkIn(${s.id})">Ask now</button><button class="btn sm" onclick="go('shipments');V.open=${s.id};render()">Open</button></div></div>`).join('')}</div>`:`<div class="empty"><b>All good for now!</b>Anything late, or any transporter who goes quiet, will show up here.</div>`}</div>
- <div class="card"><h2>Latest updates</h2>${feed.length?`<ul class="feed">${feed.map(e=>`<li onclick="go('shipments');V.open=${e.id};render()"><span class="dot ${e.type==='warn'?'warn':e.type==='sent'?'sent':''}"></span><div style="min-width:0"><div class="sm"><b>${esc(e.ref)}</b> · ${esc(e.text)}</div><div class="xs mute">${ago(e.ts)}</div></div></li>`).join('')}</ul>`:`<div class="empty"><b>Nothing yet</b>Replies from your transporters will show up here.</div>`}</div>`;
+ ${need.length?`<div class="list">${need.map(s=>`<div class="li"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)}${s.status==='pending'?' · no reply for '+ago(s.last).replace(' ago',''):''}</div></div><div style="display:flex;gap:8px"><button class="btn sm" onclick="checkIn(${s.id})">Ask now</button><button class="btn sm" onclick="go('shipments');V.open=${s.id};render()">Open</button></div></div>`).join('')}</div>`:`<div class="empty"><b>All good for now!</b>Anything late, or any transporter who goes quiet, will show up here.</div>`}</div>`;
 }
 /* ============ shipments ============ */
 const FILTERS=[['all','All'],['delayed','Delayed'],['in_transit','On the way'],['pending','Waiting for reply']];
@@ -1015,7 +1041,7 @@ function override(id){if(blocked())return;const s=byId(id),v=$('#ovr').value;if(
 
 /* modal */
 function openModal(h){$('#sheet').innerHTML=h;$('#modal').classList.add('show');document.body.style.overflow='hidden'}
-function closeModal(){$('#modal').classList.remove('show');document.body.style.overflow=''}
+function closeModal(){$('#modal').classList.remove('show');$('#sheet').classList.remove('mdrawer');document.body.style.overflow=''}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 function menu(id){const s=byId(id);openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h2>${esc(s.ref)}</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
