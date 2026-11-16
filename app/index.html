@@ -66,7 +66,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 .side{display:none}
 .main{padding:18px 16px calc(var(--nav-h) + 28px);max-width:1200px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.bnav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.bnav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-h);display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
 .bnav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--mute)}
 .bnav button.on{color:var(--accent)}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -464,6 +464,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .mlist{margin-top:14px}.mdrawer .mrow2{padding:22px 4px;font-size:20px}.plusbtn{width:44px;height:44px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.mrow2{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 4px;border:0;border-bottom:1px solid var(--line,#E4E4E7);background:none;font:600 16px/1.2 inherit;color:inherit;text-align:left;cursor:pointer}.mrow2 span{color:var(--mute,#71717A);font-size:20px}
 .metric.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}.metric.tap:hover{transform:translateY(-1px)}.metric.tap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sugg{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.12);margin-top:4px;overflow:hidden}.sugg button{display:flex;flex-direction:column;align-items:flex-start;width:100%;padding:10px 14px;border:0;background:none;text-align:left;font:inherit;cursor:pointer}.sugg button:hover{background:var(--bg2,#F1F5F9)}.sugg[hidden]{display:none}
+.dtabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin:14px 0 12px;scrollbar-width:none}.dtabs button{flex:0 0 auto;border:0;background:none;padding:10px 12px;font:600 13px/1 inherit;color:var(--mute);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}.dtabs button.on{color:var(--accent);border-bottom-color:var(--accent)}.dz.drag{background:var(--blue-bg,#EFF6FF);outline:2px dashed var(--accent);outline-offset:-2px;border-radius:10px}.dact{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -495,6 +496,7 @@ const IC={
  file:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/>',
  more:'<circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
+ documents:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
  ship:'<path d="M3 17l2 3h14l2-3"/><path d="M5 17v-7l7-3 7 3v7"/><path d="M12 7V3"/>',
  truck:'<path d="M2 6h11v10H2z"/><path d="M13 9h5l3 3v4h-8"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'
@@ -668,7 +670,7 @@ function cbKey(e,id){const c=COMBO[id],ul=document.getElementById(id+'-l');if(!c
 window.cbSetLang=v=>{setv('lang',v);render()};window.cbSetCur=v=>{setv('cur',v);render()};window.cbSetPv=v=>{V.pl=v;render()};window.cbNoop=()=>{};
 let CMD={i:0,items:[]};
 function cmdItems(q){q=q.trim().toLowerCase();const o=[];const has=t=>!q||t.toLowerCase().includes(q);
- const pages=[['Dashboard',"go('dashboard')"],['Shipments',"go('shipments')"],['History',"go('history')"],['Contacts',"go('directory')"]].concat(STABS.map(([k,l])=>['Settings: '+l,"V.set='"+k+"';go('settings')"]));
+ const pages=[['Dashboard',"go('dashboard')"],['Shipments',"go('shipments')"],['History',"go('history')"],['Contacts',"go('directory')"],['Documents',"go('documents')"]].concat(STABS.map(([k,l])=>['Settings: '+l,"V.set='"+k+"';go('settings')"]));
  const acts=[['Add a shipment',"editShip()"],['Paste from email',"fwdMail()"],['Open Help',"openHelp()"]];
  active().filter(x=>has([x.ref,x.supplier,ident(x),x.bol,x.driver,x.origin,x.dest,x.zone,tp(x).name].join(' '))).slice(0,q?8:4).forEach(x=>o.push({g:'Shipments',t:x.ref+' · '+x.supplier,d:(ident(x)?ident(x)+' · ':'')+route(x),i:'shipments',run:`go('shipments');V.open=${x.id};render()`,b:ST[x.status][0]}));
  if(q)S.dir.filter(d=>has([d.name,d.email,d.phone].join(' '))).slice(0,5).forEach(d=>o.push({g:'Transporters',t:d.name,d:d.email||'No email added',i:'directory',run:"go('directory')"}));
@@ -847,7 +849,7 @@ function applyTheme(){
 matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S)applyTheme()});
 
 /* ============ shell ============ */
-const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['directory','Contacts']];
+const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['directory','Contacts'],['documents','Documents']];
 const MENU=[['Profile','profile'],['Business Profile','org'],['Security','security'],['Plan and Billing','billing'],['Workspace Plan','team'],['History','hist'],['Trash','trash']];
 function go(t){V.tab=t;V.open=null;V.sel=new Set();V.selMode=false;render();window.scrollTo(0,0)}
 function av(sz,cls){const u=S.user,ini=(u.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -880,7 +882,7 @@ function render(){
  $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${HAM2}</div>`;
  $('#bnav').innerHTML=TABS.map(([k,l])=>`<button class="${V.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">${icon(k)}${l}</button>`).join('');
  const m=$('#main');
- m.innerHTML=banner()+({dashboard:vDash,shipments:vShip,history:vHist,directory:vDir,settings:vSet,kpi:vKpi})[V.tab]();
+ m.innerHTML=banner()+({dashboard:vDash,shipments:vShip,history:vHist,directory:vDir,settings:vSet,kpi:vKpi,documents:vDocs})[V.tab]();
  if(m.dataset.v!==V.tab+V.set){m.dataset.v=V.tab+V.set;m.classList.remove('fade');void m.offsetWidth;m.classList.add('fade')}
  if(V.tab==='shipments')wireSwipe();
 }
@@ -964,17 +966,64 @@ function prog(s,lbl){const n=stage(s),red=s.status==='delayed'||s.status==='cust
 function rerenderList(el){const pos=el.selectionStart;render();const i=$('input[type=search]');if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(e){}}}
 function tog(id){V.sel.has(id)?V.sel.delete(id):V.sel.add(id);const y=scrollY;render();scrollTo(0,y)}
 function selAll(on){filtered().forEach(s=>on?V.sel.add(s.id):V.sel.delete(s.id));render()}
-function openShip(id){V.open=id;render();if(innerWidth<1100)window.scrollTo(0,0)}
+function openShip(id){V.open=id;V.dtab='overview';render();if(innerWidth<1100)window.scrollTo(0,0)}
 function closeShip(){V.open=null;render()}
 const DOCS_IMPORT=['Bill of Lading','Commercial invoice','Customs entry form'],DOCS_LOCAL=['Delivery note','Invoice','Proof of delivery'];
 function stageIdx(s){return({pending:0,in_transit:1,delayed:1,customs_hold:2,delivered:3,cancelled:0})[s.status]||0}
 function stepper(s){const n=stageIdx(s),red=['delayed','customs_hold'].includes(s.status);return`<div class="stepper ${red?'red':''}" aria-label="Shipment stage">${['Draft','In transit','Customs','Delivered'].map((l,i)=>`<div class="${i<n?'done':i===n?'cur':''}"><i></i>${l}</div>`).join('')}</div>`}
-function docsHtml(s){const names=s.mode==='local'?DOCS_LOCAL:DOCS_IMPORT;s.docs=s.docs||{};const can=curRole()!=='viewer';
- return names.map((n,i)=>{const d=s.docs[n];return`<div class="docrow"><div class="di ${d?'ok':''}">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${n}</div><div class="xs mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d?esc(d.name)+' · '+d.size+' · '+fday(d.ts):'Not attached yet'}</div></div>${can?(d?`<button class="btn sm" onclick="rmDoc(${s.id},${i})">Remove</button>`:`<label class="btn sm" style="cursor:pointer">Attach<input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onchange="addDoc(${s.id},${i},this)"></label>`):''}</div>`}).join('')}
-function addDoc(id,i,inp){const f=inp.files[0],s=byId(id);if(!f||!s)return;if(f.size>15*1024*1024){toast('That file is over 15 MB. Please choose a smaller one.');return}
- const names=s.mode==='local'?DOCS_LOCAL:DOCS_IMPORT;s.docs=s.docs||{};const sz=f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB';
- s.docs[names[i]]={name:f.name,size:sz,ts:Date.now()};s.tl.unshift({ts:Date.now(),type:'rep',text:names[i]+' attached by '+S.user.name});save();toast(names[i]+' attached');render()}
-function rmDoc(id,i){const s=byId(id),names=s.mode==='local'?DOCS_LOCAL:DOCS_IMPORT;if(blocked())return;delete s.docs[names[i]];save();render()}
+const DOCGB={starter:.2,growth:5,pro:25,enterprise:100};
+const fmtB=b=>b>=1073741824?(b/1073741824).toFixed(2)+' GB':b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round((b||0)/1024))+' KB';
+const docNames=s=>s.mode==='local'?DOCS_LOCAL:DOCS_IMPORT;
+const docCount=s=>docNames(s).filter(n=>(s.docs||{})[n]).length;
+const docUsed=()=>S.shipments.reduce((a,s)=>a+Object.values(s.docs||{}).reduce((x,d)=>x+(d&&d.bytes||0),0),0);
+const docCap=()=>(DOCGB[S.settings.plan||'starter']||.2)*1073741824;
+function sbPath(p){return p.split('/').map(encodeURIComponent).join('/')}
+async function sbAuthH(extra){if(SESS&&SESS.expires_at-90<Date.now()/1000){try{await refreshSess()}catch(e){}}return Object.assign({apikey:SB_KEY,Authorization:'Bearer '+(SESS&&SESS.access_token)},extra||{})}
+async function sbUpload(path,file){const r=await fetch(SB_URL+'/storage/v1/object/docs/'+sbPath(path),{method:'POST',headers:await sbAuthH({'x-upsert':'true','Content-Type':file.type||'application/octet-stream'}),body:file});
+ if(!r.ok){let m='';try{m=(await r.json()).message||''}catch(e){}const er=new Error(/bucket not found/i.test(m)?'File storage is not switched on yet.':(m||'Upload failed'));er.status=r.status;throw er}}
+async function sbSign(path){const r=await fetch(SB_URL+'/storage/v1/object/sign/docs/'+sbPath(path),{method:'POST',headers:await sbAuthH({'Content-Type':'application/json'}),body:JSON.stringify({expiresIn:600})});
+ const j=await r.json().catch(()=>({}));if(!r.ok||!j.signedURL)throw new Error('Could not open this file.');return SB_URL+'/storage/v1'+j.signedURL}
+async function sbRemove(path){try{await fetch(SB_URL+'/storage/v1/object/docs/'+sbPath(path),{method:'DELETE',headers:await sbAuthH()})}catch(e){}}
+function docBadge(d){return d?'<span class="badge b-green">✓ Uploaded</span>':'<span class="badge b-amber">Missing</span>'}
+function docsTab(s){const names=docNames(s);s.docs=s.docs||{};const can=curRole()!=='viewer';
+ return`<div class="ins-h"><h3>Documents</h3><span class="xs mute">${docCount(s)} of ${names.length} attached</span></div>
+ <p class="xs mute" style="margin:0 0 10px">Drag a PDF onto a row, choose a file, or take a photo of a stamped receipt.</p>`+names.map((n,i)=>{const d=s.docs[n];
+ return`<div class="docrow dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="dropDoc(event,${s.id},${i})"><div class="di ${d?'ok':''}">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${n} ${docBadge(d)}</div><div class="xs mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d?esc(d.name)+' · '+(d.bytes?fmtB(d.bytes):d.size)+' · '+fday(d.ts):'Not attached yet'}</div>
+ <div class="dact">${d?(d.path?`<button class="btn sm" onclick="previewDoc(${s.id},${i})">Preview</button><button class="btn sm" onclick="dlDoc(${s.id},${i})">Download</button>`:''):''}${can?(d?`<button class="btn sm" onclick="rmDoc(${s.id},${i})">Remove</button>`:`<label class="btn sm" style="cursor:pointer">Upload file<input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label><label class="btn sm" style="cursor:pointer">Take photo<input type="file" hidden accept="image/*" capture="environment" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label>`):''}${d&&d.path&&can&&i<2&&s.mode!=='local'?'<button class="btn sm" disabled title="Coming soon">✨ Extract with AI · soon</button>':''}</div></div></div>`}).join('')}
+function dropDoc(e,id,i){e.preventDefault();e.currentTarget.classList.remove('drag');const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)addDoc(id,i,f)}
+async function addDoc(id,i,f){const s=byId(id);if(!f||!s)return;if(blocked())return;
+ const ok=/\.(pdf|png|jpe?g|webp|heic|docx?|xlsx?)$/i.test(f.name)||/^image\//.test(f.type);
+ if(!ok){toast('Please choose a PDF, photo, Word or Excel file.');return}
+ if(f.size>15*1024*1024){toast('That file is over 15 MB. Please choose a smaller one.');return}
+ if(docUsed()+f.size>docCap()){toast('You have used all your storage. Remove a file or upgrade your plan.');return}
+ const names=docNames(s),slot=names[i];s.docs=s.docs||{};const safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=SESS.user.id+'/'+s.id+'/'+i+'-'+Date.now()+'-'+safe;
+ toast('Uploading '+f.name+'...');
+ try{await sbUpload(path,f)}catch(e){toast(e.message);return}
+ const old=s.docs[slot];if(old&&old.path)sbRemove(old.path);
+ s.docs[slot]={name:f.name,size:fmtB(f.size),bytes:f.size,type:f.type||'',path,ts:Date.now()};
+ s.tl.unshift({ts:Date.now(),type:'rep',text:slot+' attached by '+S.user.name});save();toast(slot+' attached');render()}
+async function docUrl(id,i,dl){const s=byId(id),d=s&&s.docs&&s.docs[docNames(s)[i]];if(!d||!d.path){toast('This file was only recorded by name. Please attach it again.');return null}
+ try{const u=await sbSign(d.path);return dl?u+'&download='+encodeURIComponent(d.name):u}catch(e){toast(e.message);return null}}
+async function dlDoc(id,i){const u=await docUrl(id,i,true);if(u)window.open(u,'_blank')}
+async function previewDoc(id,i){const s=byId(id),d=s.docs[docNames(s)[i]],u=await docUrl(id,i);if(!u)return;
+ const img=/^image\//.test(d.type)||/\.(png|jpe?g|webp)$/i.test(d.name),pdf=/pdf/i.test(d.type)||/\.pdf$/i.test(d.name);
+ openModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><div style="min-width:0"><h2 style="font-size:17px;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</h2><div class="xs mute">${esc(docNames(s)[i])} · ${esc(s.ref)}</div></div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
+ ${img?`<img src="${u}" alt="${esc(d.name)}" style="width:100%;border-radius:10px;max-height:70vh;object-fit:contain;background:#f4f4f5">`:pdf?`<iframe src="${u}" title="${esc(d.name)}" style="width:100%;height:70vh;border:0;border-radius:10px;background:#f4f4f5"></iframe>`:'<p class="mute">This file type cannot be previewed. Use Download.</p>'}
+ <button class="btn" style="width:100%;margin-top:10px" onclick="dlDoc(${id},${i})">Download</button>`)}
+function rmDoc(id,i){const s=byId(id),slot=docNames(s)[i];if(blocked())return;const d=s.docs[slot];if(d&&d.path)sbRemove(d.path);delete s.docs[slot];s.tl.unshift({ts:Date.now(),type:'rep',text:slot+' removed by '+S.user.name});save();render()}
+function setDtab(k){V.dtab=k;render()}
+/* documents page */
+function vDocs(){const q=(V.dq||'').toLowerCase(),f=V.df||'all',used=docUsed(),cap=docCap(),pct=Math.min(100,used/cap*100);
+ const rows=[];S.shipments.filter(s=>!s.deletedAt).forEach(s=>docNames(s).forEach((n,i)=>{const d=(s.docs||{})[n];if(d)rows.push({s,n,i,d})}));
+ const kindOf=n=>/lading|delivery note/i.test(n)?'bl':/invoice/i.test(n)?'inv':'cus';
+ let list=rows.filter(r=>(f==='all'||kindOf(r.n)===f)&&(!q||[r.d.name,r.s.ref,r.s.containerId,r.s.supplier,r.n].join(' ').toLowerCase().includes(q)));
+ let miss=[];if(f==='missing'){active().filter(s=>!['delivered','cancelled'].includes(s.status)).forEach(s=>docNames(s).forEach((n,i)=>{if(!(s.docs||{})[n]&&(!q||[s.ref,s.containerId,s.supplier,n].join(' ').toLowerCase().includes(q)))miss.push({s,n,i})}));list=[]}
+ const fl=[['all','All'],['bl','Bill of Lading'],['inv','Commercial Invoice'],['cus','Customs'],['missing','Missing docs']];
+ return`<div class="topbar"><h1>Documents</h1></div>
+ <div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">Storage</b><span class="sm mute tnum">${fmtB(used)} of ${cap>=1073741824?(cap/1073741824)+' GB':Math.round(cap/1048576)+' MB'} used</span></div><div class="meter ${pct>=90?'full':''}" style="margin-top:8px"><i style="width:${Math.max(pct,used?2:0)}%"></i></div></div>
+ <div style="display:flex;gap:8px;margin-bottom:10px"><input id="dq" type="search" placeholder="Search file, container or supplier" value="${esc(V.dq||'')}" style="flex:1" oninput="clearTimeout(window._dt);window._dt=setTimeout(()=>{V.dq=document.getElementById('dq').value;render();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},250)"><select aria-label="Filter" onchange="V.df=this.value;render()" style="width:auto">${fl.map(([k,l])=>`<option value="${k}" ${f===k?'selected':''}>${l}</option>`).join('')}</select></div>
+ <div class="card">${f==='missing'?(miss.length?miss.map(m=>`<div class="docrow"><div class="di">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${esc(m.s.ref)} ${docBadge(null)}</div><div class="xs mute">${esc(m.n)} · ${esc(m.s.containerId||m.s.vehicle||m.s.supplier||'')}</div></div><button class="btn sm" onclick="V.dtab='documents';openShip(${m.s.id});V.tab='shipments';V.dtab='documents';render()">Upload</button></div>`).join(''):'<div class="empty"><b>Nothing missing</b>Every active shipment has all its documents.</div>')
+ :list.length?list.map(r=>`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.name)}</div><div class="xs mute">${esc(r.n)} · ${esc(r.s.ref)} · ${r.d.bytes?fmtB(r.d.bytes):r.d.size} · ${fday(r.d.ts)}</div><div class="dact">${r.d.path?`<button class="btn sm" onclick="previewDoc(${r.s.id},${r.i})">Preview</button><button class="btn sm" onclick="dlDoc(${r.s.id},${r.i})">Download</button>`:''}<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${r.s.id};render()">Open shipment</button></div></div></div>`).join(''):'<div class="empty"><b>No documents yet</b>Open a shipment, go to its Documents tab and upload a Bill of Lading or invoice.</div>'}</div>`}
 function threadHtml(s){const em=tp(s).email||'transporter',ch=s.channel==='both'?'Email and WhatsApp':'Email';
  const items=(s.tl||[]).slice().sort((a,b)=>a.ts-b.ts).filter(e=>['sent','reply'].includes(e.type));
  if(!items.length)return'<p class="sm mute">No messages yet. Use Ping transporter to ask for an update.</p>';
@@ -989,17 +1038,16 @@ function drawer(s){
  const info=(L?[['Truck number',s.vehicle],['Driver',s.driver],['Delivering to',s.zone],['Supplier',s.supplier]]:[['Container number',s.containerId],['Shipping document',s.bol],['Shipped from',s.origin],['Arriving at',s.dest]]);
  const ini=(t.name||'?').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
  const link='https://manifestlogistics.app/track/?t='+(s.token||'');
- return`<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div style="min-width:0"><h2 style="font-size:18px">${esc(s.ref)}</h2><div class="sm mute">${esc(s.supplier)}</div></div><div style="display:flex;gap:8px;align-items:center">${badge(s.status)}<button class="icon-btn closeX" style="width:34px;height:34px" aria-label="Close" onclick="closeShip()">${icon('x')}</button></div></div>
- ${stepper(s)}
+ const dt=V.dtab||'overview',OV=` ${stepper(s)}
  <div class="info">${info.map(([k,v])=>`<div><div class="xs mute">${k}</div><div class="v tnum">${esc(v||'Not added')}</div></div>`).join('')}</div>
  <div class="tprow"><div class="mtile">${esc(ini)}</div><div style="min-width:0"><div style="font-weight:600">${esc(t.name)}</div><div class="xs mute" style="word-break:break-all">${esc(t.email)}</div></div></div>
  <div class="sm mute">We ask ${FREQ[s.freq].toLowerCase()}. ${s.asked?'Last asked '+ago(s.last)+(s.status==='delivered'?'.':', next '+ago(nextCheck(s))+'.'):'The first request goes out within about 15 minutes.'} ${tzb()}</div>
  ${can?`<div class="acts"><button class="btn pri wide" onclick="ping(${s.id})">Ping transporter now</button><button class="btn" onclick="resolveShip(${s.id})">Mark resolved</button><button class="btn" onclick="exportAudit(${s.id})">Export audit log</button><button class="btn" onclick="editShip(${s.id})">Edit</button><button class="btn" onclick="menu(${s.id})">More</button></div>
  <details class="more"><summary>Change the status yourself</summary><div style="display:flex;gap:8px;margin-top:4px"><select id="ovr" aria-label="Status">${Object.entries(ST).map(([k,[l]])=>`<option value="${k}" ${s.status===k?'selected':''}>${l}</option>`).join('')}</select><button class="btn" onclick="override(${s.id})">Save</button></div><p class="xs mute" style="margin:8px 0 6px">Use this if Manifest misunderstood a reply.</p></details>`:`<div class="acts"><button class="btn wide" onclick="exportAudit(${s.id})">Export audit log</button></div><p class="xs mute" style="margin-top:10px">You can look at this shipment but not change it.</p>`}
- <div class="sharebar"><div><b>Customer tracking page</b><div class="xs mute" style="white-space:normal;margin-top:2px">Anyone with the link can see where this shipment is.</div></div><button class="btn sm" onclick="copy('${link}')">Copy link</button></div></div>
- <div class="card" style="margin-top:12px"><div class="ins-h"><h3>Documents</h3><span class="xs mute">${Object.keys(s.docs||{}).length} of 3 attached</span></div>${docsHtml(s)}</div>
- <div class="card" style="margin-top:12px"><div class="ins-h"><h3>Messages with ${esc(t.name)}</h3>${tzb()}</div>${threadHtml(s)}</div>
- <div class="card" style="margin-top:12px"><div class="ins-h"><h3>Audit trail</h3>${tzb()}</div>${auditHtml(s)}</div>`;
+ <div class="sharebar"><div><b>Customer tracking page</b><div class="xs mute" style="white-space:normal;margin-top:2px">Anyone with the link can see where this shipment is.</div></div><button class="btn sm" onclick="copy('${link}')">Copy link</button></div>`;
+ return`<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div style="min-width:0"><h2 style="font-size:18px">${esc(s.ref)}</h2><div class="sm mute">${esc(s.supplier)}</div></div><div style="display:flex;gap:8px;align-items:center">${badge(s.status)}<button class="icon-btn closeX" style="width:34px;height:34px" aria-label="Close" onclick="closeShip()">${icon('x')}</button></div></div>
+ <div class="dtabs" role="tablist">${[['overview','Overview'],['messages','Messages'],['documents','Documents ('+docCount(s)+'/'+docNames(s).length+')'],['audit','Audit Trail']].map(([k,l])=>`<button role="tab" aria-selected="${dt===k}" class="${dt===k?'on':''}" onclick="setDtab('${k}')">${l}</button>`).join('')}</div>
+ ${dt==='messages'?`<div class="ins-h"><h3>Messages with ${esc(t.name)}</h3>${tzb()}</div>${threadHtml(s)}`:dt==='documents'?docsTab(s):dt==='audit'?`<div class="ins-h"><h3>Audit trail</h3>${tzb()}</div>${auditHtml(s)}`:OV}</div>`;
 }
 function auditEvents(s){const o=[],em=tp(s).email||'the transporter';
  (s.tl||[]).forEach(e=>{let t=e.ts;if(Date.now()-t>DAY)t-=((Math.floor(t/1000)*2654435761)>>>0)%(9*HR);
