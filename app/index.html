@@ -493,6 +493,7 @@ const IC={
  board:'<rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="11" rx="1"/><rect x="17" y="3" width="4" height="14" rx="1"/>',
  file:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/>',
  more:'<circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
  ship:'<path d="M3 17l2 3h14l2-3"/><path d="M5 17v-7l7-3 7 3v7"/><path d="M12 7V3"/>',
  truck:'<path d="M2 6h11v10H2z"/><path d="M13 9h5l3 3v4h-8"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'
@@ -846,7 +847,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefer
 
 /* ============ shell ============ */
 const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['directory','Contacts']];
-const MENU=[['Profile','profile'],['Business Profile','org'],['Plan and Billing','billing'],['Security','security'],['Workspace Plan','team'],['History','hist'],['Trash','trash']];
+const MENU=[['Profile','profile'],['Business Profile','org'],['Security','security'],['Plan and Billing','billing'],['Workspace Plan','team'],['History','hist'],['Trash','trash']];
 function go(t){V.tab=t;V.open=null;V.sel=new Set();V.selMode=false;render();window.scrollTo(0,0)}
 function av(sz,cls){const u=S.user,ini=(u.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
  return`<span class="av ${cls||''}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.38)}px">${u.photo?`<img src="${u.photo}" alt="">`:esc(ini)}</span>`}
@@ -862,14 +863,15 @@ function openMenu(){const items=MENU.filter(m=>m[1]!=='team'||isTeamPlan());
 function menuGo(k){closeModal();if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
 
 function kpiList(l){return l.length?`<div class="list">${l.map(s=>`<div class="li" style="cursor:pointer" onclick="closeModal();go('shipments');V.open=${s.id};render()"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)} · ${esc(route(s))}</div></div></div>`).join('')}</div>`:'<div class="empty"><b>Nothing here</b>No shipments match right now.</div>'}
-function kpi(k){const act=countedActive(),all=active();let h='';
+function kpi(k){V.kpi=k;go('kpi')}
+function vKpi(){const k=V.kpi||'prog',act=countedActive(),all=active();let h='';
  if(k==='prog')h=`<h2>Shipments in progress</h2><p class="sm mute" style="margin:4px 0 8px">${act.length} active</p>`+kpiList(act);
  else if(k==='late')h=`<h2>Running late</h2><p class="sm mute" style="margin:4px 0 8px">Delayed, held at customs, or not replying.</p>`+kpiList(act.filter(s=>['delayed','customs_hold'].includes(s.status)||(s.status==='pending'&&Date.now()-s.last>DAY)));
  else if(k==='reply'){const m={};all.filter(s=>s.respHrs!=null).forEach(s=>{const n=tp(s).name;(m[n]=m[n]||[]).push(s.respHrs)});const rows=Object.entries(m).map(([n,a])=>[n,a.reduce((x,y)=>x+y,0)/a.length,a.length]).sort((x,y)=>x[1]-y[1]);
   h=`<h2>Reply time by transporter</h2><p class="sm mute" style="margin:4px 0 8px">Average time each one takes to answer.</p>`+(rows.length?`<div class="list">${rows.map(([n,v,c])=>`<div class="li"><div style="font-weight:600">${esc(n)}</div><div class="sm mute tnum">${v<1?'Under 1 hour':(Math.round(v*10)/10)+' hours'} · ${c} repl${c===1?'y':'ies'}</div></div>`).join('')}</div>`:'<div class="empty"><b>No replies yet</b>Reply times appear after your transporters answer.</div>')}
  else{const mc=monthCount(),lim=plan().limit,list=all.filter(s=>s.status!=='archived');
   h=`<h2>Shipments this month</h2><div class="n tnum" style="font-size:28px;margin:6px 0">${mc}${lim===Infinity?'':' / '+lim}</div><p class="sm mute">${esc(plan().name)} plan${lim===Infinity?'':': '+mc+' of '+lim+' shipments used'}</p><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin:10px 0 14px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div>`+kpiList(list)}
- openModal(`<div style="display:flex;justify-content:flex-end"><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>`+h)}
+ return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="go('dashboard')">${icon('back')||'←'}</button></div><div class="card">${h}</div>`}
 
 function addMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Add a shipment</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div class="mlist" style="margin-top:0"><button class="mrow2" onclick="closeModal();editShip()">Type it in<span>›</span></button><button class="mrow2" onclick="closeModal();fwdMail()">Paste from email<span>›</span></button></div>`)}
 function render(){
@@ -877,7 +879,7 @@ function render(){
  $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${HAM2}</div>`;
  $('#bnav').innerHTML=TABS.map(([k,l])=>`<button class="${V.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">${icon(k)}${l}</button>`).join('');
  const m=$('#main');
- m.innerHTML=banner()+({dashboard:vDash,shipments:vShip,history:vHist,directory:vDir,settings:vSet})[V.tab]();
+ m.innerHTML=banner()+({dashboard:vDash,shipments:vShip,history:vHist,directory:vDir,settings:vSet,kpi:vKpi})[V.tab]();
  if(m.dataset.v!==V.tab+V.set){m.dataset.v=V.tab+V.set;m.classList.remove('fade');void m.offsetWidth;m.classList.add('fade')}
  if(V.tab==='shipments')wireSwipe();
 }
@@ -1143,8 +1145,8 @@ function delContact(id){if(S.shipments.some(s=>s.transporter===id&&!s.deletedAt)
 const STABS=[['profile','Profile'],['org','Business'],['channels','Messages'],['security','Security'],['billing','Plan and billing']];
 function vSet(){
  const body=(curRole()!=='owner'&&['team','dev','billing'].includes(V.set))?`<div class="card empty"><b>Only the owner can change this</b>Please ask the account owner.</div>`:({profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
- return`<div class="topbar"><h1>Settings</h1><button class="btn sm" onclick="openHelp()">Help</button></div>
- <div class="tabs" role="tablist">${STABS.map(([k,l])=>`<button role="tab" class="${V.set===k?'on':''}" onclick="V.set='${k}';render()">${l}</button>`).join('')}</div>
+ const ttl=({profile:'Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Workspace Plan',dev:'Developers'})[V.set]||'Settings';
+ return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="go('dashboard')">${icon('back')||'←'}</button><h1>${ttl}</h1></div>
  <div style="max-width:${V.set==='billing'?'none':'760px'}">${body}</div>`}
 function setv(k,v){S.settings[k]=v;save();if(k==='theme')applyTheme();if(k==='mode'||k==='plan')render()}
 function sel(k,opts,cur){return`<select onchange="setv('${k}',this.value)" id="s-${k}">${opts.map(o=>`<option ${o===cur?'selected':''}>${o}</option>`).join('')}</select>`}
