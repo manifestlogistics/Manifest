@@ -465,6 +465,19 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .metric.tap{cursor:pointer;transition:transform .15s,box-shadow .15s}.metric.tap:hover{transform:translateY(-1px)}.metric.tap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sugg{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,.12);margin-top:4px;overflow:hidden}.sugg button{display:flex;flex-direction:column;align-items:flex-start;width:100%;padding:10px 14px;border:0;background:none;text-align:left;font:inherit;cursor:pointer}.sugg button:hover{background:var(--bg2,#F1F5F9)}.sugg[hidden]{display:none}
 .dtabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin:14px 0 12px;scrollbar-width:none}.dtabs button{flex:0 0 auto;border:0;background:none;padding:10px 12px;font:600 13px/1 inherit;color:var(--mute);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}.dtabs button.on{color:var(--accent);border-bottom-color:var(--accent)}.dz.drag{background:var(--blue-bg,#EFF6FF);outline:2px dashed var(--accent);outline-offset:-2px;border-radius:10px}.dact{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+
+.srow{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}.srow:last-child{border-bottom:0}.srow span{color:var(--mute);font-size:20px}
+.lnk{display:inline-block;margin-top:6px;color:var(--accent);text-decoration:underline;cursor:pointer}
+.phint{display:block;font-size:12px;opacity:.7;margin-top:6px;line-height:1.4}
+.btn.bk{background:#000;color:#fff;border:1px solid #000}.btn.bk.red{color:#EF4444}.btn.bk:disabled{opacity:.5}
+#modal.ctr{align-items:center;padding:16px}#sheet.dk{background:#242424;color:#fff;border:1px solid #3a3a3a;border-radius:16px;max-width:420px;width:100%;margin:auto}#sheet.dk input[type=text],#sheet.dk input[type=password]{background:#171717;color:#fff;border-color:#3a3a3a}#sheet.dk .btn.bk{border-color:#3a3a3a}
+.mbtns{display:flex;gap:8px;justify-content:flex-end}
+.dwl{display:flex;flex-direction:column;gap:2px}.dw{display:flex;gap:10px;align-items:flex-start;padding:10px 2px;cursor:pointer;font-size:14px;line-height:1.35}.dw input{margin-top:2px;accent-color:#EF4444}.dw.lt input{accent-color:var(--accent)}
+.dvrow{display:flex;gap:12px;align-items:center}.ck{width:22px;height:22px;border:2px solid var(--line);border-radius:6px;display:inline-grid;place-items:center;font-size:14px;flex:0 0 auto}.ck.on{background:#000;border-color:#000;color:#fff}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg2,#F1F5F9);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px}.tag button{border:0;background:none;font-size:16px;cursor:pointer;color:inherit;line-height:1}
+.sw{width:44px;height:26px;border-radius:999px;border:0;background:#CBD5E1;position:relative;cursor:pointer;flex:0 0 auto}.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}.sw.on{background:var(--accent)}.sw.on i{transform:translateX(18px)}
+.logobox{width:72px;height:72px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;overflow:hidden;background:var(--card)}.logobox img{max-width:100%;max-height:100%}
+.avbtn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
 </style>
 </head>
 <body>
@@ -614,7 +627,7 @@ function seed(m){
 
 /* ============ v3 helpers ============ */
 const TZS=[['PKT','Asia/Karachi','Karachi'],['UTC','UTC','Universal'],['EST','America/New_York','New York'],['PST','America/Los_Angeles','Los Angeles'],['GMT','Europe/London','London'],['CET','Europe/Berlin','Berlin'],['GST','Asia/Dubai','Dubai'],['IST','Asia/Kolkata','Mumbai'],['CST','Asia/Shanghai','Shanghai'],['SGT','Asia/Singapore','Singapore']];
-function tzO(){const k=S&&S.settings&&S.settings.tz;let t=TZS.find(x=>x[0]===k);if(!t){let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}t=TZS.find(x=>x[1]===z)||TZS[1]}return t}
+function tzO(){const zi=(S&&S.user&&S.user.tzId)||(S&&S.settings&&S.settings.tzId);if(zi){let t=TZS.find(x=>x[1]===zi);if(!t){let ab=zi;try{ab=new Intl.DateTimeFormat('en',{timeZone:zi,timeZoneName:'short'}).formatToParts(new Date()).find(x=>x.type==='timeZoneName').value}catch(e){}t=[ab,zi,zi.split('/').pop().replace(/_/g,' ')]}return t}const k=S&&S.settings&&S.settings.tz;let t=TZS.find(x=>x[0]===k);if(!t){let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}t=TZS.find(x=>x[1]===z)||TZS[1]}return t}
 function tzOff(t){try{const o=new Intl.DateTimeFormat('en',{timeZone:t[1],timeZoneName:'shortOffset'}).formatToParts(new Date()).find(x=>x.type==='timeZoneName').value;return o.replace('GMT','UTC')}catch(e){return t[0]}}
 function tzb(){const t=tzO();const o=tzOff(t);return`<span class="tz" title="All times are shown in ${t[2]} time">${t[0]}${o===t[0]||o==='UTC'&&t[0]==='UTC'?'':' · '+o}</span>`}
 function fts(ts,sec){try{return new Date(ts).toLocaleString('en-GB',{timeZone:tzO()[1],day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',second:sec?'2-digit':undefined,hour12:false})}catch(e){return new Date(ts).toLocaleString()}}
@@ -627,7 +640,7 @@ function vName(t,what){t=String(t||'').trim();if(!t)return'Please add '+what+'.'
 function vBiz(t){t=String(t||'').trim();if(!t)return'Please add your business name.';if(!RX.biz.test(t))return'Business names can use letters, numbers and & . , \' ( ) -';if(gib(t))return'That does not look like a real business name. Please check it.';return''}
 function vEmail(t){t=String(t||'').trim();return RX.email.test(t)?'':'That email does not look right. It should look like name@company.com'}
 function vPhone(t){t=String(t||'').trim();return !t||RX.phone.test(t)?'':'Phone numbers use digits, spaces, + and dashes, for example +92 300 1234567'}
-function vPass(t){return/[A-Z]/.test(t)&&(t.match(/[a-z]/g)||[]).length>=4&&/[0-9]/.test(t)&&/[^A-Za-z0-9]/.test(t)?'':'Use 1 capital letter, at least 4 small letters, 1 number and 1 symbol. Example: Logec2#'}
+function vPass(t){return t.length>=8&&/[A-Z]/.test(t)&&/[a-z]/.test(t)&&/[0-9]/.test(t)&&/[^A-Za-z0-9]/.test(t)?'':PWHELP}
 function fieldErr(id,msg){const el=$('#'+id);if(!el)return;el.classList.toggle('bad',!!msg);let e=el.parentElement.querySelector('.ferr');if(!e){e=document.createElement('span');e.className='ferr';el.parentElement.appendChild(e)}e.textContent=msg||'';return !msg}
 /* sparklines and trends */
 function buckets(pred,days){const out=Array(days).fill(0),st=new Date().setHours(0,0,0,0);active().forEach(sh=>sh.tl.forEach(e=>{if(!pred(e,sh))return;const a=Math.floor((st+DAY-1-e.ts)/DAY);if(a>=0&&a<days)out[days-1-a]++}));return out}
@@ -755,7 +768,7 @@ function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return sign
 function bkCreds(){const w=AUTH.w||{};return`<form class="bk-card" novalidate onsubmit="return bkSignup(event)">${bkSteps(1)}<h1>Create your account</h1><p class="bk-sub">You will use these to log in.</p>
  <div class="bk-f"><label for="c-email">Email</label><input id="c-email" type="email" autocomplete="email" inputmode="email" value="${esc(w.email||'')}" placeholder="you@company.com"></div>
  <div class="bk-f"><label for="c-user">Username</label><input id="c-user" type="text" autocomplete="username" autocapitalize="none" value="${esc(w.user||'')}" placeholder="yourname"><small>3 to 20 letters, numbers, dots or underscores.</small></div>
- <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><small>1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</small></div>
+ <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><span class="phint">${PWHELP}</span><small>1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</small></div>
  <div id="c-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="c-btn">Continue</button><button type="button" class="bk-ghost" onclick="bkGo(0)">Back</button></form>${bkTail(true)}`}
 async function bkSignup(e){e.preventDefault();
@@ -767,7 +780,7 @@ async function bkSignup(e){e.preventDefault();
   if(tk===true){fieldErr('c-user','That username is taken. Please choose another.');btn.disabled=false;btn.textContent='Continue';return false}
   const j=await gotrue('/signup',{body:{email,password:pw,data:{name:un,business:''}}});
   if(!j.access_token){AUTH.mode='signin';AUTH.step=0;showWelcome('Almost there. We sent a link to '+email+'. Open it to confirm your address, then log in.');return false}
-  setSess(j);await loadCloud();S.user.name=un;S.user.username=un.toLowerCase();S.settings.setup=false;save();await flush();AUTH.step=2;showWelcome()}
+  setSess(j);window._freshLogin=1;await loadCloud();S.user.name=un;S.user.username=un.toLowerCase();S.settings.setup=false;save();await flush();AUTH.step=2;showWelcome()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Continue';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
 function bkGuess(){let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}const reg=((navigator.language||'').split('-')[1]||'').toUpperCase();
@@ -850,7 +863,6 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefer
 
 /* ============ shell ============ */
 const TABS=[['dashboard','Dashboard'],['shipments','Shipments'],['directory','Contacts'],['documents','Documents']];
-const MENU=[['Profile','profile'],['Business Profile','org'],['Security','security'],['Plan and Billing','billing'],['Workspace Plan','team'],['History','hist'],['Trash','trash']];
 function go(t){V.tab=t;V.open=null;V.sel=new Set();V.selMode=false;render();window.scrollTo(0,0)}
 function av(sz,cls){const u=S.user,ini=(u.name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
  return`<span class="av ${cls||''}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.38)}px">${u.photo?`<img src="${u.photo}" alt="">`:esc(ini)}</span>`}
@@ -858,12 +870,6 @@ function profile(){V.set='profile';go('settings')}
 
 const HAM=`<button class="icon-btn" aria-label="Menu" onclick="openMenu()">${'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'}</button>`;
 const HAM2=`<button class="icon-btn" style="border:0;box-shadow:none" aria-label="Menu" onclick="openMenu()">${'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'}</button>`;
-function isTeamPlan(){return plan().seats>1&&curRole()==='owner'||curRole()==='admin'}
-function openMenu(){const items=MENU.filter(m=>m[1]!=='team'||isTeamPlan());
- openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="brand">${LOGO}Manifest</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
- <div class="mlist">${items.map(([l,k])=>`<button class="mrow2" onclick="menuGo('${k}')">${l}<span>›</span></button>`).join('')}</div>`);
- $('#sheet').classList.add('mdrawer')}
-function menuGo(k){closeModal();if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
 
 function kpiList(l){return l.length?`<div class="list">${l.map(s=>`<div class="li" style="cursor:pointer" onclick="closeModal();go('shipments');V.open=${s.id};render()"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)} · ${esc(route(s))}</div></div></div>`).join('')}</div>`:'<div class="empty"><b>Nothing here</b>No shipments match right now.</div>'}
 function kpi(k){V.kpi=k;go('kpi')}
@@ -922,7 +928,7 @@ function vDash(){
 const FILTERS=[['all','All'],['delayed','Delayed'],['in_transit','On the way'],['pending','Waiting for reply']];
 function filtered(){
  const q=V.q.trim().toLowerCase();
- return active().filter(s=>!s.archived&&!['cancelled'].includes(s.status)||false).filter(s=>{
+ return active().filter(s=>!s.archived&&!['cancelled'].includes(s.status)||false).filter(s=>!V.asg||asg(s).toLowerCase()===V.asg.toLowerCase()).filter(s=>{
   if(s.status==='delivered'&&V.filter!=='all')return false;
   if(V.filter==='delayed'&&!['delayed','customs_hold'].includes(s.status))return false;
   if(V.filter==='in_transit'&&s.status!=='in_transit')return false;
@@ -938,11 +944,11 @@ function fbarHtml(){const f=F(),uniq=a=>[...new Set(a.filter(Boolean))].sort(),a
  <input type="date" aria-label="From date" value="${f.from}" onchange="fset('from',this.value)"><span class="xs mute">to</span><input type="date" aria-label="To date" value="${f.to}" onchange="fset('to',this.value)">${tzb()}<span class="sp"></span>${fcount()?`<button class="btn sm" onclick="V.f=F0();render()">Clear ${fcount()}</button>`:''}</div>`}
 const KCOLS=[['pending','Waiting for reply'],['in_transit','On the way'],['customs_hold','Held at customs'],['delayed','Delayed'],['delivered','Delivered']];
 function kanban(list){return`<div class="kb">${KCOLS.map(([k,l])=>{const items=list.filter(x=>x.status===k);return`<div class="kcol" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropCard(event,'${k}')"><h4>${l}<span>${items.length}</span></h4>${items.map(x=>`<div class="kcard ${V.open===x.id?'act':''}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')" onclick="openShip(${x.id})"><div style="display:flex;justify-content:space-between;gap:6px"><b>${esc(x.ref)}</b><input type="checkbox" aria-label="Select ${esc(x.ref)}" ${V.sel.has(x.id)?'checked':''} onclick="event.stopPropagation()" onchange="tog(${x.id})"></div><div class="sm mute">${esc(x.supplier)}</div><div class="id">${esc(ident(x))}</div><div class="xs mute" style="margin-top:4px">${esc(route(x))}</div><div class="xs mute" style="margin-top:6px;display:flex;justify-content:space-between"><span>${esc(tp(x).name)}</span><span>${x.status==='delivered'?'Done':ago(nextCheck(x))}</span></div></div>`).join('')||'<div class="xs mute" style="padding:10px 4px">Nothing here</div>'}</div>`}).join('')}</div>`}
-function dropCard(e,k){e.preventDefault();e.currentTarget.classList.remove('over');const id=+e.dataTransfer.getData('text/plain'),sh=byId(id);if(!sh||sh.status===k||blocked())return;sh.status=k;if(k==='delayed'||k==='customs_hold')sh.hadDelay=true;sh.tl.unshift({ts:Date.now(),type:k==='delayed'||k==='customs_hold'?'warn':'rep',text:'Status changed to '+ST[k][0]+' by '+S.user.name});save();toast(sh.ref+' moved to '+ST[k][0]);render()}
+function dropCard(e,k){e.preventDefault();e.currentTarget.classList.remove('over');const id=+e.dataTransfer.getData('text/plain'),sh=byId(id);if(!sh||sh.status===k||blocked())return;sh.status=k;if(k==='delayed'||k==='customs_hold')sh.hadDelay=true;sh.tl.unshift({by:S.user.email,ts:Date.now(),type:k==='delayed'||k==='customs_hold'?'warn':'rep',text:'Status changed to '+ST[k][0]+' by '+S.user.name});save();toast(sh.ref+' moved to '+ST[k][0]);render()}
 function setView(v){V.view=v;try{localStorage.setItem('manifest_view',v)}catch(e){}render()}
 function floatbar(){if(!V.sel.size)return'';return`<div class="floatbar" role="toolbar" aria-label="Actions for selected shipments"><b>${V.sel.size} selected</b><button onclick="bulk('checkin')">Send update email</button><button onclick="bulkFreq()">Change frequency</button><button onclick="bulk('export')">Export CSV</button><button onclick="bulk('archive')">Archive</button><button class="x" onclick="V.sel=new Set();V.selMode=false;render()">Clear</button></div>`}
 function bulkFreq(){if(blocked())return;openModal(`<h2>Change how often we ask</h2><p class="mute" style="margin:8px 0 12px">This applies to ${V.sel.size} selected shipment${V.sel.size===1?'':'s'}.</p><div class="field"><label for="bf">How often</label><select id="bf">${Object.entries(FREQ).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></div><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Cancel</button><button class="btn pri" style="flex:1" onclick="applyFreq()">Apply</button></div>`)}
-function applyFreq(){const v=$('#bf').value,ids=[...V.sel];ids.forEach(i=>{const x=byId(i);x.freq=v;x.tl.unshift({ts:Date.now(),type:'rep',text:'Check-ins set to '+FREQ[v].toLowerCase()+' by '+S.user.name})});V.sel=new Set();save();closeModal();toast('Updated '+ids.length+' shipment'+(ids.length===1?'':'s'));render()}
+function applyFreq(){const v=$('#bf').value,ids=[...V.sel];ids.forEach(i=>{const x=byId(i);x.freq=v;x.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Check-ins set to '+FREQ[v].toLowerCase()+' by '+S.user.name})});V.sel=new Set();save();closeModal();toast('Updated '+ids.length+' shipment'+(ids.length===1?'':'s'));render()}
 function vShip(){
  if(!V.view){try{V.view=localStorage.getItem('manifest_view')||'table'}catch(e){V.view='table'}}
  const list=filtered(),L=mode()==='local',board=false;
@@ -1001,7 +1007,7 @@ async function addDoc(id,i,f){const s=byId(id);if(!f||!s)return;if(blocked())ret
  try{await sbUpload(path,f)}catch(e){toast(e.message);return}
  const old=s.docs[slot];if(old&&old.path)sbRemove(old.path);
  s.docs[slot]={name:f.name,size:fmtB(f.size),bytes:f.size,type:f.type||'',path,ts:Date.now()};
- s.tl.unshift({ts:Date.now(),type:'rep',text:slot+' attached by '+S.user.name});save();toast(slot+' attached');render()}
+ s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:slot+' attached by '+S.user.name});save();toast(slot+' attached');render()}
 async function docUrl(id,i,dl){const s=byId(id),d=s&&s.docs&&s.docs[docNames(s)[i]];if(!d||!d.path){toast('This file was only recorded by name. Please attach it again.');return null}
  try{const u=await sbSign(d.path);return dl?u+'&download='+encodeURIComponent(d.name):u}catch(e){toast(e.message);return null}}
 async function dlDoc(id,i){const u=await docUrl(id,i,true);if(u)window.open(u,'_blank')}
@@ -1010,7 +1016,7 @@ async function previewDoc(id,i){const s=byId(id),d=s.docs[docNames(s)[i]],u=awai
  openModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><div style="min-width:0"><h2 style="font-size:17px;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</h2><div class="xs mute">${esc(docNames(s)[i])} · ${esc(s.ref)}</div></div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
  ${img?`<img src="${u}" alt="${esc(d.name)}" style="width:100%;border-radius:10px;max-height:70vh;object-fit:contain;background:#f4f4f5">`:pdf?`<iframe src="${u}" title="${esc(d.name)}" style="width:100%;height:70vh;border:0;border-radius:10px;background:#f4f4f5"></iframe>`:'<p class="mute">This file type cannot be previewed. Use Download.</p>'}
  <button class="btn" style="width:100%;margin-top:10px" onclick="dlDoc(${id},${i})">Download</button>`)}
-function rmDoc(id,i){const s=byId(id),slot=docNames(s)[i];if(blocked())return;const d=s.docs[slot];if(d&&d.path)sbRemove(d.path);delete s.docs[slot];s.tl.unshift({ts:Date.now(),type:'rep',text:slot+' removed by '+S.user.name});save();render()}
+function rmDoc(id,i){const s=byId(id),slot=docNames(s)[i];if(blocked())return;const d=s.docs[slot];if(d&&d.path)sbRemove(d.path);delete s.docs[slot];s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:slot+' removed by '+S.user.name});save();render()}
 function setDtab(k){V.dtab=k;render()}
 /* documents page */
 function vDocs(){const q=(V.dq||'').toLowerCase(),f=V.df||'all',used=docUsed(),cap=docCap(),pct=Math.min(100,used/cap*100);
@@ -1030,7 +1036,7 @@ function threadHtml(s){const em=tp(s).email||'transporter',ch=s.channel==='both'
  return'<div class="thread">'+items.map(e=>e.type==='sent'?`<div class="msg out"><div class="meta">Manifest to ${esc(tp(s).name)} · ${ch} · ${esc(tp(s).lang||'English')} · ${fts(e.ts,true)}</div><span dir="${RTL.includes(LCODE[tp(s).lang])?'rtl':'ltr'}" style="display:block">${esc(msgText(tp(s).lang,s))}</span></div>`:`<div class="msg in"><div class="meta">${esc(tp(s).name)} · ${esc(em)} · ${fts(e.ts,true)}</div>${esc(e.text.replace(/^Reply:\s*/,'').replace(/^"|"$/g,''))}</div>`).join('')+'</div>'}
 function ping(id){checkIn(id)}
 function resolveShip(id){if(blocked())return;const s=byId(id);if(!['delayed','customs_hold'].includes(s.status)){toast('Nothing to resolve. This shipment is not late or held.');return}
- s.status='in_transit';s.tl.unshift({ts:Date.now(),type:'rep',text:'Marked as resolved by '+S.user.name});save();toast(s.ref+' marked as resolved');render()}
+ s.status='in_transit';s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Marked as resolved by '+S.user.name});save();toast(s.ref+' marked as resolved');render()}
 function exportAudit(id){const s=byId(id),t=tzO();const txt=[s.ref+' · '+s.supplier,(ident(s)||'')+' · '+route(s),'Transporter: '+tp(s).name+' <'+(tp(s).email||'no email')+'>','Times shown in '+t[0]+' ('+tzOff(t)+')','',...auditEvents(s).slice().reverse().map(([ts,h,d])=>fts(ts,true)+'  '+h+(d?' - '+d:''))].join('\n');
  saveFile('audit-'+s.ref.toLowerCase()+'.txt',txt,()=>showLog(id))}
 function drawer(s){
@@ -1088,12 +1094,12 @@ async function saveFile(name,data,fallback){try{const d=window.claude&&await win
 function exportCsv(ids){const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';const rows=[['Order','Supplier','Status','Container or truck','Transporter','Last asked']].concat(ids.map(i=>{const s=byId(i);return[s.ref,s.supplier,ST[s.status][0],ident(s),tp(s).name,new Date(s.last).toISOString()]}));
  const csv=rows.map(r=>r.map(q).join(',')).join('\n');
  saveFile('shipments.csv',csv,()=>openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Export ${ids.length} shipment${ids.length===1?'':'s'}</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div class="pre" id="csvtxt">${esc(csv)}</div><button class="btn pri" style="width:100%;margin-top:12px" onclick="copy($('#csvtxt').textContent)">Copy</button><p class="xs mute" style="margin-top:8px">Copy this and paste it into any spreadsheet.</p>`))}
-function bulk(a){const ids=[...V.sel];if(!ids.length)return;if(a==='export'){exportCsv(ids);return}if(a==='archive')archive(ids);if(a==='delete')del(ids);if(a==='checkin'){ids.forEach(i=>{const s=byId(i);if(!tp(s).email)return;s.nextNow=true;s.next=Date.now();s.tl.unshift({ts:Date.now(),type:'rep',text:'Update request queued by '+S.user.name})});V.sel=new Set();V.selMode=false;save();toast('Okay! We will ask for updates on '+ids.length+' shipments within about 15 minutes');render()}}
-function override(id){if(blocked())return;const s=byId(id),v=$('#ovr').value;if(v===s.status)return;s.status=v;if(v==='delayed'||v==='customs_hold')s.hadDelay=true;s.tl.unshift({ts:Date.now(),type:v==='delayed'||v==='customs_hold'?'warn':'rep',text:'Status changed to '+ST[v][0]+' by '+S.user.name});save();toast('Status changed');render()}
+function bulk(a){const ids=[...V.sel];if(!ids.length)return;if(a==='export'){exportCsv(ids);return}if(a==='archive')archive(ids);if(a==='delete')del(ids);if(a==='checkin'){ids.forEach(i=>{const s=byId(i);if(!tp(s).email)return;s.nextNow=true;s.next=Date.now();s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Update request queued by '+S.user.name})});V.sel=new Set();V.selMode=false;save();toast('Okay! We will ask for updates on '+ids.length+' shipments within about 15 minutes');render()}}
+function override(id){if(blocked())return;const s=byId(id),v=$('#ovr').value;if(v===s.status)return;s.status=v;if(v==='delayed'||v==='customs_hold')s.hadDelay=true;s.tl.unshift({by:S.user.email,ts:Date.now(),type:v==='delayed'||v==='customs_hold'?'warn':'rep',text:'Status changed to '+ST[v][0]+' by '+S.user.name});save();toast('Status changed');render()}
 
 /* modal */
 function openModal(h){$('#sheet').innerHTML=h;$('#modal').classList.add('show');document.body.style.overflow='hidden'}
-function closeModal(){$('#modal').classList.remove('show');$('#sheet').classList.remove('mdrawer');document.body.style.overflow=''}
+function closeModal(){$('#modal').classList.remove('show','ctr');$('#sheet').classList.remove('mdrawer','dk');document.body.style.overflow=''}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 function menu(id){const s=byId(id);openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h2>${esc(s.ref)}</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
@@ -1145,8 +1151,8 @@ function saveShip(id){
  else if(!d.email){d.email=email;if(g('tphone'))d.phone=g('tphone');if(g('tlang'))d.lang=g('tlang')}
  const base={ref:g('ref'),supplier:g('supplier'),mode:m,transporter:d.id,freq:g('freq'),channel:'email',
   vehicle:g('vehicle'),driver:g('driver'),zone:g('zone'),containerId:g('containerId'),bol:g('bol'),origin:g('origin'),dest:g('dest')};
- if(id){Object.assign(byId(id),base);byId(id).tl.unshift({ts:Date.now(),type:'rep',text:'Details changed by '+S.user.name})}
- else{S.shipments.unshift({...base,id:S.nextId++,status:'pending',archived:false,deletedAt:null,respHrs:null,last:Date.now(),next:Date.now(),created:Date.now(),tl:[{ts:Date.now(),type:'rep',text:'Tracking started. The first update request to '+d.name+' goes out shortly'}]})}
+ if(id){Object.assign(byId(id),base);byId(id).tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Details changed by '+S.user.name})}
+ else{S.shipments.unshift({...base,assignee:S.user.email,id:S.nextId++,status:'pending',archived:false,deletedAt:null,respHrs:null,last:Date.now(),next:Date.now(),created:Date.now(),tl:[{ts:Date.now(),type:'rep',text:'Tracking started. The first update request to '+d.name+' goes out shortly'}]})}
  save();closeModal();V.tab='shipments';V.open=id||S.shipments[0].id;toast(id?'Shipment updated':'Tracking started');render()}
 
 /* forward email parser (demo) */
@@ -1205,22 +1211,8 @@ function delContact(id){if(S.shipments.some(s=>s.transporter===id&&!s.deletedAt)
 
 /* ============ settings ============ */
 const STABS=[['profile','Profile'],['org','Business'],['channels','Messages'],['security','Security'],['billing','Plan and billing']];
-function vSet(){
- const body=(curRole()!=='owner'&&['team','dev','billing'].includes(V.set))?`<div class="card empty"><b>Only the owner can change this</b>Please ask the account owner.</div>`:({profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
- const ttl=({profile:'Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Workspace Plan',dev:'Developers'})[V.set]||'Settings';
- return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="go('dashboard')">${icon('back')||'←'}</button><h1>${ttl}</h1></div>
- <div style="max-width:${V.set==='billing'?'none':'760px'}">${body}</div>`}
 function setv(k,v){S.settings[k]=v;save();if(k==='theme')applyTheme();if(k==='mode'||k==='plan')render()}
 function sel(k,opts,cur){return`<select onchange="setv('${k}',this.value)" id="s-${k}">${opts.map(o=>`<option ${o===cur?'selected':''}>${o}</option>`).join('')}</select>`}
-function sOrg(){const s=S.settings;
- return`<div class="card"><h2 style="margin-bottom:14px">About your business</h2>
- <div class="field"><label for="s-biz">Business name</label><input id="s-biz" type="text" value="${esc(s.biz)}" onchange="setv('biz',this.value.trim())"></div>
- <div class="field"><label for="s-taxId">Tax number</label><input id="s-taxId" type="text" value="${esc(s.taxId)}" placeholder="Optional" onchange="setv('taxId',this.value.trim())"></div>
-  <div class="row2"><div class="field"><label for="s-lang">Default language for transporters</label>${combo('s-lang','lang',s.lang,'cbSetLang')}</div><div class="field"><label for="s-cur">Currency</label>${combo('s-cur','cur',curOf(),'cbSetCur')}</div></div></div>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:4px">What you ship</h2><p class="sm mute" style="margin-bottom:12px">Changes the questions we ask when you add a shipment.</p>
- <div class="seg"><button class="${s.mode==='import'?'on':''}" onclick="setv('mode','import')">Goods from other countries</button><button class="${s.mode==='local'?'on':''}" onclick="setv('mode','local')">Local deliveries</button></div>
- <p class="xs mute" style="margin-top:8px">${s.mode==='local'?"We'll ask for the truck number, the driver and where it's going.":"We'll ask for the container number, the shipping document number and the ports."}</p></div>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Appearance</h2><div class="seg">${['light','dark','system'].map(t=>`<button class="${s.theme===t?'on':''}" onclick="setv('theme','${t}');render()">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div></div>`}
 function lockNote(p){return`<span class="lock">${p==='next'?'Needs a bigger plan':'Needs the '+p+' plan'}</span>`}
 function sChan(){const s=S.settings,P=plan();
  const pl=V.pl||'English';const prev=msgText(pl,null);const custom=(s.tpl||DEFTPL).trim()!==DEFTPL;
@@ -1235,18 +1227,6 @@ function sChan(){const s=S.settings,P=plan();
  <div class="field"><label for="tpl">Message</label><textarea id="tpl" onchange="setv('tpl',this.value)" oninput="$('#tplp').textContent=this.value.replace(/\\{\\{(\\w+)\\}\\}/g,(m,k)=>({transporter_name:'Rahim Transport',shipment_id:'PO-5521',container_id:'MSKU4829174'})[k]||m)">${esc(s.tpl)}</textarea></div>
  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-top:4px"><span class="lbl">Example, as your transporter sees it</span><div style="width:210px">${combo('pv','lang',pl,'cbSetPv')}</div></div><div class="pre" id="tplp" dir="${RTL.includes(LCODE[pl])?'rtl':'ltr'}" style="margin-top:6px">${esc(prev)}</div><p class="xs mute" style="margin-top:8px">${custom?'You wrote your own message, so it goes out exactly as written, in every language. To have Manifest translate for each transporter, reset it to the standard message.':(langNote(pl)||'Each transporter gets this in the language set on their contact.')}</p>${custom?'<button class="btn sm" style="margin-top:8px" onclick="setv(\'tpl\',DEFTPL);render()">Reset to the standard message</button>':''}</div>`}
 function insVar(v){const t=$('#tpl');const p=t.selectionStart??t.value.length;t.value=t.value.slice(0,p)+v+t.value.slice(p);t.dispatchEvent(new Event('input'));setv('tpl',t.value)}
-function sTeam(){const P=plan(),used=1+S.team.length;
- return`<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2>Your team</h2><span class="sm mute">${used} of ${P.seats>100?'unlimited':P.seats} people</span></div>
- <div class="list" style="margin-top:8px"><div class="li"><div><div style="font-weight:600">${esc(S.user.name)} (you)</div><div class="sm mute">${esc(S.user.email)}</div></div><span class="badge b-blue">Owner</span></div>
- ${S.team.map((m,i)=>`<div class="li"><div style="min-width:0"><div style="font-weight:600;word-break:break-all">${esc(m.email)}</div><div class="xs mute">${m.role==='operator'?'Can add and change shipments':'Can look but not change'}</div></div><div style="display:flex;gap:6px"><select aria-label="Role for ${esc(m.email)}" style="min-height:36px;padding:6px 8px;width:auto" onchange="setRole(${i},this.value)"><option value="operator" ${m.role==='operator'?'selected':''}>Can add and edit</option><option value="viewer" ${m.role==='viewer'?'selected':''}>View only</option></select><button class="btn sm dng" onclick="rmMember(${i})">Remove</button></div></div>`).join('')}</div></div>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Invite someone</h2>
- ${used>=P.seats?`<p class="sm mute" style="margin-bottom:10px">${P.seats===1?'Starter is for one person.':'All the spots on your team are taken.'}</p>${lockNote(P.seats===1?'Growth':'next')}`:`<div class="field"><label for="iv-e">Email</label><input id="iv-e" type="email" placeholder="colleague@company.com"></div><div class="field"><label for="iv-r">Role</label><select id="iv-r"><option value="operator">Can add and edit</option><option value="viewer">View only</option></select></div><div id="iv-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" onclick="invite()">Send invite</button>`}</div>
- <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">See what they'll see</h3><p class="sm mute" style="margin-bottom:10px">Try the app the way a team member would see it.</p><div class="seg">${['owner','operator','viewer'].map(r=>`<button class="${curRole()===r?'on':''}" onclick="S.me='${r}';toast('Viewing as ${ROLES[r]}');render()">${ROLES[r]}</button>`).join('')}</div></div>`}
-function invite(){const e=$('#iv-e').value.trim().toLowerCase(),r=$('#iv-r').value,er=$('#iv-err');
- if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){er.textContent="That email doesn't look right. Please check it.";return}
- if(e===S.user.email.toLowerCase()||S.team.some(m=>m.email===e)){er.textContent='That person is already on your team.';return}
- S.team.push({email:e,role:r});save();toast('Invite sent to '+e);render()}
-function setRole(i,r){S.team[i].role=r;save();toast('Role updated')}
 function rmMember(i){const m=S.team.splice(i,1)[0];save();toast(m.email+' removed');render()}
 function money(n){return priceText(n)}
 function sBill(){const P=plan(),st=S.settings,n=monthCount(),lim=P.limit,paid=P.amt>0;
@@ -1278,20 +1258,6 @@ function contactSales(){openModal(`<h2>Talk to us about Enterprise</h2><p class=
 function sendSales(){ticket('Enterprise plan enquiry','Billing','Low',$('#ent-m').value.trim()||'(no message)');closeModal();toast('Thanks! We will be in touch about Enterprise.')}
 
 /* ============ profile ============ */
-function sProfile(){const u=S.user;
- return`<div class="card"><div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">${av(76,'bigav')}<div><div style="font-weight:650;font-size:17px">${esc(u.name)}</div><div class="sm mute">@${esc(u.username)} · ${esc(S.settings.biz)}</div><div style="display:flex;gap:8px;margin-top:10px"><label class="btn sm" style="cursor:pointer">Change photo<input type="file" accept="image/*" hidden onchange="setPhoto(this)"></label>${u.photo?'<button class="btn sm" onclick="rmPhoto()">Remove</button>':''}</div></div></div></div>
- <form class="card" novalidate style="margin-top:14px" onsubmit="return saveProfile(event)"><h2 style="margin-bottom:14px">Your details</h2>
- <div class="field"><label for="p-name">Full name</label><input id="p-name" type="text" autocomplete="name" value="${esc(u.name)}"></div>
- <div class="field"><label for="p-user">Username</label><input id="p-user" type="text" autocomplete="username" value="${esc(u.username)}"><span class="xs mute">Letters, numbers, dots and underscores. 3 to 20 characters.</span></div>
- <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" value="${esc(u.email)}" disabled><span class="xs mute">This is the email you sign in with.</span></div>
- <div class="field"><label for="p-phone">Phone number (optional)</label><input id="p-phone" type="tel" autocomplete="tel" value="${esc(u.phone)}" placeholder="+92 300 1234567"></div>
- <div id="p-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri">Save changes</button></form>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:4px">Sign out</h2><p class="sm mute" style="margin-bottom:12px">You can sign back in any time.</p><button class="btn" onclick="signOut()">Sign out</button></div>
- <div class="card danger" style="margin-top:14px"><h2 style="margin-bottom:4px">Delete account</h2><p class="sm mute" style="margin-bottom:12px">This removes your account, your shipments and your contacts. It can't be undone.</p><button class="btn dng" onclick="delAccount()">Delete my account</button></div>`}
-function saveProfile(e){e.preventDefault();const g=i=>$('#p-'+i).value.trim(),er=$('#p-err');er.textContent='';
- const r=[fieldErr('p-name',vName(g('name'),'your name')),fieldErr('p-user',/^[a-z0-9_.]{3,20}$/i.test(g('user'))?'':'Usernames use 3 to 20 letters, numbers, dots or underscores.'),fieldErr('p-phone',vPhone(g('phone')))];
- if(r.includes(false)){er.textContent='Please fix the highlighted fields.';return false}
- Object.assign(S.user,{name:g('name'),username:g('user').toLowerCase(),phone:g('phone')});save();toast('Your details are saved');render();return false}
 function setPhoto(inp){const f=inp.files[0];if(!f)return;if(!/^image\//.test(f.type)){toast('Please choose a picture');return}
  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),z=160,k=Math.max(z/im.width,z/im.height);c.width=c.height=z;const x=c.getContext('2d');x.drawImage(im,(z-im.width*k)/2,(z-im.height*k)/2,im.width*k,im.height*k);S.user.photo=c.toDataURL('image/jpeg',.82);save();toast('Photo updated');render()};im.onerror=()=>toast('We could not read that picture');im.src=r.result};r.readAsDataURL(f)}
 function rmPhoto(){S.user.photo='';save();render()}
@@ -1314,12 +1280,201 @@ function connectInteg(k){if(blocked())return;if(!growthUp()){toast('Connecting a
  openModal(`<div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><div class="itile" style="background:${i.tile}" aria-hidden="true">${i.ltr}</div><h2>Connect ${esc(i.name)}</h2></div><p class="mute" style="margin-bottom:16px">${esc(i.text)}</p><p class="sm mute" style="margin-bottom:16px">You'll be asked to sign in to ${esc(i.name)} and allow Manifest to connect.</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" onclick="S.integ['${k}']=true;save();closeModal();toast('${esc(i.name)} connected ');render()">Connect</button></div>`)}
 function dropInteg(k){const i=INTEG.find(x=>x.k===k);ask('Disconnect '+i.name+'?','We will stop sending it updates.','Disconnect',()=>{S.integ[k]=false;save();render()})}
 /* ============ security ============ */
-function sSec(){
- return`<div class="card"><h2 style="margin-bottom:12px">Password</h2>
- <div class="field"><label for="pw0">Current password</label><input id="pw0" type="password" autocomplete="current-password"></div>
- <div class="row2"><div class="field"><label for="pw1">New password</label><input id="pw1" type="password" autocomplete="new-password"></div><div class="field"><label for="pw2">Confirm new password</label><input id="pw2" type="password" autocomplete="new-password"></div></div>
- <div id="pw-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" onclick="changePw()">Update password</button><p class="xs mute" style="margin-top:8px">Use a password you don't use anywhere else.</p></div>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:4px">Sign out everywhere</h2><p class="sm mute" style="margin-bottom:12px">Signs you out on every phone and computer, including this one.</p><button class="btn" onclick="signOutAll()">Sign out of all devices</button></div>`}
+/* ============ settings v4: roles, menu ============ */
+const PWHELP='Password must be at least 8 to 12 characters and include a mix of uppercase letters, lowercase letters, numbers, and a symbol';
+const isAdmin=()=>['owner','admin'].includes(curRole());
+const isTeamPlan=()=>plan().seats>1;
+const asg=s=>s.assignee||S.user.email;
+const maskEmail=e=>{e=String(e||'');const i=e.indexOf('@');return i<1?e:e.slice(0,Math.min(2,i))+'***'+e.slice(i)};
+const mName=m=>m.name||(m.email||'').split('@')[0].replace(/[._]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+function dkModal(h){openModal(h);$('#sheet').classList.add('dk');$('#modal').classList.add('ctr')}
+const MENU=[['Personal Profile','profile'],['Business Profile','org'],['Team','team'],['Security','security'],['Plan and Billing','billing'],['History','hist'],['Trash','trash']];
+function menuItems(){const a=isAdmin();return MENU.filter(([l,k])=>k==='profile'||k==='security'||(a&&(k!=='team'||isTeamPlan())))}
+function openMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="brand">${LOGO}Manifest</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
+ <div class="mlist">${menuItems().map(([l,k])=>`<button class="mrow2" onclick="menuGo('${k}')">${l}<span>›</span></button>`).join('')}</div>`);$('#sheet').classList.add('mdrawer')}
+function menuGo(k){closeModal();V.sec=null;V.tm=null;if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
+function setBack(){if(V.set==='security'&&V.sec){const f=V.sec==='forgot'&&V.sf&&V.sf.from;V.sec=f==='pw'||f==='email'?f:null;V.em=0;V.dsel=false;V.dpick=new Set()}else if(V.set==='team'&&V.tm!=null)V.tm=null;else return go('dashboard');render()}
+function vSet(){const admin=isAdmin();
+ const need=['org','team','dev','billing','channels'].includes(V.set)&&!admin;
+ const body=need?`<div class="card empty"><b>Only an admin can see this</b>Please ask the account owner.</div>`:({profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
+ const sub=V.set==='security'&&V.sec?({pw:'Reset password',forgot:'Forgot password',email:'Email address',devices:'Active sessions and devices'})[V.sec]:V.set==='team'&&V.tm!=null&&S.team[V.tm]?mName(S.team[V.tm]):V.set==='team'&&V.tm===-1?mName({email:S.user.email,name:S.user.name}):'';
+ const ttl=sub||({profile:'Personal Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Team',dev:'Developers'})[V.set]||'Settings';
+ return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="setBack()">${icon('back')||'←'}</button><h1>${esc(ttl)}</h1></div>
+ <div style="max-width:${V.set==='billing'?'none':'760px'}">${body}</div>`}
+
+/* ============ security ============ */
+function sSec(){const t=V.sec;if(t==='pw')return secPw();if(t==='forgot')return secForgot();if(t==='email')return secEmail();if(t==='devices')return secDev();
+ const team=isTeamPlan(),row=(l,sub,k)=>`<button class="srow" onclick="secGo('${k}')"><div><b>${l}</b><div class="xs mute">${sub}</div></div><span>›</span></button>`;
+ return`<div class="card" style="padding:4px 16px">${row('Reset password','Change the password you log in with','pw')}${team?'':row('Add or change email','See and change the email on your account','email')}${row('Active sessions and devices','See where you are logged in','devices')}</div>
+ ${team&&isAdmin()?wsSec():''}
+ <div class="card" style="margin-top:14px"><div class="btnrow"><button class="btn bk" onclick="signOut()">Log out</button><button class="btn bk red" onclick="delStart()">Delete account</button></div></div>`}
+function secGo(k){V.sec=k;V.em=0;V.sf={step:1,email:'',from:null};if(k==='devices'){V.dsel=false;V.dpick=new Set();devLoad()}render()}
+function secPw(){return`<div class="card"><h2 style="margin-bottom:12px">Reset password</h2>
+ <div class="field"><label for="pw0">Current password</label><input id="pw0" type="password" autocomplete="current-password"><a href="#" class="xs lnk" onclick="event.preventDefault();secForgotGo('pw')">Forgot password?</a></div>
+ <div class="field"><label for="pw1">New password</label><input id="pw1" type="password" autocomplete="new-password"><span class="xs mute">${PWHELP}</span></div>
+ <div class="field"><label for="pw2">Confirm password</label><input id="pw2" type="password" autocomplete="new-password"></div>
+ <div id="pw-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" onclick="changePw()">Update password</button></div>`}
+function secForgotGo(from){closeModal();V.set='security';V.sec='forgot';V.sf={step:1,email:'',from};render()}
+function secForgot(){const f=V.sf||(V.sf={step:1,email:''});
+ const err='<div id="sf-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div>';
+ if(f.step===1)return`<form class="card" novalidate onsubmit="return sfSend(event)"><h2 style="margin-bottom:4px">Forgot password</h2><p class="sm mute" style="margin-bottom:12px">Enter the email address linked to your account. We will send you a code.</p><div class="field"><label for="sf-e">Email address</label><input id="sf-e" type="email" autocomplete="off" value=""></div>${err}<button class="btn pri" id="sf-b">Send code</button></form>`;
+ if(f.step===2)return`<form class="card" novalidate onsubmit="return sfVerify(event)"><h2 style="margin-bottom:4px">Check your email</h2><p class="sm mute" style="margin-bottom:12px">We sent a code to ${esc(maskEmail(f.email))}. Enter it below.</p><div class="field"><label for="sf-o">Code</label><input id="sf-o" inputmode="numeric" autocomplete="one-time-code"></div>${err}<button class="btn pri" id="sf-b">Continue</button></form>`;
+ return`<form class="card" novalidate onsubmit="return sfChange(event)"><h2 style="margin-bottom:12px">Choose a new password</h2><div class="field"><label for="sf-p1">New password</label><input id="sf-p1" type="password" autocomplete="new-password"><span class="xs mute">${PWHELP}</span></div><div class="field"><label for="sf-p2">Confirm password</label><input id="sf-p2" type="password" autocomplete="new-password"></div>${err}<button class="btn pri" id="sf-b">Update password</button></form>`}
+async function sfSend(e){e.preventDefault();const em=$('#sf-e').value.trim(),er=$('#sf-err'),b=$('#sf-b');
+ if(vEmail(em)){er.textContent=vEmail(em);return false}
+ if(em.toLowerCase()!==String(S.user.email).toLowerCase()){er.textContent='Wrong email address or no account found';return false}
+ b.disabled=true;try{await gotrue('/recover',{body:{email:em}});V.sf.email=em;V.sf.step=2;render()}catch(x){er.textContent=authMsg(x);b.disabled=false}return false}
+async function sfVerify(e){e.preventDefault();const t=$('#sf-o').value.replace(/\s/g,''),er=$('#sf-err'),b=$('#sf-b');
+ if(t.length<4){er.textContent='Please enter the code from your email.';return false}b.disabled=true;
+ try{const j=await gotrue('/verify',{body:{type:'recovery',email:V.sf.email,token:t}});V.sf.tok=j.access_token;V.sf.step=3;render()}catch(x){er.textContent='That code is wrong or has expired. Please try again.';b.disabled=false}return false}
+async function sfChange(e){e.preventDefault();const p1=$('#sf-p1').value,p2=$('#sf-p2').value,er=$('#sf-err'),b=$('#sf-b');
+ if(vPass(p1)){er.textContent=vPass(p1);return false}if(p1!==p2){er.textContent='The two passwords do not match.';return false}b.disabled=true;
+ try{await gotrue('/user',{method:'PUT',token:V.sf.tok,body:{password:p1}});V.sec=null;V.sf=null;toast('Password changed');render()}catch(x){er.textContent=authMsg(x);b.disabled=false}return false}
+function secEmail(){const st=V.em||0,err='<div id="em-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div>';
+ if(st===0){const al=(S.settings.alertEmails||[]).filter(x=>x&&x.toLowerCase()!==String(S.user.email).toLowerCase());
+  return`<div class="card"><h2 style="margin-bottom:8px">Emails on your account</h2><div class="list"><div class="li"><div style="min-width:0"><div style="font-weight:600;word-break:break-all">${esc(S.user.email)}</div><div class="xs mute">Your log in email</div></div></div>${al.map(x=>`<div class="li"><div style="min-width:0"><div style="font-weight:600;word-break:break-all">${esc(x)}</div><div class="xs mute">Gets your alerts</div></div></div>`).join('')}</div><button class="btn pri" style="margin-top:14px" onclick="V.em=1;render()">Change Email Address</button></div>`}
+ if(st===1)return`<form class="card" novalidate onsubmit="return emCheck(event)"><h2 style="margin-bottom:4px">Enter your password</h2><p class="sm mute" style="margin-bottom:12px">To change your email, first confirm it is you.</p><div class="field"><label for="em-pw">Current password</label><input id="em-pw" type="password" autocomplete="current-password"><a href="#" class="xs lnk" onclick="event.preventDefault();secForgotGo('email')">Forgot password?</a></div>${err}<button class="btn pri" id="em-b">Continue</button></form>`;
+ return`<form class="card" novalidate onsubmit="return emSave(event)"><h2 style="margin-bottom:12px">New email address</h2><div class="field"><label for="em-n">New email address</label><input id="em-n" type="email" autocomplete="off"></div>${err}<button class="btn pri" id="em-b">Update Email</button></form>`}
+async function emCheck(e){e.preventDefault();const pw=$('#em-pw').value,er=$('#em-err'),b=$('#em-b');if(!pw){er.textContent='Please enter your password.';return false}b.disabled=true;
+ try{await gotrue('/token?grant_type=password',{body:{email:S.user.email,password:pw}});V.em=2;render()}catch(x){er.textContent=x.code==='invalid_credentials'?"That isn't your password.":authMsg(x);b.disabled=false}return false}
+async function emSave(e){e.preventDefault();const n=$('#em-n').value.trim().toLowerCase(),er=$('#em-err'),b=$('#em-b');
+ if(vEmail(n)){er.textContent=vEmail(n);return false}if(n===String(S.user.email).toLowerCase()){er.textContent='That is already your email.';return false}b.disabled=true;
+ try{await gotrue('/user',{method:'PUT',auth:true,body:{email:n}});V.em=0;V.sec=null;toast('We sent a confirmation link to '+n+'. Tap it to finish.');render()}catch(x){er.textContent=authMsg(x);b.disabled=false}return false}
+/* devices */
+function devInfo(){const ua=navigator.userAgent||'';const os=/Android/.test(ua)?'Android':/iPhone|iPad|iPod/.test(ua)?'iOS':/Windows/.test(ua)?'Windows':/Mac OS X/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'Unknown';
+ const kind=/iPad|Tablet/.test(ua)?'Tablet':/Mobi|Android|iPhone/.test(ua)?'Phone':'Computer';
+ const browser=/Edg\//.test(ua)?'Edge':/OPR\//.test(ua)?'Opera':/SamsungBrowser/.test(ua)?'Samsung Internet':/Firefox\//.test(ua)?'Firefox':/Chrome\//.test(ua)?'Chrome':/Safari\//.test(ua)?'Safari':'Browser';
+ let z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+ const place=z?z.split('/').pop().replace(/_/g,' ')+(z.includes('/')?', '+z.split('/')[0].replace(/_/g,' '):''):'Unknown';return{kind,os,browser,place}}
+function devId(){let i='';try{i=localStorage.getItem('mf_dev')||''}catch(e){}if(!i){i=(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)}));try{localStorage.setItem('mf_dev',i)}catch(e){}}return i}
+async function devHook(){const fresh=window._freshLogin;window._freshLogin=0;
+ try{if(fresh){api('rpc/cancel_deletion',{method:'POST',body:{}}).then(r=>{if(r===true)toast('Welcome back. Your account deletion was cancelled.')}).catch(()=>{});
+   await api('devices?on_conflict=id',{method:'POST',body:{id:devId(),...devInfo(),last_seen:new Date().toISOString(),revoked:false},prefer:'resolution=merge-duplicates,return=minimal'})}
+  else await devCheck();
+  const ws=S.settings.ws,last=+(localStorage.getItem('mf_last')||0);if(!fresh&&isTeamPlan()&&ws&&ws.timeout&&last&&Date.now()-last>ws.timeout*DAY){S.settings.ws=ws;signOut('You were logged out because you were inactive for '+ws.timeout+' days.');return}
+ }catch(e){}
+ try{localStorage.setItem('mf_last',String(Date.now()))}catch(e){}}
+async function devCheck(){if(!S||!SESS)return;try{const r=await api('devices?id=eq.'+devId()+'&select=revoked');
+  if(r&&r[0]&&r[0].revoked){signOut('You were logged out from this device.');return}
+  if(r&&!r.length)await api('devices?on_conflict=id',{method:'POST',body:{id:devId(),...devInfo(),last_seen:new Date().toISOString()},prefer:'resolution=merge-duplicates,return=minimal'});
+  else api('devices?id=eq.'+devId(),{method:'PATCH',body:{last_seen:new Date().toISOString()},prefer:'return=minimal'}).catch(()=>{});
+  localStorage.setItem('mf_last',String(Date.now()))}catch(e){}}
+setInterval(devCheck,60000);
+async function devLoad(){V.devs=null;V.derr='';try{V.devs=await api('devices?select=*&revoked=eq.false&order=last_seen.desc')}catch(e){V.derr=e.net?'We could not reach Manifest.':'The devices list is not switched on yet.'}if(V.sec==='devices')render()}
+function secDev(){const d=V.devs;if(d===undefined||d===null)return V.derr?`<div class="card empty"><b>${esc(V.derr)}</b></div>`:'<div class="card empty"><b>Loading…</b></div>';
+ const me=devId(),pick=V.dpick||(V.dpick=new Set()),n=pick.size;
+ const rows=d.map(x=>`<div class="li dvrow" ${V.dsel?`onclick="devPick('${x.id}')"`:''}>${V.dsel?`<span class="ck ${pick.has(x.id)?'on':''}">${pick.has(x.id)?'✓':''}</span>`:''}<div style="flex:1;min-width:0"><div style="font-weight:600">${esc(x.kind)} · ${esc(x.os)} ${x.id===me?'<span class="badge b-blue">This device</span>':''}</div><div class="xs mute">${esc(x.browser)} · ${esc(x.place)} (approximate)</div><div class="xs mute">${x.id===me?'Active now':'Last active '+ago(Date.parse(x.last_seen))}</div></div></div>`).join('');
+ return`<div class="card">${d.length?`<div class="list">${rows}</div>`:'<div class="empty"><b>No devices yet</b>Devices appear here the next time you log in.</div>'}
+ <div style="display:flex;justify-content:center;margin-top:16px">${V.dsel&&n?`<button class="btn bk red" onclick="devAsk()">Log out</button>`:`<button class="btn bk red" onclick="V.dsel=true;render()">Remove Device</button>`}</div>
+ <p class="xs mute" style="margin-top:10px;text-align:center">A device is logged out the next time it opens Manifest or is online.</p></div>`}
+function devPick(id){const p=V.dpick;p.has(id)?p.delete(id):p.add(id);render()}
+function devAsk(){dkModal(`<h2>Are you sure?</h2><p style="margin:8px 0 18px;opacity:.8">You will no longer be logged in on the selected devices</p><div class="mbtns"><button class="btn bk" onclick="closeModal()">Cancel</button><button class="btn bk red" onclick="devRevoke()">Log out</button></div>`)}
+async function devRevoke(){const ids=[...V.dpick],me=devId();closeModal();
+ try{await api('devices?id=in.('+ids.join(',')+')',{method:'PATCH',body:{revoked:true},prefer:'return=minimal'});V.dsel=false;V.dpick=new Set();if(ids.includes(me)){signOut('You were logged out from this device.');return}toast('Logged out on '+ids.length+' device'+(ids.length>1?'s':''));devLoad()}
+ catch(e){toast('We could not log those devices out. Please try again.')}}
+/* workspace security (admins on team plans) */
+function wsSec(){const ws=S.settings.ws||(S.settings.ws={on:false,domains:[],timeout:30,allow:[]});
+ return`<div class="card" style="margin-top:14px"><h2 style="margin-bottom:4px">Workspace Security</h2><p class="sm mute" style="margin-bottom:14px">Only admins can see this.</p>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>Allowed email domains</b><div class="xs mute">Block invites to any other email domain. Off by default, so you can invite brokers and agents who use Gmail.</div></div><button class="sw ${ws.on?'on':''}" role="switch" aria-checked="${!!ws.on}" aria-label="Restrict email domains" onclick="wsSet('on',${!ws.on})"><i></i></button></div>
+ <div class="tags" style="margin-top:10px">${ws.domains.map((d,i)=>`<span class="tag">${esc(d)}<button aria-label="Remove ${esc(d)}" onclick="wsDel(${i})">×</button></span>`).join('')}</div>
+ <div style="display:flex;gap:8px;margin-top:8px"><input id="ws-d" type="text" placeholder="@acmelogistics.com" autocomplete="off" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();wsAdd()}"><button class="btn" onclick="wsAdd()">Add</button></div><div id="ws-err" class="xs" style="color:var(--red-tx);min-height:16px"></div>
+ <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px"><label for="ws-t"><b>Session timeout</b></label><div class="xs mute" style="margin-bottom:6px">Logs out people who have not used Manifest for this long.</div><select id="ws-t" onchange="wsSet('timeout',+this.value)">${[7,14,30].map(n=>`<option value="${n}" ${ws.timeout===n?'selected':''}>${n} days</option>`).join('')}</select></div></div>`}
+function wsSet(k,v){const ws=S.settings.ws;ws[k]=v;save();render()}
+function wsDel(i){S.settings.ws.domains.splice(i,1);save();render()}
+function wsAdd(){let d=$('#ws-d').value.trim().toLowerCase().replace(/^@/,'');const er=$('#ws-err');if(!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d)){er.textContent='That domain does not look right. Example: @acmelogistics.com';return}
+ const ws=S.settings.ws;if(!ws.domains.includes('@'+d))ws.domains.push('@'+d);save();render()}
+/* delete account */
+const DELWHY=['Switched to another logistics provider or tracking software','Tracking updates are inaccurate or delayed','Too expensive / no longer fits our budget','Only needed it for one-time or seasonal shipment','Our business closed, merged, or paused shipping','Consolidating into another company account','Privacy or security concerns','Other (please specify)'];
+function delStart(){V.dwhy='';dkModal(`<h2>Why are you deleting your account?</h2><p class="sm" style="opacity:.7;margin:4px 0 12px">You can skip this.</p><div class="dwl">${DELWHY.map((w,i)=>`<label class="dw"><input type="radio" name="dw" value="${i}" onchange="delWhy(${i})"><span>${w}</span></label>`).join('')}</div><input id="dw-o" type="text" placeholder="Tell us more" style="display:none;margin-top:8px" maxlength="150" oninput="V.dother=this.value"><div class="mbtns" style="margin-top:16px"><button class="btn bk" onclick="closeModal()">Cancel</button><button class="btn bk" onclick="delPw()">Continue</button></div>`)}
+function delWhy(i){V.dwhy=i===DELWHY.length-1?'':DELWHY[i];V.dother='';V.dwo=i===DELWHY.length-1;$('#dw-o').style.display=V.dwo?'block':'none'}
+function delReason(){return V.dwo?(V.dother||'').trim():(V.dwhy||'')}
+function delPw(){V.dr=delReason();dkModal(`<h2>Enter your password</h2><p class="sm" style="opacity:.7;margin:4px 0 12px">Enter your account password to continue.</p><div class="field"><input id="dl-pw" type="password" autocomplete="current-password" placeholder="Account password"><a href="#" class="xs lnk" onclick="event.preventDefault();secForgotGo(null)">Forgot password?</a></div><div id="dl-err" class="sm" style="color:#F87171;min-height:18px" role="alert"></div><div class="mbtns"><button class="btn bk" onclick="closeModal()">Cancel</button><button class="btn bk" id="dl-b" onclick="delCheck()">Continue</button></div>`)}
+async function delCheck(){const pw=$('#dl-pw').value,er=$('#dl-err'),b=$('#dl-b');if(!pw){er.textContent='Please enter your password.';return}b.disabled=true;
+ try{await gotrue('/token?grant_type=password',{body:{email:S.user.email,password:pw}})}catch(x){er.textContent=x.code==='invalid_credentials'?"That isn't your password.":authMsg(x);b.disabled=false;return}
+ V.ddate=Date.now()+30*DAY;dkModal(`<h2>Account Scheduled for Deletion</h2><p style="margin:8px 0 18px;opacity:.8">Your account will be permanently deleted after 30 days on ${fdate(V.ddate)}. Before 30 days you can log in to your account.</p><div class="mbtns"><button class="btn bk" onclick="closeModal()">Cancel</button><button class="btn bk" id="dl-c" onclick="delDo()">Continue</button></div>`)}
+async function delDo(){const b=$('#dl-c');b.disabled=true;
+ try{const d=await api('rpc/request_deletion',{method:'POST',body:{r:V.dr||'',n:S.user.name||''}});closeModal();await signOut('Your account is scheduled for deletion on '+fdate(Date.parse(d)||V.ddate)+'. Log in before then to cancel.')}
+ catch(e){closeModal();toast(e.net?'We could not reach Manifest. Please try again.':'Account deletion is not switched on yet. Please contact support.')}}
+
+/* ============ personal profile ============ */
+function sProfile(){const u=S.user,team=isTeamPlan(),tz=tzO();
+ return`<div class="card" style="text-align:center"><button class="avbtn" onclick="photoView()" aria-label="View your picture">${av(96,'bigav')}</button><div style="font-weight:650;font-size:17px;margin-top:10px">${esc(u.name||'Your name')}</div>
+ <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap"><label class="btn sm" style="cursor:pointer">Upload photo<input type="file" accept="image/*" hidden onchange="setPhoto(this)"></label><label class="btn sm" style="cursor:pointer">Take photo<input type="file" accept="image/*" capture="user" hidden onchange="setPhoto(this)"></label>${u.photo?'<button class="btn sm" onclick="rmPhoto()">Remove</button>':''}</div></div>
+ <form class="card" novalidate style="margin-top:14px" onsubmit="return saveProfile(event)"><h2 style="margin-bottom:14px">Your details</h2>
+ <div class="field"><label for="p-name">Full name</label><input id="p-name" type="text" autocomplete="name" value="${esc(u.name)}"><span class="xs mute">This name shows in activity and notifications, like "Updated by ${esc((u.name||'Lara').split(' ')[0])}".</span></div>
+ <div class="field"><label for="p-user">Username</label><input id="p-user" type="text" autocomplete="username" value="${esc(u.username)}"><span class="xs mute">Letters, numbers, dots and underscores. 3 to 20 characters.</span></div>
+ <div class="field"><label for="p-email">Email</label><input id="p-email" type="text" value="${esc(maskEmail(u.email))}" disabled><span class="xs mute">${isTeamPlan()?'Your log in email.':'To see or change your full email, go to Security.'}</span></div>
+ <div class="field"><label for="p-phone">Personal WhatsApp or phone number (optional)</label><input id="p-phone" type="tel" autocomplete="tel" value="${esc(u.phone)}" placeholder="+92 300 1234567"><span class="xs mute">For urgent alerts sent straight to your own phone.</span></div>
+ ${team?`<div class="field"><label for="p-title">Job title (optional)</label><input id="p-title" type="text" maxlength="60" value="${esc(u.title||'')}" placeholder="Logistics Manager"></div>`:''}
+ <div class="field"><label for="p-tz">Your timezone</label><select id="p-tz">${bkTzList().map(([z,n])=>`<option value="${z}" ${z===tz[1]?'selected':''}>${esc(n)} (${tzOff([z,z])})</option>`).join('')}</select><span class="xs mute">All times in your dashboard match this clock.</span></div>
+ <div id="p-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri">Save changes</button></form>`}
+function photoView(){openModal(`<div style="display:flex;justify-content:flex-end"><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div style="display:grid;place-items:center;margin:10px 0 16px">${S.user.photo?`<img src="${S.user.photo}" alt="Your picture" style="width:min(80vw,320px);height:min(80vw,320px);border-radius:50%;object-fit:cover">`:av(180,'bigav')}</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><label class="btn pri" style="cursor:pointer">Change picture<input type="file" accept="image/*" hidden onchange="closeModal();setPhoto(this)"></label><label class="btn" style="cursor:pointer">Take photo<input type="file" accept="image/*" capture="user" hidden onchange="closeModal();setPhoto(this)"></label></div>`)}
+function saveProfile(e){e.preventDefault();const g=i=>($('#p-'+i)?$('#p-'+i).value.trim():''),er=$('#p-err');er.textContent='';
+ const r=[fieldErr('p-name',vName(g('name'),'your name')),fieldErr('p-user',/^[a-z0-9_.]{3,20}$/i.test(g('user'))?'':'Usernames use 3 to 20 letters, numbers, dots or underscores.'),fieldErr('p-phone',vPhone(g('phone')))];
+ if(r.includes(false)){er.textContent='Please fix the highlighted fields.';return false}
+ Object.assign(S.user,{name:g('name'),username:g('user').toLowerCase(),phone:g('phone'),title:g('title')||'',tzId:$('#p-tz').value});save();toast('Your details are saved');render();return false}
+/* ============ business profile ============ */
+function sOrg(){const s=S.settings,ty=s.shipTypes||s.mode||'import',tz=s.tzId||tzO()[1];
+ const tys=[['import','Sea Imports'],['local','Local Deliveries'],['both','Both']];
+ return`<form class="card" novalidate onsubmit="return saveBiz(event)"><h2 style="margin-bottom:14px">About your business</h2>
+ <div class="field"><label>Company logo (optional)</label><div style="display:flex;gap:12px;align-items:center"><div class="logobox">${s.logo?`<img src="${s.logo}" alt="Company logo">`:'<span class="xs mute">No logo</span>'}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn sm" style="cursor:pointer">${s.logo?'Change logo':'Upload logo'}<input type="file" accept="image/*" hidden onchange="setLogo(this)"></label>${s.logo?'<button type="button" class="btn sm" onclick="S.settings.logo=\'\';save();render()">Remove</button>':''}</div></div><span class="xs mute">Shows on your invoices and at the top of your customer tracking page.</span></div>
+ <div class="field"><label for="b-biz">Business name</label><input id="b-biz" type="text" autocomplete="organization" value="${esc(s.biz)}"><span class="xs mute">We put this in every check-in, so transporters know who is asking.</span></div>
+ <div class="row2"><div class="field"><label for="b-ctry">Country</label><select id="b-ctry" onchange="bizCountry(this.value)"><option value="">Choose a country</option>${CTRY.map(c=>`<option value="${c[1]}" ${c[1]===s.country?'selected':''}>${esc(c[0])}</option>`).join('')}</select></div>
+ <div class="field"><label for="b-tz">Default timezone</label><select id="b-tz">${bkTzList().map(([z,n])=>`<option value="${z}" ${z===tz?'selected':''}>${esc(n)} (${tzOff([z,z])})</option>`).join('')}</select></div></div>
+ <div class="row2"><div class="field"><label for="s-cur">Display currency</label>${combo('s-cur','cur',curOf(),'cbSetCur')}</div><div class="field"><label for="s-lang">Default language for transporters</label>${combo('s-lang','lang',s.lang,'cbSetLang')}</div></div>
+ <div class="field"><label>Primary shipment type</label><div class="seg" id="b-type">${tys.map(([k,l])=>`<button type="button" data-k="${k}" class="${ty===k?'on':''}" onclick="pickMode(this)">${l}</button>`).join('')}</div></div>
+ <div class="field"><label for="b-alert">Operations alert email</label><input id="b-alert" type="text" autocomplete="off" value="${esc((s.alertEmails||[]).join(', '))}" placeholder="ops@company.com"><span class="xs mute">Gets instant alerts when a container is held at customs or a driver reports a problem. Use commas for more than one.</span></div>
+ <div class="field"><label for="b-wa">Operations alert WhatsApp number</label><input id="b-wa" type="tel" value="${esc(s.wa||'')}" placeholder="+92 300 1234567"></div>
+ <div class="field"><label for="b-tax">Tax number (optional)</label><input id="b-tax" type="text" value="${esc(s.taxId||'')}"></div>
+ <div id="b-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri">Save changes</button></form>
+ <div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Appearance</h2><div class="seg">${['light','dark','system'].map(t=>`<button class="${s.theme===t?'on':''}" onclick="setv('theme','${t}');render()">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div></div>
+ <h2 style="margin:22px 0 10px">Messages to your transporters</h2>${sChan()}`}
+function bizCountry(iso){const c=CTRY.find(x=>x[1]===iso);if(c&&$('#b-tz'))$('#b-tz').value=c[3]}
+function saveBiz(e){e.preventDefault();const er=$('#b-err');er.textContent='';
+ const biz=$('#b-biz').value.trim(),iso=$('#b-ctry').value,tz=$('#b-tz').value,al=$('#b-alert').value.split(/[,;\s]+/).map(x=>x.trim()).filter(Boolean),wa=$('#b-wa').value.trim(),ty=document.querySelector('#b-type .on').dataset.k;
+ const r=[fieldErr('b-biz',biz?'':'Please add your business name.'),fieldErr('b-ctry',iso?'':'Please choose your country.'),fieldErr('b-alert',al.length&&al.every(x=>!vEmail(x))?'':'Please add a valid alert email.'),fieldErr('b-wa',wa?vPhone(wa):'Please add a WhatsApp number for alerts.')];
+ if(r.includes(false)){er.textContent='Please fix the highlighted fields.';return false}
+ let t=TZS.find(x=>x[1]===tz);if(!t){const c=CTRY.find(x=>x[3]===tz)||TZX.find(x=>x[0]===tz);t=[(c&&(c[4]||c[1]))||tz,tz,(c&&(c[4]||c[1]))||tz];TZS.push(t)}
+ Object.assign(S.settings,{biz,country:iso,tz:t[0],tzId:tz,shipTypes:ty,mode:ty==='local'?'local':'import',alertEmails:al,wa,taxId:$('#b-tax').value.trim()});
+ save();toast('Business details saved');render();return false}
+function setLogo(inp){const f=inp.files[0];if(!f)return;if(!/^image\//.test(f.type)){toast('Please choose a picture');return}
+ const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,320/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.settings.logo=c.toDataURL('image/png');save();toast('Logo updated');render()};im.onerror=()=>toast('We could not read that picture');im.src=r.result};r.readAsDataURL(f)}
+/* ============ team ============ */
+ROLES.admin='Admin';
+const activeOf=em=>active().filter(s=>!['delivered','cancelled'].includes(s.status)&&asg(s).toLowerCase()===String(em).toLowerCase());
+function sTeam(){const P=plan(),used=1+S.team.length;
+ if(V.tm!=null)return tmDetail(V.tm);
+ const card=(m,i)=>`<button class="srow" onclick="V.tm=${i};render()"><div><b>${esc(mName(m))}${m.suspended?' <span class="badge b-amber">Suspended</span>':''}</b><div class="xs mute">${esc(ROLES[m.role]||m.role)}</div></div><span>›</span></button>`;
+ return`<div class="card" style="padding:4px 16px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0 4px"><h2>Your team</h2><span class="sm mute">${used} of ${P.seats>100?'unlimited':P.seats} people</span></div>
+ ${card({email:S.user.email,name:S.user.name+' (you)',role:'owner'},-1)}${S.team.map(card).join('')}</div>
+ <div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Invite someone</h2>
+ ${used>=P.seats?`<p class="sm mute" style="margin-bottom:10px">${P.seats===1?'Starter is for one person.':'All the spots on your team are taken.'}</p>${lockNote(P.seats===1?'Growth':'next')}`:`<div class="field"><label for="iv-e">Email</label><input id="iv-e" type="email" placeholder="colleague@company.com"></div><div class="field"><label for="iv-r">Role</label><select id="iv-r"><option value="operator">Can add and edit</option><option value="admin">Admin</option><option value="viewer">View only</option></select></div><div id="iv-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" onclick="invite()">Send invite</button>`}</div>
+ <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">See what they'll see</h3><p class="sm mute" style="margin-bottom:10px">Try the app the way a team member would see it.</p><div class="seg">${['owner','admin','operator','viewer'].map(r=>`<button class="${curRole()===r?'on':''}" onclick="S.me='${r}';toast('Viewing as ${ROLES[r]}');if(!isAdmin()){V.set='profile'}render()">${ROLES[r]}</button>`).join('')}</div></div>`}
+function tmDetail(i){const me=i===-1,m=me?{email:S.user.email,name:S.user.name,title:S.user.title,phone:S.user.phone,role:'owner',joined:S.user.joined,last:Date.now()}:S.team[i];if(!m)return'<div class="card empty"><b>Not found</b></div>';
+ const mine=activeOf(m.email),late=mine.filter(s=>s.status==='delayed').length;
+ const acts=[];S.shipments.forEach(s=>(s.tl||[]).forEach(e=>{if(e.by&&e.by.toLowerCase()===m.email.toLowerCase())acts.push({ref:s.ref,ts:e.ts,text:e.text})}));acts.sort((a,b)=>b.ts-a.ts);
+ const kv=(k,v)=>`<div class="li"><div class="sm mute">${k}</div><div style="font-weight:600;text-align:right;word-break:break-word">${v||'<span class="mute" style="font-weight:400">Not added</span>'}</div></div>`;
+ return`<div class="card"><div class="list">${kv('Full name',esc(mName(m)))}${kv('Job title',esc(m.title))}${kv('Email',esc(m.email))}${kv('Phone',esc(m.phone))}${kv('Role',esc(ROLES[m.role]||m.role))}${kv('Join date',m.joined?fdate(m.joined):(me?'':'Invited, not joined yet'))}${kv('Last active',m.last?ago(m.last):'Not active yet')}</div></div>
+ <div class="card" style="margin-top:14px"><h3>Workload</h3><p class="sm" style="margin:6px 0 10px">Handling <b>${mine.length}</b> active shipment${mine.length===1?'':'s'}, <b>${late}</b> delayed</p><button class="btn" onclick="tmView('${esc(m.email)}')">View their shipments</button></div>
+ ${me?'':`<div class="card" style="margin-top:14px"><h3 style="margin-bottom:10px">Access</h3><div class="field"><label for="tm-r">Role</label><select id="tm-r" onchange="setRole(${i},this.value)">${['admin','operator','viewer'].map(r=>`<option value="${r}" ${m.role===r?'selected':''}>${r==='viewer'?'View only':ROLES[r]}</option>`).join('')}</select></div><div class="btnrow"><button class="btn" onclick="tmSuspend(${i})">${m.suspended?'Reactivate login':'Suspend login'}</button><button class="btn dng" onclick="tmRemove(${i})">Remove from team</button></div><p class="xs mute" style="margin-top:8px">Suspending keeps their history. Nothing is deleted.</p></div>`}
+ <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">Activity</h3>${acts.length?`<div class="list">${acts.slice(0,40).map(a=>`<div class="li"><div style="min-width:0"><div class="sm">${esc(a.text)}</div><div class="xs mute">${esc(a.ref)} · ${fts(a.ts)}</div></div></div>`).join('')}</div>`:'<div class="empty" style="padding:14px"><b>No activity yet</b>Their actions on shipments will show up here.</div>'}</div>`}
+function tmView(em){V.asg=em;go('shipments')}
+function setRole(i,r){S.team[i].role=r;save();toast('Role updated');render()}
+function tmSuspend(i){const m=S.team[i];m.suspended=!m.suspended;save();toast(m.suspended?mName(m)+' is suspended':mName(m)+' is active again');render()}
+function tmRemove(i){const m=S.team[i],mine=activeOf(m.email);
+ if(!mine.length){openModal(`<h2>Remove ${esc(mName(m))}?</h2><p class="mute" style="margin:8px 0 14px">They lose access. Their history stays in your audit trail.</p><div class="mbtns"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn dng" onclick="tmDo(${i},[])">Remove</button></div>`);return}
+ const others=[{email:S.user.email,name:S.user.name+' (you)'},...S.team.filter((x,j)=>j!==i&&!x.suspended).map(x=>({email:x.email,name:mName(x)}))];
+ openModal(`<h2>Reassign ${esc(mName(m))}'s ${mine.length} active shipment${mine.length===1?'':'s'}</h2><p class="mute" style="margin:8px 0 10px">Choose who takes them over, so no container goes unmonitored. Pick more than one to share them out.</p><div class="dwl">${others.map((o,k)=>`<label class="dw lt"><input type="checkbox" class="tm-o" value="${esc(o.email)}" ${k===0?'checked':''}><span>${esc(o.name)}</span></label>`).join('')}</div><div id="tm-err" class="sm" style="color:var(--red-tx);min-height:18px"></div><div class="mbtns"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn dng" onclick="tmReassign(${i})">Reassign and remove</button></div>`)}
+function tmReassign(i){const to=[...document.querySelectorAll('.tm-o:checked')].map(x=>x.value);if(!to.length){$('#tm-err').textContent='Please choose at least one person.';return}tmDo(i,to)}
+function tmDo(i,to){const m=S.team[i];if(to.length)activeOf(m.email).forEach((s,k)=>{s.assignee=to[k%to.length];s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Reassigned from '+mName(m)+' to '+s.assignee+' by '+S.user.name})});
+ S.team.splice(i,1);V.tm=null;save();closeModal();toast(mName(m)+' was removed');render()}
+function invite(){const e=$('#iv-e').value.trim().toLowerCase(),r=$('#iv-r').value,er=$('#iv-err');
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){er.textContent="That email doesn't look right. Please check it.";return}
+ if(e===S.user.email.toLowerCase()||S.team.some(m=>m.email===e)){er.textContent='That person is already on your team.';return}
+ const ws=S.settings.ws;if(ws&&ws.on&&ws.domains.length&&!ws.domains.includes('@'+e.split('@')[1])&&!(ws.allow||[]).includes(e)){er.innerHTML=esc('Only '+ws.domains.join(' or ')+' email addresses can be invited to this workplace.')+` <a href="#" class="lnk" onclick="event.preventDefault();wsAllow('${esc(e)}')">Allow this person anyway</a>`;return}
+ S.team.push({email:e,role:r,joined:null,invited:Date.now()});save();toast('Invite sent to '+e);render()}
+function wsAllow(e){const ws=S.settings.ws;(ws.allow=ws.allow||[]).push(e);save();invite()}
+
 /* ============ help and support ============ */
 const SLA={Starter:'Email support, reply within 48 hours',Growth:'Email support, reply within 24 hours',['Pro / Fleet']:'Priority help, reply within 8 hours',Enterprise:'Your own account manager'};
 const ARTICLES=[
@@ -1413,7 +1568,7 @@ async function loadCloud(){const uid=SESS.user.id;
  const b=p.settings||{};
  S={user:{name:'',username:'',phone:'',photo:'',...(b.user||{}),email:SESS.user.email},settings:{...defSettings(),...(b.settings||{}),biz:p.business_name||(b.settings&&b.settings.biz)||'',plan:p.plan||'starter'},team:b.team||[],tickets:b.tickets||[],invoices:b.invoices||[],sec:b.sec||{},integ:b.integ||{},notifSeen:b.notifSeen||0,me:'owner',health:'ok',dir:[],shipments:[],nextId:10};
  S.dir=tr.map(d=>({id:(d.data&&d.data.id)||('t'+ms2(d.created_at)),uid:d.id,kind:(d.data&&d.data.kind)||'transporter',name:d.name,email:d.email||'',phone:d.phone||'',lang:d.language||'English'}));
- const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll()}
+ const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll();setTimeout(devHook,0)}
 async function doPush(){if(!SESS||!S)return;const uid=SESS.user.id;
  S.dir.forEach(d=>{if(!d.uid)d.uid=uuid()});S.shipments.forEach(s=>{if(!s.uid)s.uid=uuid();if(!s.token)s.token=rtoken();if(!s.created)s.created=Date.now()});
  const pp=profPayload(),ps=JSON.stringify(pp);
@@ -1464,7 +1619,7 @@ async function signin(e){e.preventDefault();const er=$('#si-err'),btn=$('#si-btn
  try{
   if(!email.includes('@')){let em=null;try{em=await api('rpc/login_email',{method:'POST',body:{u:email}})}catch(x){er.textContent=x.net?'We could not reach Manifest. Please check your internet and try again.':'Logging in with a username is not switched on yet. Please use your email for now.';btn.disabled=false;btn.textContent='Log in';return false}
    if(!em){er.textContent='That username or password is not right. You can also log in with your email.';btn.disabled=false;btn.textContent='Log in';return false}email=em}
-const j=await gotrue('/token?grant_type=password',{body:{email,password:pw}});setSess(j);await loadCloud();enter()}
+const j=await gotrue('/token?grant_type=password',{body:{email,password:pw}});setSess(j);window._freshLogin=1;await loadCloud();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Log in';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
 async function signup(e){e.preventDefault();
@@ -1474,7 +1629,7 @@ async function signup(e){e.preventDefault();
  const email=$('#su-email').value.trim(),biz=$('#su-biz').value.trim(),name=$('#su-name').value.trim(),m=$('#su-mode .on').dataset.m;
  try{const j=await gotrue('/signup',{body:{email,password:$('#su-pw').value,data:{business:biz,name}}});
   if(!j.access_token){AUTH.mode='signin';showWelcome('Almost there. We sent a link to '+email+'. Open it to confirm your address, then sign in.');return false}
-  setSess(j);await loadCloud();S.user.name=name;S.user.username=uname(email);S.settings.biz=biz;S.settings.mode=m;save();enter()}
+  setSess(j);window._freshLogin=1;await loadCloud();S.user.name=name;S.user.username=uname(email);S.settings.biz=biz;S.settings.mode=m;save();enter()}
  catch(err){er.textContent=authMsg(err);btn.disabled=false;btn.textContent='Create account';if(SESS&&!S){SESS=null;sessSave()}}
  return false}
 function forgot(){AUTH.mode='forgot';AUTH.fp={step:1,email:''};showWelcome()}
@@ -1486,7 +1641,7 @@ function bkForgot(){const f=AUTH.fp||{step:1};
  <div class="bk-f"><label for="fp-o" class="sr">One-time code</label><input id="fp-o" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Enter the code"></div>
  <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Continue</button><button type="button" class="bk-ghost" onclick="fpSend()">Send a new code</button></form>${bkTail(false)}`;
  return`<form class="bk-card" novalidate onsubmit="return fpChange(event)"><h1>Choose a new password</h1><p class="bk-sub">1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</p>
- <div class="bk-f"><label for="fp-p1">New password</label><input id="fp-p1" type="password" autocomplete="new-password"></div>
+ <div class="bk-f"><label for="fp-p1">New password</label><input id="fp-p1" type="password" autocomplete="new-password"><span class="phint">${PWHELP}</span></div>
  <div class="bk-f"><label for="fp-p2">Confirm password</label><input id="fp-p2" type="password" autocomplete="new-password"></div>
  <div id="fp-err" class="bk-err" role="alert"></div><button class="bk-pri" id="fp-btn">Change password</button></form>${bkTail(false)}`}
 async function fpSend(e){if(e)e.preventDefault();const f=AUTH.fp;const em=(f.step===1?$('#fp-e').value:f.email).trim();const er=$('#fp-err'),btn=$('#fp-btn');
@@ -1505,12 +1660,12 @@ async function fpChange(e){e.preventDefault();const p1=$('#fp-p1').value,p2=$('#
  try{await gotrue('/user',{method:'PUT',token:AUTH.fp.tok,body:{password:p1}});AUTH.fp=null;AUTH.mode='signin';showWelcome('Your password is changed. Please log in.')}
  catch(x){er.textContent=authMsg(x);btn.disabled=false}return false}
 function showReset(msg){$('#app').classList.add('hide');bkOn();const w=$('#welcome');
- w.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><form class="card auth" novalidate onsubmit="return doReset(event)" style="width:100%;max-width:400px"><h1>Choose a new password</h1><p class="sm mute" style="margin-bottom:16px">Use 1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</p><div class="field"><label for="rs-pw">New password</label><input id="rs-pw" type="password" autocomplete="new-password"></div><div id="rs-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert">${esc(msg||'')}</div><button class="btn pri" style="width:100%">Save password</button></form></div>`}
+ w.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><form class="card auth" novalidate onsubmit="return doReset(event)" style="width:100%;max-width:400px"><h1>Choose a new password</h1><p class="sm mute" style="margin-bottom:16px">${PWHELP}</p><div class="field"><label for="rs-pw">New password</label><input id="rs-pw" type="password" autocomplete="new-password"><span class="phint">${PWHELP}</span></div><div id="rs-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert">${esc(msg||'')}</div><button class="btn pri" style="width:100%">Save password</button></form></div>`}
 async function doReset(e){e.preventDefault();const pw=$('#rs-pw').value,er=$('#rs-err');const v=vPass(pw);if(v){er.textContent=v;return false}
  try{await gotrue('/user',{method:'PUT',auth:true,body:{password:pw}});SESS=null;sessSave();AUTH.mode='signin';showWelcome('Your password is updated. Please sign in.')}
  catch(err){er.textContent=authMsg(err)}return false}
-async function signOut(){AUTH.w=null;AUTH.step=0;try{await flush()}catch(e){}try{await gotrue('/logout',{auth:true})}catch(e){}
- SESS=null;sessSave();S=null;PUSH.dirty=false;V={tab:'dashboard',filter:'all',q:'',sel:new Set(),selMode:false,open:null,hist:'archive',hq:'',set:'profile'};AUTH.mode='signin';showWelcome()}
+async function signOut(msg){AUTH.w=null;AUTH.step=0;try{await flush()}catch(e){}try{await gotrue('/logout',{auth:true})}catch(e){}
+ SESS=null;sessSave();S=null;PUSH.dirty=false;V={tab:'dashboard',filter:'all',q:'',sel:new Set(),selMode:false,open:null,hist:'archive',hq:'',set:'profile'};AUTH.mode='signin';showWelcome(typeof msg==='string'?msg:undefined)}
 async function signOutAll(){try{await flush();await gotrue('/logout?scope=global',{auth:true})}catch(e){}SESS=null;sessSave();S=null;AUTH.mode='signin';showWelcome('You were signed out of every device.')}
 function doDelete(){closeModal();
  api('rpc/delete_my_account',{method:'POST',body:{}}).then(()=>{SESS=null;sessSave();S=null;PUSH.dirty=false;V={tab:'dashboard',filter:'all',q:'',sel:new Set(),selMode:false,open:null,hist:'archive',hq:'',set:'profile'};AUTH.mode='signup';showWelcome('Your account and everything in it was deleted.')})
@@ -1524,7 +1679,7 @@ async function changePw(){const a=$('#pw0').value,b=$('#pw1').value,c=$('#pw2').
 /* ---- asking transporters (the sending happens on our server) ---- */
 function checkIn(id){if(blocked())return;const s=byId(id);if(!s)return;const d=tp(s);
  if(!d.email){toast('Please add an email for '+d.name+' first');return}
- s.nextNow=true;s.next=Date.now();s.tl.unshift({ts:Date.now(),type:'rep',text:'Update request queued by '+S.user.name});save();toast('Okay! We will ask '+d.name+' within about 15 minutes');render()}
+ s.nextNow=true;s.next=Date.now();s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Update request queued by '+S.user.name});save();toast('Okay! We will ask '+d.name+' within about 15 minutes');render()}
 function simReply(){}
 function ticket(subject,cat,pri,msg){S.tickets.unshift({id:Date.now(),subject,cat,pri,msg,files:[],ts:Date.now()});save();api('tickets',{method:'POST',body:{subject,category:cat,urgency:pri,body:msg},prefer:'return=minimal'}).catch(()=>{})}
 function planInterest(k){closeModal();ticket('Plan interest: '+PLANS[k].name,'Billing','Low','Wants to know when '+PLANS[k].name+' opens');toast('Thanks! We will email you when '+PLANS[k].name+' opens.')}

@@ -16,10 +16,41 @@ export function makeDb(url, key, f = globalThis.fetch) {
     post: (p, b, prefer = 'return=minimal') => call(p, { method: 'POST', body: b, prefer }),
     patch: (p, b) => call(p, { method: 'PATCH', body: b, prefer: 'return=minimal' }),
     user: id => call('users/' + id, {}, '/auth/v1/admin/'),
+    delUser: id => call('users/' + id, { method: 'DELETE' }, '/auth/v1/admin/'),
   };
 }
 
 const iso = ms => new Date(ms).toISOString();
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+export function deletionEmail({ name, reason, deleteAt, site }) {
+  const d = new Date(deleteAt);
+  const date = `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  const time = `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')} UTC`;
+  const why = reason ? `\n\nWhy this is happening: You requested this deletion because ${String(reason).replace(/[.\s]+$/, '')}.` : '';
+  const text = `Hi ${name || 'there'},\n\nWe're writing to let you know that your Manifest account is scheduled for permanent deletion on ${date} at ${time}.${why}\n\nWhat you need to know: Once deleted, your profile, settings, and data cannot be recovered.\n\nWant to keep your account? Simply log in to your account here: ${site}/app/?mode=signin before ${date} to cancel deletion.\n\nIf you did not request this deletion, please secure your account immediately by changing your password.\n\nBest regards,\nThe Manifest team`;
+  return { subject: `Account scheduled for deletion on ${date}`, text };
+}
+
+/** Emails people who asked to delete their account, and removes accounts whose 30 days are up. */
+export async function processDeletions({ db, sendMail, gmail, site, now, log = console.log }) {
+  const out = { emailed: 0, deleted: 0, errors: 0 };
+  let rows = [];
+  try { rows = await db.get('account_deletions?select=*'); } catch (e) { return out; }
+  if (!Array.isArray(rows)) return out;
+  for (const r of rows) {
+    try {
+      if (Date.parse(r.delete_at) <= now) { await db.delUser(r.user_id); out.deleted++; log('deleted account', r.user_id); continue; }
+      if (!r.email_sent && r.email) {
+        const m = deletionEmail({ name: r.name, reason: r.reason, deleteAt: r.delete_at, site });
+        await sendMail({ from: { name: 'Manifest', address: gmail }, to: r.email, subject: m.subject, text: m.text });
+        await db.patch(`account_deletions?user_id=eq.${r.user_id}`, { email_sent: true });
+        out.emailed++;
+      }
+    } catch (e) { out.errors++; log('deletion step failed:', e.message); }
+  }
+  return out;
+}
 const inList = ids => '(' + ids.join(',') + ')';
 
 export async function main(env, deps) {
@@ -48,6 +79,9 @@ export async function main(env, deps) {
   };
   const addMsg = (ship, kind, body, direction = 'out') => db.post('messages', { owner: ship.owner, shipment_id: ship.id, direction, channel: 'email', kind, body });
   const dir = async ship => (await db.get(`transporters?select=*&id=eq.${ship.transporter_id}`))[0] || null;
+
+  /* 0. account deletions */
+  try { const d = await processDeletions({ db, sendMail, gmail, site, now, log }); stat.errors += d.errors; } catch (e) { /* never block the rest */ }
 
   /* 1. replies */
   if (deps.inbox) {

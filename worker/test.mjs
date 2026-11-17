@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { classify, cleanReply, tagFrom, buildCheckin, isSilent, replyTo, silenceHours, isAuto, isBounce } from './lib.mjs';
-import { main } from './run.mjs';
+import { main, processDeletions, deletionEmail } from './run.mjs';
 
 test('classify reads simple replies', () => {
   assert.equal(classify('On the way, will arrive tomorrow.'), 'in_transit');
@@ -165,4 +165,20 @@ test('daily Gmail limit is respected', async () => {
   const db = fakeDb(w), mails = [];
   await main({ GMAIL_USER: 'gm@gmail.com' }, { db, now: NOW, inbox: null, mailer: { send: async m => mails.push(m) }, log: () => {} });
   assert.equal(mails.filter(m => m.to === 'ali@transport.com').length, 0);
+});
+
+test('deletion email and purge', async () => {
+  const m = deletionEmail({ name: 'Lara', reason: 'Too expensive', deleteAt: '2026-12-17T10:30:00Z', site: 'https://x.app' });
+  assert.equal(m.subject, 'Account scheduled for deletion on 17 December 2026');
+  assert.match(m.text, /Hi Lara,/);
+  assert.match(m.text, /because Too expensive\./);
+  assert.doesNotMatch(deletionEmail({ name: 'A', reason: '', deleteAt: '2026-12-17T10:30:00Z', site: 's' }).text, /Why this is happening/);
+  const sent = [], patched = [], gone = [];
+  const db = { get: async () => [
+    { user_id: 'u1', delete_at: '2026-12-17T10:30:00Z', email_sent: false, email: 'a@b.com', name: 'A', reason: '' },
+    { user_id: 'u2', delete_at: '2026-11-01T00:00:00Z', email_sent: true, email: 'c@d.com' }],
+    patch: async (p, b) => patched.push(p), delUser: async id => gone.push(id) };
+  const r = await processDeletions({ db, sendMail: async x => sent.push(x), gmail: 'g@x.com', site: 's', now: Date.parse('2026-11-18T00:00:00Z'), log: () => {} });
+  assert.deepEqual([r.emailed, r.deleted, sent.length, gone], [1, 1, 1, ['u2']]);
+  assert.equal(patched.length, 1);
 });
