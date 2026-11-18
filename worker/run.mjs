@@ -1,6 +1,6 @@
 // Manifest worker. Runs every few minutes on GitHub Actions.
 // 1) read replies  2) flag silence  3) send due check-ins  4) forward support messages
-import { HR, LABELS, buildCheckin, tagFrom, cleanReply, classify, isAuto, isBounce, isSilent, nextCheckin, agoText, validEmail, clean } from './lib.mjs';
+import { LIMITS, capOf, HR, LABELS, buildCheckin, tagFrom, cleanReply, classify, isAuto, isBounce, isSilent, nextCheckin, agoText, validEmail, clean } from './lib.mjs';
 
 export function makeDb(url, key, f = globalThis.fetch) {
   const legacy = String(key).startsWith('eyJ');
@@ -17,6 +17,7 @@ export function makeDb(url, key, f = globalThis.fetch) {
     patch: (p, b) => call(p, { method: 'PATCH', body: b, prefer: 'return=minimal' }),
     user: id => call('users/' + id, {}, '/auth/v1/admin/'),
     delUser: id => call('users/' + id, { method: 'DELETE' }, '/auth/v1/admin/'),
+    rpc: (name, args) => call('rpc/' + name, { method: 'POST', body: args }),
   };
 }
 
@@ -79,6 +80,35 @@ export async function main(env, deps) {
   };
   const addMsg = (ship, kind, body, direction = 'out') => db.post('messages', { owner: ship.owner, shipment_id: ship.id, direction, channel: 'email', kind, body });
   const dir = async ship => (await db.get(`transporters?select=*&id=eq.${ship.transporter_id}`))[0] || null;
+
+
+  /* usage limits: every send is counted against the plan, then against bought packs */
+  const month = iso(now).slice(0, 7), plans = {}, stopped = new Set();
+  let limitsOff = false;
+  const planOf = async id => {
+    if (!(id in plans)) { try { const r = await db.get(`billing?select=plan&owner=eq.${id}`); const p = r && r[0] && r[0].plan; plans[id] = LIMITS[p] ? p : 'starter'; } catch (e) { plans[id] = null; } }
+    return plans[id];
+  };
+  const NAMES = { email: 'emails', wa: 'WhatsApp messages', ai: 'AI reads' };
+  const limitNotice = async (owner, kind, r, plan) => {
+    const to = (await alertTo(owner)).join(', '); if (!to) return;
+    const what = NAMES[kind], hit = r.warn === '100';
+    const text = hit
+      ? `You have used all ${r.cap} ${what} in your ${plan} plan this month, so we have paused sending ${what}.\n\nIt starts again on the 1st of next month. If you need more now, open Manifest > Settings > Plan and Billing and request a pack. Packs never expire.`
+      : `You have used ${r.used} of the ${r.cap} ${what} in your ${plan} plan this month.\n\nIf you may run out, open Manifest > Settings > Plan and Billing and request a pack. Packs never expire.`;
+    await sendMail({ from: { name: 'Manifest', address: gmail }, to, subject: hit ? `Manifest: you have used all your ${what} this month` : `Manifest: 80% of your ${what} used this month`, text: text + `\n\n${site}/app/` });
+  };
+  /** returns {ok, src}. If the limits tables are not set up yet it lets the send through, so nothing breaks. */
+  const spend = async (owner, kind) => {
+    if (limitsOff || !db.rpc) return { ok: true, src: 'off' };
+    const plan = await planOf(owner); if (!plan) { limitsOff = true; log('limits not set up yet (run schema7.sql), sending without limits'); return { ok: true, src: 'off' }; }
+    if (stopped.has(owner + kind)) return { ok: false };
+    let r; try { r = await db.rpc('spend', { o: owner, k: kind, cap: Math.min(capOf(plan, kind), 2e9), m: month, n: 1 }); } catch (e) { limitsOff = true; log('limits not set up yet (run schema7.sql), sending without limits'); return { ok: true, src: 'off' }; }
+    if (r.warn) { try { await limitNotice(owner, kind, r, plan); } catch (e) { log('limit notice failed:', e.message); } }
+    if (r.src === 'none') { stopped.add(owner + kind); stat.limited = (stat.limited || 0) + 1; return { ok: false }; }
+    return { ok: true, src: r.src };
+  };
+  const unspend = async (owner, kind, src) => { if (src === 'plan' || src === 'pack') { try { await db.rpc('unspend', { o: owner, k: kind, m: month, src, n: 1 }); } catch (e) { /* ignore */ } } };
 
   /* 0. account deletions */
   try { const d = await processDeletions({ db, sendMail, gmail, site, now, log }); stat.errors += d.errors; } catch (e) { /* never block the rest */ }
@@ -147,7 +177,10 @@ export async function main(env, deps) {
           if (!t || !validEmail(t.email)) { await db.patch(`shipments?id=eq.${s.id}`, { next_checkin: nextCheckin(now, s.freq_hours) }); continue; }
           if (room <= 0) { log('daily email limit reached, waiting'); break; }
           const mail = buildCheckin({ site, gmail, ship: s, transporter: t, profile: p });
-          await sendMail({ from: mail.from, to: mail.to, replyTo: mail.replyTo, subject: mail.subject, text: mail.text, html: mail.html });
+          const gate = await spend(s.owner, 'email');
+          if (!gate.ok) continue; // over the plan's monthly emails and no pack left, so it waits
+          try { await sendMail({ from: mail.from, to: mail.to, replyTo: mail.replyTo, subject: mail.subject, text: mail.text, html: mail.html }); }
+          catch (e) { await unspend(s.owner, 'email', gate.src); throw e; }
           room--;
           await addMsg(s, 'sent', `Asked for an update by email to ${t.name}${mail.lang !== 'English' ? ' in ' + mail.lang : ''}`);
           await db.patch(`shipments?id=eq.${s.id}`, { last_checkin: iso(now), next_checkin: nextCheckin(now, s.freq_hours), ...(s.status === 'in_transit' ? { status: 'pending' } : {}) });

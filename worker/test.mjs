@@ -182,3 +182,49 @@ test('deletion email and purge', async () => {
   assert.deepEqual([r.emailed, r.deleted, sent.length, gone], [1, 1, 1, ['u2']]);
   assert.equal(patched.length, 1);
 });
+
+/* ---- plan limits and packs ---- */
+function limitDb(used, packs) {
+  const w = world(); w.shipments.find(s => s.id === 's1').next_checkin = ago(1);
+  const db = fakeDb(w), st = { email: used, warned: {} }, pk = { email: packs }, log = [];
+  db.rpc = async (n, a) => {
+    log.push([n, a.k, a.cap]);
+    if (n === 'unspend') { if (a.src === 'plan') st.email--; else pk.email++; return null; }
+    let src, warn = null;
+    if (st.email + a.n <= a.cap) { st.email += a.n; src = 'plan'; if (st.email * 5 >= a.cap * 4 && !st.warned['80']) { warn = '80'; st.warned['80'] = 1; } }
+    else if (pk.email >= a.n) { pk.email -= a.n; src = 'pack'; }
+    else { src = 'none'; if (!st.warned['100']) { warn = '100'; st.warned['100'] = 1; } }
+    return { src, used: st.email, cap: a.cap, pack: pk.email, warn };
+  };
+  return { db, st, pk, log };
+}
+const runLimits = (db, mails, extra = {}) => main({ GMAIL_USER: 'gm@gmail.com' }, { db, now: NOW, inbox: null, mailer: { send: async m => mails.push(m) }, log: () => {}, ...extra });
+
+test('over the monthly email limit: waits, warns the owner once, keeps the shipment due', async () => {
+  const { db, st } = limitDb(299, 0), mails = [];
+  await runLimits(db, mails);
+  assert.equal(mails.filter(m => m.to === 'ali@transport.com').length, 1, 'only one check-in fits');
+  assert.equal(st.email, 300);
+  const notes = mails.filter(m => m.to === 'owner@shop.com' && /Manifest: (80%|you have used all)/.test(m.subject));
+  assert.equal(notes.length, 2); assert.ok(notes.some(m => /80%/.test(m.subject))); assert.ok(notes.some(m => /used all/.test(m.subject) && /request a pack/.test(m.text)));
+  const waiting = db.T.shipments.filter(s => ['s1', 's2'].includes(s.id) && Date.parse(s.next_checkin) <= NOW);
+  assert.equal(waiting.length, 1, 'the blocked one is still due');
+  const before = mails.length; await runLimits(db, mails);
+  assert.equal(mails.length, before, 'nothing more goes out and no repeat warnings');
+});
+
+test('packs are used after the monthly allowance, and a failed send gives the credit back', async () => {
+  const a = limitDb(300, 1), mails = [];
+  await runLimits(a.db, mails);
+  assert.equal(mails.filter(m => m.to === 'ali@transport.com').length, 1); assert.equal(a.pk.email, 0);
+  const b = limitDb(10, 0), got = [];
+  await runLimits(b.db, got, { mailer: { send: async m => { if (m.to === 'ali@transport.com') throw new Error('smtp down'); } } });
+  assert.equal(b.st.email, 10, 'both credits returned');
+});
+
+test('if the limits tables are not set up yet, sending still works', async () => {
+  const w = world(), db = fakeDb(w), mails = [];
+  db.rpc = async () => { throw new Error('function not found'); };
+  await runLimits(db, mails);
+  assert.equal(mails.filter(m => m.to === 'ali@transport.com').length, 1);
+});

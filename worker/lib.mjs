@@ -106,3 +106,12 @@ export function isSilent(s, now) {
 }
 export const nextCheckin = (now, freqHours) => new Date(now + (Number(freqHours) || 168) * HR).toISOString();
 export function agoText(ms) { const h = Math.round(ms / HR); return h < 48 ? `${h} hours` : `${Math.round(h / 24)} days`; }
+
+/** What each plan may send per calendar month. Keep in step with CAPS in app/index.html. */
+export const LIMITS = {
+  starter:    { email: 300,       wa: 0,    ai: 0 },
+  growth:     { email: 6000,      wa: 500,  ai: 100 },
+  pro:        { email: 30000,     wa: 2500, ai: 1000 },
+  enterprise: { email: 100000000, wa: 100000000, ai: 100000000 },
+};
+export const capOf = (plan, kind) => (LIMITS[plan] || LIMITS.starter)[kind];
