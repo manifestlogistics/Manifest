@@ -7,10 +7,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cpolygon points='200,50 330,125 200,200 70,125' fill='%23DCEAFF'/%3E%3Cpolygon points='70,125 200,200 200,350 70,275' fill='%232F6BF0'/%3E%3Cpolygon points='200,200 330,125 330,275 200,350' fill='%230F2A5E'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F8FAFC;--card:#FFFFFF;--line:#E2E8F0;--text:#0F172A;--mute:#64748B;--accent:#2563EB;--accent-h:#1D4ED8;--soft:#F1F5F9;
+:root{--bg:#F8FAFC;--card:#FFFFFF;--line:#E2E8F0;--text:#0F172A;--mute:#64748B;--accent:#0A0A0A;--accent-h:#262626;--on-accent:#fff;--soft:#F1F5F9;
 --blue-bg:#EFF6FF;--blue-tx:#1D4ED8;--red-bg:#FEF2F2;--red-tx:#B91C1C;--green-bg:#ECFDF5;--green-tx:#047857;--amber-bg:#FFFBEB;--amber-tx:#B45309;--gray-bg:#F1F5F9;--gray-tx:#475569;
 --shadow:0 1px 3px rgba(0,0,0,.04);--overlay:rgba(15,23,42,.45);--nav-h:64px}
-:root[data-theme=dark]{--bg:#0B0F14;--card:#121820;--line:rgba(255,255,255,.1);--text:#F1F5F9;--mute:#94A3B8;--accent:#3B82F6;--accent-h:#60A5FA;--soft:#1A222C;
+:root[data-theme=dark]{--bg:#0B0F14;--card:#121820;--line:rgba(255,255,255,.1);--text:#F1F5F9;--mute:#94A3B8;--accent:#F1F5F9;--accent-h:#FFFFFF;--on-accent:#0B0F14;--soft:#1A222C;
 --blue-bg:rgba(59,130,246,.16);--blue-tx:#93C5FD;--red-bg:rgba(239,68,68,.16);--red-tx:#FCA5A5;--green-bg:rgba(16,185,129,.16);--green-tx:#6EE7B7;--amber-bg:rgba(245,158,11,.16);--amber-tx:#FCD34D;--gray-bg:rgba(148,163,184,.14);--gray-tx:#CBD5E1;
 --shadow:none;--overlay:rgba(0,0,0,.6)}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
@@ -27,7 +27,7 @@ h3{font-size:15px;font-weight:650}
 /* controls */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:14px;min-height:42px;box-shadow:var(--shadow)}
 .btn:hover{background:var(--soft)}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.pri:hover{background:var(--accent-h)}
 .btn.dng{color:var(--red-tx);border-color:transparent;background:var(--red-bg)}
 .btn.sm{padding:6px 12px;min-height:34px;font-size:13px}
@@ -75,7 +75,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
  .side .brand{margin:0 8px 24px}
  .side button.nav{display:flex;align-items:center;gap:12px;border:0;background:transparent;padding:11px 12px;border-radius:10px;font-weight:600;color:var(--mute);text-align:left}
  .side button.nav:hover{background:var(--soft)}
- .side button.nav.on{background:var(--blue-bg);color:var(--blue-tx)}
+ .side button.nav.on{background:var(--soft);color:var(--text)}
  .side .who{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0}
  .bnav{display:none}
  #app{padding-left:232px}
@@ -97,7 +97,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 .swipe{position:relative;border-radius:14px;overflow:hidden}
 .swipe .bgl,.swipe .bgr{position:absolute;inset:0;display:flex;align-items:center;padding:0 20px;font-weight:700;font-size:13px}
 .swipe .bgl,.swipe .bgr{visibility:hidden}
-.swipe .bgl{background:var(--accent);color:#fff;justify-content:flex-start}
+.swipe .bgl{background:var(--accent);color:var(--on-accent);justify-content:flex-start}
 .swipe .bgr{background:#64748B;color:#fff;justify-content:flex-end}
 .scard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;touch-action:pan-y;transition:transform .18s}
 .scard.act{border-color:var(--accent)}
@@ -241,7 +241,7 @@ details.more summary{padding:10px 0;font-weight:600;font-size:14px;cursor:pointe
 .perks b{display:block;font-size:12.5px}.perks span{display:block;font-size:11.5px;color:var(--mute);margin-top:2px;line-height:1.3}
 .tabs{flex-wrap:wrap;overflow:visible;gap:6px;border-bottom:0;margin-bottom:16px}
 .tabs button{border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:var(--card,#fff)}
-.tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabs button.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .cur-plan+.btnrow .btn{min-height:46px;font-size:15px}
 .btn.dng{border:1.5px solid var(--red-tx);color:var(--red-tx);background:var(--card);font-weight:700}
 .btn.dng:hover{background:var(--red-bg)}
@@ -296,7 +296,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .bdg{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#DC2626;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px;border:2px solid var(--card)}
 .tz{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--mute);background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 6px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .side-tools{display:flex;gap:8px;align-items:center;margin:0 8px 14px}
-.cnt{background:var(--accent);color:#fff;border-radius:9px;font-size:11px;padding:0 6px;min-width:18px;text-align:center}
+.cnt{background:var(--accent);color:var(--on-accent);border-radius:9px;font-size:11px;padding:0 6px;min-width:18px;text-align:center}
 .fpills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .fpill{display:inline-flex;gap:6px;align-items:center;background:var(--blue-bg);color:var(--blue-tx);border-radius:6px;padding:3px 4px 3px 9px;font-size:12px;font-weight:600;border:0}
 .fpill b{width:18px;height:18px;border-radius:4px;display:grid;place-items:center}
@@ -478,6 +478,20 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .sw{width:44px;height:26px;border-radius:999px;border:0;background:#CBD5E1;position:relative;cursor:pointer;flex:0 0 auto}.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}.sw.on{background:var(--accent)}.sw.on i{transform:translateX(18px)}
 .logobox{width:72px;height:72px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;overflow:hidden;background:var(--card)}.logobox img{max-width:100%;max-height:100%}
 .avbtn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
+.eico{width:44px;height:44px;border-radius:50%;background:var(--soft,#F1F5F9);color:var(--mute);display:grid;place-items:center;margin:0 auto 10px}.eico .ico{width:20px;height:20px}
+.plan .price{display:flex;align-items:baseline;gap:4px}.plan .price .per{font-size:14px;font-weight:600;color:var(--mute);letter-spacing:0}
+.plan .poptag{display:inline-block;margin-left:8px;vertical-align:middle;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--on-accent);letter-spacing:.01em}
+.dvic{width:40px;height:40px;border-radius:50%;background:var(--soft,#F1F5F9);display:grid;place-items:center;flex:0 0 auto;color:var(--mute)}
+
+/* buttons: black pills */
+.btn,.btn.pri,.btn.bk{background:radial-gradient(120% 140% at 50% 0%,#2a2a2a 0%,#0a0a0a 55%,#000 100%);color:#fff;border:1px solid #000;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08);padding:10px 20px}
+.btn:hover,.btn.pri:hover,.btn.bk:hover{background:#1c1c1c;color:#fff}
+.btn.sm{padding:6px 14px}
+.btn.dng,.btn.bk.red{color:#F87171;background:#0a0a0a;border:1px solid #000}
+.btn.dng:hover{background:#1c1c1c}
+:root[data-theme=dark] .btn,:root[data-theme=dark] .btn.pri{background:#F1F5F9;color:#0B0F14;border-color:#F1F5F9;box-shadow:none}
+:root[data-theme=dark] .btn.dng{color:#B91C1C}
+.av{background:linear-gradient(135deg,#475569,#0A0A0A)}
 </style>
 </head>
 <body>
@@ -509,6 +523,12 @@ const IC={
  file:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/>',
  more:'<circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
+ archive:'<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M10 12h4"/>',
+ trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
+ receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+ phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+ tablet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M11 18h2"/>',
+ computer:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
  documents:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
  ship:'<path d="M3 17l2 3h14l2-3"/><path d="M5 17v-7l7-3 7 3v7"/><path d="M12 7V3"/>',
@@ -526,9 +546,9 @@ function fdate(ts){return new Date(ts).toLocaleDateString(undefined,{day:'numeri
 /* ============ state ============ */
 const KEY='manifest_v2';
 const PLANS={
- starter:{name:'Starter',amt:0,price:'$0',per:'/mo',who:'Solo shops and small sellers',limit:5,seats:1,wa:false,domain:false,feat:['Up to 5 shipments a month','We ask for updates by email','Just you (one person)','Manifest name on messages']},
- growth:{name:'Growth',amt:69,price:'$69',per:'/mo',who:'Local shops and growing businesses',limit:100,seats:1,wa:true,domain:true,feat:['Up to 100 active shipments','Email and WhatsApp updates','Send from your own email','Help within 24 hours']},
- pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'Busy teams with lots of shipments',limit:500,seats:10,wa:true,domain:true,api:true,feat:['Up to 500 active shipments','Send from your own email address','Connect Google Sheets, Slack and more','Reads your emails and PDFs for you','See which suppliers are late most','10 people on your team','Priority help when you need it']},
+ starter:{name:'Starter',amt:0,price:'$0',per:'/mo',who:'For independent importers',limit:5,seats:1,wa:false,domain:false,feat:['Up to 5 shipments a month','We ask for updates by email','Just you (one person)','Manifest name on messages']},
+ growth:{name:'Growth',amt:69,price:'$69',per:'/mo',who:'For solo logistics coordinators',limit:100,seats:1,wa:true,domain:true,feat:['Up to 100 active shipments','Email and WhatsApp updates','Send from your own email','Help within 24 hours']},
+ pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'For multi-user operations teams',limit:500,seats:10,wa:true,domain:true,api:true,feat:['Up to 500 active shipments','Send from your own email address','Connect Google Sheets, Slack and more','Reads your emails and PDFs for you','See which suppliers are late most','10 people on your team','Priority help when you need it']},
  enterprise:{name:'Enterprise',amt:399,price:'Custom',per:'From $399/mo',who:'Big fleets and freight agents',limit:Infinity,seats:999,wa:true,domain:true,api:true,feat:['Unlimited shipments','Integrations built for you','Guaranteed reply times','Your own WhatsApp line','Different access for each person','Your own account manager']}
 };
 const ST={in_transit:['On the way','b-blue'],delayed:['Delayed','b-red'],customs_hold:['Held at customs','b-amber'],delivered:['Delivered','b-green'],pending:['Waiting for reply','b-gray'],cancelled:['Cancelled','b-gray']};
@@ -884,7 +904,7 @@ function vKpi(){const k=V.kpi||'prog',act=countedActive(),all=active();let h='';
 
 function addMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Add a shipment</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div class="mlist" style="margin-top:0"><button class="mrow2" onclick="closeModal();editShip()">Type it in<span>›</span></button><button class="mrow2" onclick="closeModal();fwdMail()">Paste from email<span>›</span></button></div>`)}
 function render(){
- $('#side').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="side-tools"><button class="icon-btn" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${tzb()}${HAM}</div><button class="cmdbtn" onclick="openCmd()" aria-label="Search or jump to">${icon('search')}Search or jump to<span class="kbd">Ctrl K</span></button>`+TABS.map(([k,l])=>`<button class="nav ${V.tab===k?'on':''}" onclick="go('${k}')">${icon(k)}${l}</button>`).join('')+`<div class="who"><button class="btn sm" style="margin-bottom:8px;width:100%" onclick="openHelp()">Help</button><button class="who-card" onclick="profile()" aria-label="Your profile">${av(36)}<span style="min-width:0"><span style="display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.user.name)}</span><span class="xs mute" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.settings.biz)}</span></span></button>${sysStrip()}</div>`;
+ $('#side').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="side-tools"><button class="icon-btn" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${tzb()}</div><button class="cmdbtn" onclick="openCmd()" aria-label="Search or jump to">${icon('search')}Search or jump to<span class="kbd">Ctrl K</span></button>`+TABS.map(([k,l])=>`<button class="nav ${V.tab===k?'on':''}" onclick="go('${k}')">${icon(k)}${l}</button>`).join('')+`<div class="who"><button class="btn sm" style="margin-bottom:8px;width:100%" onclick="openHelp()">Help</button><button class="nav ${V.tab==='settings'&&V.set!=='profile'?'on':''}" style="width:100%;margin-bottom:6px" onclick="V.set='hub';V.sec=null;V.tm=null;go('settings')">${icon('settings')}Settings</button><button class="who-card" onclick="profile()" aria-label="Your profile">${av(36)}<span style="min-width:0"><span style="display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.user.name)}</span><span class="xs mute" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(S.settings.biz)}</span></span></button>${sysStrip()}</div>`;
  $('#appbar').innerHTML=`<div class="brand">${LOGO}Manifest</div><div class="tools"><button class="icon-btn" style="border:0;box-shadow:none" aria-label="Search" onclick="openSearch()">${icon('search')}</button><button class="icon-btn bell" style="border:0;box-shadow:none" aria-label="Notifications" onclick="openNotifs()">${icon('bell')}${unreadN()?`<b class="bdg">${unreadN()}</b>`:''}</button>${HAM2}</div>`;
  $('#bnav').innerHTML=TABS.map(([k,l])=>`<button class="${V.tab===k?'on':''}" onclick="go('${k}')" aria-label="${l}">${icon(k)}${l}</button>`).join('');
  const m=$('#main');
@@ -1027,9 +1047,9 @@ function vDocs(){const q=(V.dq||'').toLowerCase(),f=V.df||'all',used=docUsed(),c
  const fl=[['all','All'],['bl','Bill of Lading'],['inv','Commercial Invoice'],['cus','Customs'],['missing','Missing docs']];
  return`<div class="topbar"><h1>Documents</h1></div>
  <div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">Storage</b><span class="sm mute tnum">${fmtB(used)} of ${cap>=1073741824?(cap/1073741824)+' GB':Math.round(cap/1048576)+' MB'} used</span></div><div class="meter ${pct>=90?'full':''}" style="margin-top:8px"><i style="width:${Math.max(pct,used?2:0)}%"></i></div></div>
- <div style="display:flex;gap:8px;margin-bottom:10px"><input id="dq" type="search" placeholder="Search file, container or supplier" value="${esc(V.dq||'')}" style="flex:1" oninput="clearTimeout(window._dt);window._dt=setTimeout(()=>{V.dq=document.getElementById('dq').value;render();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},250)"><select aria-label="Filter" onchange="V.df=this.value;render()" style="width:auto">${fl.map(([k,l])=>`<option value="${k}" ${f===k?'selected':''}>${l}</option>`).join('')}</select></div>
- <div class="card">${f==='missing'?(miss.length?miss.map(m=>`<div class="docrow"><div class="di">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${esc(m.s.ref)} ${docBadge(null)}</div><div class="xs mute">${esc(m.n)} · ${esc(m.s.containerId||m.s.vehicle||m.s.supplier||'')}</div></div><button class="btn sm" onclick="V.dtab='documents';openShip(${m.s.id});V.tab='shipments';V.dtab='documents';render()">Upload</button></div>`).join(''):'<div class="empty"><b>Nothing missing</b>Every active shipment has all its documents.</div>')
- :list.length?list.map(r=>`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.name)}</div><div class="xs mute">${esc(r.n)} · ${esc(r.s.ref)} · ${r.d.bytes?fmtB(r.d.bytes):r.d.size} · ${fday(r.d.ts)}</div><div class="dact">${r.d.path?`<button class="btn sm" onclick="previewDoc(${r.s.id},${r.i})">Preview</button><button class="btn sm" onclick="dlDoc(${r.s.id},${r.i})">Download</button>`:''}<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${r.s.id};render()">Open shipment</button></div></div></div>`).join(''):'<div class="empty"><b>No documents yet</b>Open a shipment, go to its Documents tab and upload a Bill of Lading or invoice.</div>'}</div>`}
+ <div style="display:flex;gap:8px;margin-bottom:10px"><input id="dq" type="search" placeholder="Search files..." value="${esc(V.dq||'')}" style="flex:1" oninput="clearTimeout(window._dt);window._dt=setTimeout(()=>{V.dq=document.getElementById('dq').value;render();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},250)"><select aria-label="Filter" onchange="V.df=this.value;render()" style="width:auto">${fl.map(([k,l])=>`<option value="${k}" ${f===k?'selected':''}>${l}</option>`).join('')}</select></div>
+ <div class="card">${f==='missing'?(miss.length?miss.map(m=>`<div class="docrow"><div class="di">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${esc(m.s.ref)} ${docBadge(null)}</div><div class="xs mute">${esc(m.n)} · ${esc(m.s.containerId||m.s.vehicle||m.s.supplier||'')}</div></div><button class="btn sm" onclick="V.dtab='documents';openShip(${m.s.id});V.tab='shipments';V.dtab='documents';render()">Upload</button></div>`).join(''):'<div class="empty"><span class="eico">'+icon('documents')+'</span><b>Nothing missing</b>Every active shipment has all its documents.</div>')
+ :list.length?list.map(r=>`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.name)}</div><div class="xs mute">${esc(r.n)} · ${esc(r.s.ref)} · ${r.d.bytes?fmtB(r.d.bytes):r.d.size} · ${fday(r.d.ts)}</div><div class="dact">${r.d.path?`<button class="btn sm" onclick="previewDoc(${r.s.id},${r.i})">Preview</button><button class="btn sm" onclick="dlDoc(${r.s.id},${r.i})">Download</button>`:''}<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${r.s.id};render()">Open shipment</button></div></div></div>`).join(''):'<div class="empty"><span class="eico">'+icon('documents')+'</span><b>No documents yet</b>Open a shipment, go to its Documents tab and upload a Bill of Lading or invoice.</div>'}</div>`}
 function threadHtml(s){const em=tp(s).email||'transporter',ch=s.channel==='both'?'Email and WhatsApp':'Email';
  const items=(s.tl||[]).slice().sort((a,b)=>a.ts-b.ts).filter(e=>['sent','reply'].includes(e.type));
  if(!items.length)return'<p class="sm mute">No messages yet. Use Ping transporter to ask for an update.</p>';
@@ -1179,7 +1199,7 @@ function vHist(){
  <div class="seg" style="max-width:320px;margin-bottom:12px"><button class="${tr?'':'on'}" onclick="V.hist='archive';render()">Archive</button><button class="${tr?'on':''}" onclick="V.hist='trash';render()">Trash (${S.shipments.filter(s=>s.deletedAt).length})</button></div>
  <input type="search" placeholder="Search past shipments" aria-label="Search history" value="${esc(V.hq)}" oninput="V.hq=this.value;rerenderHist(this)" style="margin-bottom:12px">
  ${tr?'<p class="sm mute" style="margin-bottom:10px">Deleted shipments wait here for 30 days. After that they are gone for good.</p>':''}
- <div class="card">${items.length?`<div class="list">${items.map(s=>`<div class="li"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(s.supplier)} · ${esc(ident(s))}</div>${tr?`<div class="xs mute">Deleted ${ago(s.deletedAt)}, removed in ${Math.max(1,30-Math.floor((Date.now()-s.deletedAt)/DAY))} days</div>`:''}</div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${tr?`<button class="btn sm" onclick="restore(${s.id})">Restore</button><button class="btn sm dng" onclick="purge(${s.id})">Delete forever</button>`:`<button class="btn sm" onclick="showLog(${s.id})">See what happened</button><button class="btn sm" onclick="restore(${s.id})">Restore</button>`}</div></div>`).join('')}</div>`:`<div class="empty"><b>${tr?'Trash is empty':'Nothing here yet'}</b>${tr?'Deleted shipments wait here for 30 days.':'Shipments you archive are kept here, so your main list stays tidy.'}</div>`}</div>`}
+ <div class="card">${items.length?`<div class="list">${items.map(s=>`<div class="li"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(s.supplier)} · ${esc(ident(s))}</div>${tr?`<div class="xs mute">Deleted ${ago(s.deletedAt)}, removed in ${Math.max(1,30-Math.floor((Date.now()-s.deletedAt)/DAY))} days</div>`:''}</div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${tr?`<button class="btn sm" onclick="restore(${s.id})">Restore</button><button class="btn sm dng" onclick="purge(${s.id})">Delete forever</button>`:`<button class="btn sm" onclick="showLog(${s.id})">See what happened</button><button class="btn sm" onclick="restore(${s.id})">Restore</button>`}</div></div>`).join('')}</div>`:`<div class="empty"><span class="eico">${icon(tr?'trash':'archive')}</span><b>${tr?'Trash is empty':'Nothing here yet'}</b>${tr?'Deleted shipments wait here for 30 days.':'Shipments you archive are kept here, so your main list stays tidy.'}</div>`}</div>`}
 function rerenderHist(el){const p=el.selectionStart;render();const i=$('input[type=search]');i.focus();try{i.setSelectionRange(p,p)}catch(e){}}
 function restore(id){if(blocked())return;const s=byId(id);s.deletedAt=null;s.archived=false;if(s.status==='cancelled')s.status='pending';save();toast(s.ref+' restored');render()}
 function purge(id){if(blocked())return;ask('Delete forever?','This shipment and its history will be removed. This cannot be undone.','Delete forever',()=>{S.shipments=S.shipments.filter(s=>s.id!==id);save();render()})}
@@ -1234,10 +1254,10 @@ function sBill(){const P=plan(),st=S.settings,n=monthCount(),lim=P.limit,paid=P.
  return`<div class="card"><div class="cur-plan"><div><div class="sm mute">Your plan</div><h2 style="font-size:20px;margin-top:2px">${esc(P.name)} ${st.cancelAt?'<span class="badge b-amber">Ending</span>':paid?'<span class="badge b-green">Active</span>':''}</h2><p class="sm mute" style="margin-top:4px">${status}</p></div>
 </div>
  ${paid?`<div class="btnrow" style="margin-top:16px">${st.cancelAt?'<button class="btn pri" style="flex:1" onclick="resumePlan()">Keep my plan</button>':'<button class="btn pri" style="flex:1" onclick="document.getElementById(\'plansH\').scrollIntoView({behavior:\'smooth\'})">Change plan</button><button class="btn dng" style="flex:1" onclick="cancelPlan()">Cancel subscription</button>'}</div>`:''}
- <p class="sm mute" style="margin:14px 0 8px">${lim===Infinity?'You have added '+n+' shipments this month':"You've added "+n+' of '+lim+' shipments this month. Resets on '+fdate(monthReset())+'.'}</p><div class="meter ${lim!==Infinity&&n>=lim?'full':''}"><i style="width:${lim===Infinity?8:Math.min(100,n/lim*100)}%"></i></div></div>
+ <p class="sm mute" style="margin:14px 0 8px">${lim===Infinity?'You have added '+n+' shipments this month':P.name==='Starter'?countedActive().length+' of '+lim+' active shipments in progress':"You've added "+n+' of '+lim+' shipments this month. Resets on '+fdate(monthReset())+'.'}</p><div class="meter ${lim!==Infinity&&(P.name==='Starter'?countedActive().length:n)>=lim?'full':''}"><i style="width:${lim===Infinity?8:Math.min(100,(P.name==='Starter'?countedActive().length:n)/lim*100)}%"></i></div></div>
  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:22px 0 10px"><h2 id="plansH">Change your plan</h2><div class="field" style="margin:0;min-width:200px"><label for="bc" class="xs">Show prices in</label>${combo('bc','cur',curOf(),'cbSetCur')}</div></div>${curOf()==='USD'?'':`<p class="xs mute" style="margin:-4px 0 10px">You are billed in US dollars. ${esc(curOf())} amounts are estimates${LIVE?' using today\'s rates':''} and may differ slightly on your statement.</p>`}
- <p class="sm mute" style="margin:0 0 12px">Paid plans are opening soon. Starter is free and works fully today.</p><div class="plans">${Object.entries(PLANS).map(([k,p])=>`<div class="card plan ${isPlan(k)?'cur':''}"><div class="sm mute">${p.who}</div><h3 style="margin-top:4px">${p.name}</h3><div class="price">${p.name==='Enterprise'?'Custom':priceText(p.amt)}</div><div class="xs mute">${p.name==='Enterprise'?'From '+priceText(p.amt)+'/mo':p.amt?'/mo':'/mo'}</div><ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn ${isPlan(k)?'':'pri'}" ${isPlan(k)?'disabled':''} onclick="pickPlan('${k}')">${isPlan(k)?'Current plan':k==='enterprise'?'Talk to us':'Tell me when it opens'}</button></div>`).join('')}</div>
- <h2 style="margin:22px 0 10px">Invoices</h2><div class="card">${S.invoices.length?`<div class="list">${S.invoices.map(i=>`<div class="li"><div><div style="font-weight:600">${esc(i.desc)}</div><div class="xs mute">${fdate(i.date)}</div></div><b>${money(i.amt)}</b></div>`).join('')}</div>`:'<div class="empty" style="padding:18px"><b>No invoices yet</b>Your invoices will appear here when you move to a paid plan.</div>'}</div>`}
+ <p class="sm mute" style="margin:0 0 12px">Paid plans are opening soon. Starter is free and works fully today.</p><div class="plans">${Object.entries(PLANS).map(([k,p])=>`<div class="card plan ${isPlan(k)?'cur':''}"><div class="sm mute">${p.who}</div><h3 style="margin-top:4px">${p.name}${k==='growth'?'<span class="poptag">Most Popular</span>':''}</h3>${p.name==='Enterprise'?`<div class="price">Custom</div><div class="xs mute">From ${priceText(p.amt)}/mo</div>`:`<div class="price">${priceText(p.amt)}<span class="per">/mo</span></div>`}<ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn ${isPlan(k)?'':'pri'}" ${isPlan(k)?'disabled':''} onclick="pickPlan('${k}')">${isPlan(k)?'Current plan':k==='enterprise'?'Talk to us':'Tell me when it opens'}</button></div>`).join('')}</div>
+ <h2 style="margin:22px 0 10px">Invoices</h2><div class="card">${S.invoices.length?`<div class="list">${S.invoices.map(i=>`<div class="li"><div><div style="font-weight:600">${esc(i.desc)}</div><div class="xs mute">${fdate(i.date)}</div></div><b>${money(i.amt)}</b></div>`).join('')}</div>`:'<div class="empty" style="padding:18px"><span class="eico">'+icon('receipt')+'</span><b>No invoices yet</b>Your invoices will appear here when you move to a paid plan.</div>'}</div>`}
 function applyPlan(k){const P=PLANS[k];S.settings.plan=k;
  if(!P.wa)S.shipments.forEach(s=>{if(s.channel==='both')s.channel='email'});
  if(!P.domain&&S.settings.sender==='domain')S.settings.sender='shared';if(!['pro','enterprise'].includes(k))S.integ={};
@@ -1293,12 +1313,13 @@ function menuItems(){const a=isAdmin();return MENU.filter(([l,k])=>k==='profile'
 function openMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="brand">${LOGO}Manifest</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
  <div class="mlist">${menuItems().map(([l,k])=>`<button class="mrow2" onclick="menuGo('${k}')">${l}<span>›</span></button>`).join('')}</div>`);$('#sheet').classList.add('mdrawer')}
 function menuGo(k){closeModal();V.sec=null;V.tm=null;if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
-function setBack(){if(V.set==='security'&&V.sec){const f=V.sec==='forgot'&&V.sf&&V.sf.from;V.sec=f==='pw'||f==='email'?f:null;V.em=0;V.dsel=false;V.dpick=new Set()}else if(V.set==='team'&&V.tm!=null)V.tm=null;else return go('dashboard');render()}
+function sHub(){return`<div class="card" style="padding:4px 16px">${menuItems().filter(([l,k])=>k!=='profile').map(([l,k])=>`<button class="srow" onclick="menuGo('${k}')"><div><b>${l}</b></div><span>›</span></button>`).join('')}</div>`}
+function setBack(){if(V.set==='security'&&V.sec){const f=V.sec==='forgot'&&V.sf&&V.sf.from;V.sec=f==='pw'||f==='email'?f:null;V.em=0;V.dsel=false;V.dpick=new Set()}else if(V.set==='team'&&V.tm!=null)V.tm=null;else if(matchMedia('(min-width:900px)').matches&&!['hub','profile'].includes(V.set))V.set='hub';else return go('dashboard');render()}
 function vSet(){const admin=isAdmin();
  const need=['org','team','dev','billing','channels'].includes(V.set)&&!admin;
- const body=need?`<div class="card empty"><b>Only an admin can see this</b>Please ask the account owner.</div>`:({profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
+ const body=need?`<div class="card empty"><b>Only an admin can see this</b>Please ask the account owner.</div>`:({hub:sHub,profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
  const sub=V.set==='security'&&V.sec?({pw:'Reset password',forgot:'Forgot password',email:'Email address',devices:'Active sessions and devices'})[V.sec]:V.set==='team'&&V.tm!=null&&S.team[V.tm]?mName(S.team[V.tm]):V.set==='team'&&V.tm===-1?mName({email:S.user.email,name:S.user.name}):'';
- const ttl=sub||({profile:'Personal Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Team',dev:'Developers'})[V.set]||'Settings';
+ const ttl=sub||({hub:'Settings',profile:'Personal Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Team',dev:'Developers'})[V.set]||'Settings';
  return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="setBack()">${icon('back')||'←'}</button><h1>${esc(ttl)}</h1></div>
  <div style="max-width:${V.set==='billing'?'none':'760px'}">${body}</div>`}
 
@@ -1363,9 +1384,11 @@ setInterval(devCheck,60000);
 async function devLoad(){V.devs=null;V.derr='';try{V.devs=await api('devices?select=*&revoked=eq.false&order=last_seen.desc')}catch(e){V.derr=e.net?'We could not reach Manifest.':'The devices list is not switched on yet.'}if(V.sec==='devices')render()}
 function secDev(){const d=V.devs;if(d===undefined||d===null)return V.derr?`<div class="card empty"><b>${esc(V.derr)}</b></div>`:'<div class="card empty"><b>Loading…</b></div>';
  const me=devId(),pick=V.dpick||(V.dpick=new Set()),n=pick.size;
- const rows=d.map(x=>`<div class="li dvrow" ${V.dsel?`onclick="devPick('${x.id}')"`:''}>${V.dsel?`<span class="ck ${pick.has(x.id)?'on':''}">${pick.has(x.id)?'✓':''}</span>`:''}<div style="flex:1;min-width:0"><div style="font-weight:600">${esc(x.kind)} · ${esc(x.os)} ${x.id===me?'<span class="badge b-blue">This device</span>':''}</div><div class="xs mute">${esc(x.browser)} · ${esc(x.place)} (approximate)</div><div class="xs mute">${x.id===me?'Active now':'Last active '+ago(Date.parse(x.last_seen))}</div></div></div>`).join('');
- return`<div class="card">${d.length?`<div class="list">${rows}</div>`:'<div class="empty"><b>No devices yet</b>Devices appear here the next time you log in.</div>'}
- <div style="display:flex;justify-content:center;margin-top:16px">${V.dsel&&n?`<button class="btn bk red" onclick="devAsk()">Log out</button>`:`<button class="btn bk red" onclick="V.dsel=true;render()">Remove Device</button>`}</div>
+ const icn=k=>icon(k==='Phone'?'phone':k==='Tablet'?'tablet':'computer');
+ const rows=d.map(x=>{const cur=x.id===me;return`<div class="li dvrow" ${V.dsel&&!cur?`onclick="devPick('${x.id}')"`:''}>${V.dsel&&!cur?`<span class="ck ${pick.has(x.id)?'on':''}">${pick.has(x.id)?'✓':''}</span>`:''}<span class="dvic">${icn(x.kind)}</span><div style="flex:1;min-width:0"><div style="font-weight:600">${esc(x.kind)} · ${esc(x.os)} ${cur?'<span class="badge b-blue">This device</span>':''}</div><div class="xs mute">${esc(x.browser)} · ${esc(x.place)} (approximate)</div><div class="xs mute">${cur?'Active now':'Last active '+ago(Date.parse(x.last_seen))}</div></div></div>`}).join('');
+ const others=d.filter(x=>x.id!==me).length;
+ return`<div class="card">${d.length?`<div class="list">${rows}</div>`:'<div class="empty"><span class="eico">'+icon('computer')+'</span><b>No devices yet</b>Devices appear here the next time you log in.</div>'}
+ ${others?`<div style="display:flex;justify-content:center;margin-top:16px">${V.dsel&&n?`<button class="btn bk red" onclick="devAsk()">Log out</button>`:`<button class="btn bk red" onclick="V.dsel=true;render()">Remove Device</button>`}</div>`:''}
  <p class="xs mute" style="margin-top:10px;text-align:center">A device is logged out the next time it opens Manifest or is online.</p></div>`}
 function devPick(id){const p=V.dpick;p.has(id)?p.delete(id):p.add(id);render()}
 function devAsk(){dkModal(`<h2>Are you sure?</h2><p style="margin:8px 0 18px;opacity:.8">You will no longer be logged in on the selected devices</p><div class="mbtns"><button class="btn bk" onclick="closeModal()">Cancel</button><button class="btn bk red" onclick="devRevoke()">Log out</button></div>`)}
