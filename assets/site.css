@@ -185,6 +185,8 @@ details p{padding:0 0.25rem 1.125rem;color:var(--mu)}
 .cp{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--dim);font-size:0.8125rem}
 .rv{opacity:0;transform:translateY(1rem);transition:opacity .6s,transform .6s}.rv.in{opacity:1;transform:none}
 @media all{
+ .bento{display:flex;flex-direction:column}.bx{grid-column:auto!important;width:100%;min-width:0}
+ .fg{grid-template-columns:1fr!important}.fg>div{grid-column:auto!important}
  .steps,.pg,.cmp,.two{grid-template-columns:1fr}
  .blade{grid-template-columns:1fr;gap:1.5rem}.blade.flip .txt{order:0}
  .bento{grid-template-columns:1fr 1fr}.bx,.bx.w3,.bx.w4{grid-column:span 2}
