@@ -107,11 +107,18 @@ export function isSilent(s, now) {
 export const nextCheckin = (now, freqHours) => new Date(now + (Number(freqHours) || 168) * HR).toISOString();
 export function agoText(ms) { const h = Math.round(ms / HR); return h < 48 ? `${h} hours` : `${Math.round(h / 24)} days`; }
 
-/** What each plan may send per calendar month. Keep in step with CAPS in app/index.html. */
+/** What each plan may send per calendar month. Email is unlimited (cost is tiny). Keep in step with CAPS in app/index.html. */
+const NO_LIMIT = 100000000;
 export const LIMITS = {
-  starter:    { email: 300,       wa: 0,    ai: 0 },
-  growth:     { email: 6000,      wa: 500,  ai: 100 },
-  pro:        { email: 30000,     wa: 2500, ai: 1000 },
-  enterprise: { email: 100000000, wa: 100000000, ai: 100000000 },
+  starter:    { email: NO_LIMIT, wa: 0,    ai: 6 },
+  growth:     { email: NO_LIMIT, wa: 500,  ai: 250 },
+  pro:        { email: NO_LIMIT, wa: 2500, ai: 1500 },
+  enterprise: { email: NO_LIMIT, wa: NO_LIMIT, ai: NO_LIMIT },
 };
-export const capOf = (plan, kind) => (LIMITS[plan] || LIMITS.starter)[kind];
+export const capOf = (plan, kind, table = LIMITS) => (table[plan] || table.starter)[kind];
+/** The plan someone really has: a trial that ran out and was never paid drops back to Starter. */
+export const effPlan = (b, now = Date.now()) => {
+  if (!b || !LIMITS[b.plan]) return 'starter';
+  if (b.paid || !b.trial_ends) return b.plan;
+  return Date.parse(b.trial_ends) > now ? b.plan : 'starter';
+};

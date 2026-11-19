@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { classify, cleanReply, tagFrom, buildCheckin, isSilent, replyTo, silenceHours, isAuto, isBounce } from './lib.mjs';
 import { main, processDeletions, deletionEmail } from './run.mjs';
+import { effPlan, capOf, LIMITS } from './lib.mjs';
 
 test('classify reads simple replies', () => {
   assert.equal(classify('On the way, will arrive tomorrow.'), 'in_transit');
@@ -198,7 +199,8 @@ function limitDb(used, packs) {
   };
   return { db, st, pk, log };
 }
-const runLimits = (db, mails, extra = {}) => main({ GMAIL_USER: 'gm@gmail.com' }, { db, now: NOW, inbox: null, mailer: { send: async m => mails.push(m) }, log: () => {}, ...extra });
+const TINY = { starter: { email: 300, wa: 0, ai: 0 } };
+const runLimits = (db, mails, extra = {}) => main({ GMAIL_USER: 'gm@gmail.com' }, { db, now: NOW, inbox: null, limits: TINY, mailer: { send: async m => mails.push(m) }, log: () => {}, ...extra });
 
 test('over the monthly email limit: waits, warns the owner once, keeps the shipment due', async () => {
   const { db, st } = limitDb(299, 0), mails = [];
@@ -227,4 +229,15 @@ test('if the limits tables are not set up yet, sending still works', async () =>
   db.rpc = async () => { throw new Error('function not found'); };
   await runLimits(db, mails);
   assert.equal(mails.filter(m => m.to === 'ali@transport.com').length, 1);
+});
+
+test('email is unlimited, and an expired unpaid trial falls back to Starter', () => {
+  assert.ok(capOf('starter', 'email') >= 1e8);
+  assert.deepEqual([LIMITS.starter.ai, LIMITS.growth.ai, LIMITS.pro.ai, LIMITS.growth.wa, LIMITS.pro.wa], [6, 250, 1500, 500, 2500]);
+  const now = Date.parse('2026-11-20T00:00:00Z'), iso = h => new Date(now + h * 3600e3).toISOString();
+  assert.equal(effPlan(null, now), 'starter');
+  assert.equal(effPlan({ plan: 'growth', trial_ends: iso(10), paid: false }, now), 'growth');
+  assert.equal(effPlan({ plan: 'growth', trial_ends: iso(-1), paid: false }, now), 'starter');
+  assert.equal(effPlan({ plan: 'growth', trial_ends: iso(-1), paid: true }, now), 'growth');
+  assert.equal(effPlan({ plan: 'pro', trial_ends: null, paid: false }, now), 'pro');
 });

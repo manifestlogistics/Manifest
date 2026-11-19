@@ -123,7 +123,7 @@ section.s{padding:5.25rem 0;border-top:1px solid #111}
 .ent{margin-top:0.875rem;display:flex;justify-content:space-between;align-items:center;gap:1.125rem;background:var(--card);border:1px solid var(--line);border-radius:1.125rem;padding:1.25rem 1.5rem}
 .ent b{font-weight:650}.ent p{color:var(--mu);font-size:0.875rem;margin-top:2px}
 .hs{display:flex;gap:0.875rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:0.25rem 1.25rem 1rem;margin:0 -1.25rem;scrollbar-width:thin}
-.hs .pc{flex:0 0 min(84%,20rem);scroll-snap-align:center}
+.hs .pc{flex:0 0 min(84%,20rem);scroll-snap-align:center}.hs .pc:first-child{margin-left:auto}.hs .pc:last-child{margin-right:auto}
 @media(min-width:56.25rem){.hs .pc{flex:0 0 21.25rem}}
 /* faq */
 .faq{margin-top:3.5rem;max-width:none;margin-left:auto;margin-right:auto}

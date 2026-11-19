@@ -1,6 +1,6 @@
 // Manifest worker. Runs every few minutes on GitHub Actions.
 // 1) read replies  2) flag silence  3) send due check-ins  4) forward support messages
-import { LIMITS, capOf, HR, LABELS, buildCheckin, tagFrom, cleanReply, classify, isAuto, isBounce, isSilent, nextCheckin, agoText, validEmail, clean } from './lib.mjs';
+import { LIMITS, capOf, effPlan, HR, LABELS, buildCheckin, tagFrom, cleanReply, classify, isAuto, isBounce, isSilent, nextCheckin, agoText, validEmail, clean } from './lib.mjs';
 
 export function makeDb(url, key, f = globalThis.fetch) {
   const legacy = String(key).startsWith('eyJ');
@@ -86,7 +86,7 @@ export async function main(env, deps) {
   const month = iso(now).slice(0, 7), plans = {}, stopped = new Set();
   let limitsOff = false;
   const planOf = async id => {
-    if (!(id in plans)) { try { const r = await db.get(`billing?select=plan&owner=eq.${id}`); const p = r && r[0] && r[0].plan; plans[id] = LIMITS[p] ? p : 'starter'; } catch (e) { plans[id] = null; } }
+    if (!(id in plans)) { try { const r = await db.get(`billing?select=plan,trial_ends,paid&owner=eq.${id}`); plans[id] = effPlan(r && r[0], now); } catch (e) { plans[id] = null; } }
     return plans[id];
   };
   const NAMES = { email: 'emails', wa: 'WhatsApp messages', ai: 'AI reads' };
@@ -103,7 +103,8 @@ export async function main(env, deps) {
     if (limitsOff || !db.rpc) return { ok: true, src: 'off' };
     const plan = await planOf(owner); if (!plan) { limitsOff = true; log('limits not set up yet (run schema7.sql), sending without limits'); return { ok: true, src: 'off' }; }
     if (stopped.has(owner + kind)) return { ok: false };
-    let r; try { r = await db.rpc('spend', { o: owner, k: kind, cap: Math.min(capOf(plan, kind), 2e9), m: month, n: 1 }); } catch (e) { limitsOff = true; log('limits not set up yet (run schema7.sql), sending without limits'); return { ok: true, src: 'off' }; }
+    const cap = capOf(plan, kind, (deps && deps.limits) || LIMITS); if (cap >= 100000000) return { ok: true, src: 'off' }; // unlimited
+    let r; try { r = await db.rpc('spend', { o: owner, k: kind, cap, m: month, n: 1 }); } catch (e) { limitsOff = true; log('limits not set up yet (run schema7.sql), sending without limits'); return { ok: true, src: 'off' }; }
     if (r.warn) { try { await limitNotice(owner, kind, r, plan); } catch (e) { log('limit notice failed:', e.message); } }
     if (r.src === 'none') { stopped.add(owner + kind); stat.limited = (stat.limited || 0) + 1; return { ok: false }; }
     return { ok: true, src: r.src };

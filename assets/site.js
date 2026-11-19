@@ -18,11 +18,11 @@ if(ft){ft.className='ft';ft.innerHTML='<div class="wrap"><div class="fg"><div><a
 '<div><h4>Support &amp; Resources</h4><ul><li><a href="/info/?p=help">Help Center &amp; Guides</a></li><li><a href="mailto:'+MAIL+'?subject=Support%20ticket">Submit a Support Ticket</a></li><li><a href="/info/?p=whatsapp">WhatsApp &amp; Email Setup</a></li><li><a href="mailto:'+MAIL+'?subject=Book%20a%20demo">Book a Demo (Enterprise)</a></li><li><a href="mailto:'+MAIL+'">Contact Us</a></li></ul></div>'+
 '<div><h4>Legal &amp; Compliance</h4><ul><li><a href="/info/?p=privacy">Privacy Policy</a></li><li><a href="/info/?p=terms">Terms of Service</a></li><li><a href="/info/?p=dpa">Data Processing Agreement (DPA)</a></li><li><a href="/info/?p=cookies">Cookie Policy</a></li><li><a href="/info/?p=security">Security &amp; Trust</a></li></ul></div></div><div class="cp">© '+new Date().getFullYear()+' Manifest. All rights reserved.</div></div>'}
 /* pricing */
-var P=[{n:'Starter',p:'$0',u:'/ forever',b:['5 active shipments at once','1 user','Unlimited email check-ins','10 AI email reads / mo','In-app delay alerts & board view','22+ messaging languages'],c:'Start Free'},
+var P=[{n:'Starter',p:'$0',u:'/ forever',b:['5 active shipments at once','1 user','Unlimited email check-ins','6 AI email reads / mo','In-app delay alerts & board view','22+ messaging languages'],c:'Start Free'},
 {n:'Growth',p:'$69',u:'/ mo',hot:1,b:['100 active shipments at once','1 user','500 WhatsApp check-ins / mo','250 AI email & PDF reads / mo','5 GB Document storage','Integrations <em>(Coming soon)</em>','Send from your own email'],c:'Start 3-day free trial'},
 {n:'Pro',p:'$149',u:'/ mo',b:['500 active shipments at once','10 team members (role-based)','2,500 WhatsApp check-ins / mo','1,500 AI email & PDF reads / mo','25 GB Document storage','Priority 8h support','Everything in Growth'],c:'Start 3-day free trial'}];
 window.renderPricing=function(el,cls){el.className=cls;el.innerHTML=P.map(function(x){return'<div class="pc'+(x.hot?' hot':'')+'">'+(x.hot?'<span class="bd">Most Popular</span>':'')+'<h3>'+x.n+'</h3><div class="pr">'+x.p+' <small>'+x.u+'</small></div><ul>'+x.b.map(function(i){return'<li><span>'+i+'</span></li>'}).join('')+'</ul><a class="pill'+(x.hot?' glow':'')+'" href="/app/">'+x.c+'</a></div>'}).join('')};
-var pe=document.getElementById('pricing-grid');if(pe)renderPricing(pe,'pg');
+var pe=document.getElementById('pricing-grid');if(pe)renderPricing(pe,'hs');
 var ph=document.getElementById('pricing-hs');if(ph)renderPricing(ph,'hs');
 /* reveal */
 var rv=document.querySelectorAll('.rv');

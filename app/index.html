@@ -127,9 +127,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 .tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:18px;scrollbar-width:none}
 .tabs button{border:0;background:transparent;padding:10px 14px;font-weight:600;color:var(--mute);border-bottom:2px solid transparent;white-space:nowrap}
 .tabs button.on{color:var(--accent);border-color:var(--accent)}
-.plans{display:grid;gap:12px}
-@media(min-width:700px){.plans{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1200px){.plans{grid-template-columns:repeat(4,1fr)}}
+.plans{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}.plans .plan{flex:0 0 min(82%,19rem);scroll-snap-align:center}@media(min-width:1100px){.swipehint{display:none}}
 .plan{display:flex;flex-direction:column}
 .plan>.sm{min-height:40px}
 .plan.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -453,7 +451,7 @@ input[type=date]:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px
 .bk-type.on,.bk-plan.on{border-color:#fff;background:#0D0D0D}
 .bk-row{display:grid;grid-template-columns:120px 1fr;gap:8px}
 .bk-two{display:grid;gap:0 12px}@media(min-width:560px){.bk-two{grid-template-columns:1fr 1fr}}
-.bk-plans{display:grid;gap:10px;margin-bottom:18px}@media(min-width:700px){.bk-plans{grid-template-columns:repeat(3,1fr)}}
+.bk-plans{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-bottom:18px;padding-bottom:8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}.bk-plans .bk-plan{flex:0 0 min(80%,17rem);width:auto;scroll-snap-align:center}
 .bk-plan{cursor:default;display:flex;flex-direction:column;gap:6px;padding:16px}
 .bk-plan.free{cursor:pointer}.bk-plan .pr{font-size:26px;font-weight:700;letter-spacing:-.02em}.bk-plan .pr small{font-size:13px;color:#A1A1AA;font-weight:500}
 .bk-plan ul{margin:4px 0 0;padding-left:18px;color:#D4D4D8;font-size:13px;display:grid;gap:3px}
@@ -551,27 +549,30 @@ function fdate(ts){return new Date(ts).toLocaleDateString(undefined,{day:'numeri
 /* ============ state ============ */
 const KEY='manifest_v2';
 const PLANS={
- starter:{name:'Starter',amt:0,price:'$0',per:'/mo',who:'For independent importers',limit:5,seats:1,wa:false,domain:false,feat:['Up to 5 shipments a month','300 update emails a month','Just you (one person)','Manifest name on messages']},
- growth:{name:'Growth',amt:69,price:'$69',per:'/mo',who:'For solo logistics coordinators',limit:100,seats:1,wa:true,domain:true,feat:['Up to 100 active shipments','6,000 emails and 500 WhatsApp messages a month','Send from your own email','Help within 24 hours']},
- pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'For multi-user operations teams',limit:500,seats:10,wa:true,domain:true,api:true,feat:['Up to 500 active shipments','30,000 emails and 2,500 WhatsApp messages a month','Send from your own email address','Connect Google Sheets, Slack and more','Reads your emails and PDFs for you','See which suppliers are late most','10 people on your team','Priority help when you need it']},
- enterprise:{name:'Enterprise',amt:399,price:'Custom',per:'From $399/mo',who:'Big fleets and freight agents',limit:Infinity,seats:999,wa:true,domain:true,api:true,feat:['Unlimited shipments','Integrations built for you','Guaranteed reply times','Your own WhatsApp line','Different access for each person','Your own account manager']}
+ starter:{name:'Starter',amt:0,price:'$0',per:'/mo',who:'For independent importers',limit:5,seats:1,wa:false,domain:false,feat:['5 active shipments at once','1 user','Unlimited email check-ins','6 AI email reads / mo','In-app delay alerts & board view','22+ messaging languages']},
+ growth:{name:'Growth',amt:69,price:'$69',per:'/mo',who:'For solo logistics coordinators',limit:100,seats:1,wa:true,domain:true,feat:['100 active shipments at once','1 user','500 WhatsApp check-ins / mo','250 AI email & PDF reads / mo','5 GB document storage','Integrations (coming soon)','Send from your own email']},
+ pro:{name:'Pro / Fleet',amt:149,price:'$149',per:'/mo',who:'For multi-user operations teams',limit:500,seats:10,wa:true,domain:true,api:true,feat:['500 active shipments at once','10 team members (role-based)','2,500 WhatsApp check-ins / mo','1,500 AI email & PDF reads / mo','25 GB document storage','Priority 8h support','Everything in Growth']},
+ enterprise:{name:'Enterprise',amt:499,price:'Custom',per:'From $499/mo',who:'Big fleets and freight agents',limit:Infinity,seats:999,wa:true,domain:true,api:true,feat:['Unlimited shipments','Integrations built for you','Guaranteed reply times','Your own WhatsApp line','Different access for each person','Your own account manager']}
 };
-const CAPS={starter:{email:300,wa:0,ai:0},growth:{email:6000,wa:500,ai:100},pro:{email:30000,wa:2500,ai:1000},enterprise:null};
-const PACKS=[{id:'wa500',kind:'wa',n:500,usd:15,name:'500 WhatsApp messages'},{id:'wa2000',kind:'wa',n:2000,usd:50,name:'2,000 WhatsApp messages'},{id:'em10k',kind:'email',n:10000,usd:5,name:'10,000 emails'},{id:'ai500',kind:'ai',n:500,usd:5,name:'500 AI reads'}];
-const UK={email:'Emails',wa:'WhatsApp messages',ai:'AI reads'};
+const CAPS={starter:{email:Infinity,wa:0,ai:6},growth:{email:Infinity,wa:500,ai:250},pro:{email:Infinity,wa:2500,ai:1500},enterprise:null};
+const PACKS=[{id:'wa500',kind:'wa',n:500,usd:15,name:'500 WhatsApp check-ins'},{id:'wa2000',kind:'wa',n:2000,usd:50,name:'2,000 WhatsApp check-ins'},{id:'ai500',kind:'ai',n:500,usd:5,name:'500 AI reads'}];
+const UK={email:'Email check-ins',wa:'WhatsApp check-ins',ai:'AI email & PDF reads'};
 let U={ok:null,t:0,email:0,wa:0,ai:0,packs:{}};
-async function usageLoad(){if(!SESS)return;U.t=Date.now();try{const m=new Date().toISOString().slice(0,7);const [u,p,b]=await Promise.all([api('usage?select=*&month=eq.'+m),api('pack_credits?select=*'),api('billing?select=plan')]);const r=(u&&u[0])||{};U.email=r.email||0;U.wa=r.wa||0;U.ai=r.ai||0;U.packs={};(p||[]).forEach(x=>{U.packs[x.kind]=x.credits});U.ok=true;if(b&&b[0]&&PLANS[b[0].plan]&&b[0].plan!==S.settings.plan){S.settings.plan=b[0].plan}}catch(e){U.ok=false}render()}
+function effBill(b){if(!b||!PLANS[b.plan])return{plan:'starter',trial:null,used:false};const used=!!b.trial_used;if(b.paid||!b.trial_ends)return{plan:b.plan,trial:null,used};const t=Date.parse(b.trial_ends);return t>Date.now()?{plan:b.plan,trial:t,used}:{plan:'starter',trial:null,used}}
+function applyBilling(b){const e=effBill(b),st=S.settings,ch=e.plan!==st.plan||e.trial!==st.trialEnds||e.used!==st.trialUsed;st.plan=e.plan;st.trialEnds=e.trial;st.trialUsed=e.used;return ch}
+async function usageLoad(){if(!SESS)return;U.t=Date.now();try{const m=new Date().toISOString().slice(0,7);const [u,p,b]=await Promise.all([api('usage?select=*&month=eq.'+m),api('pack_credits?select=*'),api('billing?select=*')]);const r=(u&&u[0])||{};U.email=r.email||0;U.wa=r.wa||0;U.ai=r.ai||0;U.packs={};(p||[]).forEach(x=>{U.packs[x.kind]=x.credits});U.ok=true;applyBilling(b&&b[0])}catch(e){U.ok=false}render()}
 function usageReset(){const d=new Date();return Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)}
 function usageCard(){const k=S.settings.plan||'starter',cap=CAPS[k];if(!SESS)return'';
  if(U.ok===null||Date.now()-U.t>60000){if(!U.busy){U.busy=1;usageLoad().finally(()=>{U.busy=0})}}
  if(U.ok===false)return`<h2 style="margin:22px 0 10px">Messages this month</h2><div class="card"><p class="sm mute">Your message count will show here soon.</p></div>`;
  if(U.ok===null)return'';
  const rows=['email','wa','ai'].map(x=>{const c=cap?cap[x]:null,u=U[x],pk=U.packs[x]||0;
-  if(cap&&!c)return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">${UK[x]}</b><span class="sm mute">${'Starts on Growth'}</span></div></div>`;
+  if(x==='email')return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">${UK[x]}</b><span class="sm mute">Unlimited</span></div></div>`;
+  if(cap&&!c)return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">${UK[x]}</b><span class="sm mute">Starts on Growth</span></div></div>`;
   const pct=c?Math.min(100,u/c*100):8;
   return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">${UK[x]}</b><span class="sm mute tnum">${c?u.toLocaleString()+' of '+c.toLocaleString()+' used':u.toLocaleString()+' used'}</span></div><div class="meter ${c&&pct>=100?'full':''}" style="margin-top:8px"><i style="width:${pct}%"></i></div>${pk?`<div class="xs mute" style="margin-top:6px">+ ${pk.toLocaleString()} extra from packs</div>`:''}</div>`}).join('');
  const packs=PACKS.filter(p=>cap&&cap[p.kind]);
- return`<h2 style="margin:22px 0 10px">Messages this month</h2><div class="card">${rows}<p class="xs mute" style="margin:0">Resets on ${fdate(usageReset())}. If you reach the limit we pause sending until it resets. We never charge you extra on our own.</p></div>
+ return`<h2 style="margin:22px 0 10px">Messages this month</h2><div class="card">${rows}<p class="xs mute" style="margin:0">Resets on ${fdate(usageReset())}. If you reach a limit we pause that one until it resets. We never charge you extra on our own.</p></div>
  ${packs.length?`<h2 style="margin:22px 0 10px">Need more? Add a pack</h2><div class="card"><div class="list">${packs.map(p=>`<div class="li"><div><div style="font-weight:600">${esc(p.name)}</div><div class="xs mute">Never expires. Used after your monthly amount.</div></div><button class="btn sm" onclick="packAsk('${p.id}')">${money(p.usd)}</button></div>`).join('')}</div></div>`:''}`}
 function packAsk(id){const p=PACKS.find(x=>x.id===id);openModal(`<h2>${esc(p.name)}</h2><p class="mute" style="margin:8px 0 14px">Packs cost ${money(p.usd)} and never expire. Online payment is not open yet. Tap below and we will set it up for you by email.</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" onclick="packSend('${p.id}')">Request this pack</button></div>`)}
 function packSend(id){const p=PACKS.find(x=>x.id===id);closeModal();ticket('Pack request: '+p.name,'Billing','Low','Wants to buy: '+p.name+' ('+money(p.usd)+')');toast('Thanks! We will email you to set up your pack.')}
@@ -638,7 +639,7 @@ const active=()=>S.shipments.filter(s=>!s.archived&&!s.deletedAt);
 const countedActive=()=>active().filter(s=>!['delivered','cancelled'].includes(s.status));
 const monthStart=()=>{const d=new Date();d.setDate(1);d.setHours(0,0,0,0);return d.getTime()};
 const monthReset=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth()+1,1).getTime()};
-const monthCount=()=>S.shipments.filter(x=>(x.created||0)>=monthStart()).length;
+const monthCount=()=>countedActive().length;
 const byId=id=>S.shipments.find(s=>s.id===id);
 /* ============ seed ============ */
 function ev(ts,type,text){return{ts:Date.now()-ts,type,text}}
@@ -857,9 +858,9 @@ function bkSaveBiz(e){e.preventDefault();
  if(wa&&!S.user.phone)S.user.phone='+'+dc+wa;
  AUTH.w={...AUTH.w,biz,iso,tz,cur,type,alerts:list.join(', '),dial,wa:$('#b-wa').value};
  save();bkGo(3);return false}
-function bkPlan(){const P=[['Starter','$0','/mo','Solo shops and small sellers',['Up to 5 shipments a month','Email updates','Late alerts'],true],['Growth','$69','/mo','Local shops and growing businesses',['Up to 100 active shipments','Email and WhatsApp updates','Send from your own email'],false],['Pro / Fleet','$149','/mo','Busy teams with lots of shipments',['Up to 250 shipments a month','Your own email address','10 people on your team'],false]];
- return`<div class="bk-card">${bkSteps(3)}<h1>Choose a plan</h1><p class="bk-sub">Start free. Paid plans are opening soon, and you will be able to upgrade from Settings.</p>
- <div class="bk-plans">${P.map(([n,p,u,d,f,free])=>`<div class="bk-plan ${free?'free on':''}">${free?'<span class="bk-tag">Selected</span>':'<span class="bk-tag soon">Opening soon</span>'}<b>${n}</b><div class="pr">${p}<small>${u}</small></div><span style="color:#A1A1AA;font-size:13px">${d}</span><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>
+function bkPlan(){
+ return`<div class="bk-card">${bkSteps(3)}<h1>Choose a plan</h1><p class="bk-sub">Start free. You can try Growth or Pro free for 3 days from Settings after setup. Swipe to compare.</p>
+ <div class="bk-plans">${['starter','growth','pro'].map(k=>{const p=PLANS[k],free=k==='starter';return`<div class="bk-plan ${free?'free on':''}">${free?'<span class="bk-tag">Selected</span>':k==='growth'?'<span class="bk-tag soon">Most popular</span>':'<span class="bk-tag soon">3-day free trial</span>'}<b>${p.name}</b><div class="pr">${p.price}<small>${free?'/ forever':'/ mo'}</small></div><span style="color:#A1A1AA;font-size:13px">${p.who}</span><ul>${p.feat.map(x=>`<li>${x}</li>`).join('')}</ul></div>`}).join('')}</div>
  <div id="p-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="p-btn" onclick="bkFinish()">Complete Setup</button><button type="button" class="bk-ghost" onclick="bkGo(2)">Back</button></div>${bkTail(false)}`}
 async function bkFinish(){const b=$('#p-btn');b.disabled=true;b.textContent='Setting things up…';
@@ -923,7 +924,7 @@ function vKpi(){const k=V.kpi||'prog',act=countedActive(),all=active();let h='';
  else if(k==='reply'){const m={};all.filter(s=>s.respHrs!=null).forEach(s=>{const n=tp(s).name;(m[n]=m[n]||[]).push(s.respHrs)});const rows=Object.entries(m).map(([n,a])=>[n,a.reduce((x,y)=>x+y,0)/a.length,a.length]).sort((x,y)=>x[1]-y[1]);
   h=`<h2>Reply time by transporter</h2><p class="sm mute" style="margin:4px 0 8px">Average time each one takes to answer.</p>`+(rows.length?`<div class="list">${rows.map(([n,v,c])=>`<div class="li"><div style="font-weight:600">${esc(n)}</div><div class="sm mute tnum">${v<1?'Under 1 hour':(Math.round(v*10)/10)+' hours'} · ${c} repl${c===1?'y':'ies'}</div></div>`).join('')}</div>`:'<div class="empty"><b>No replies yet</b>Reply times appear after your transporters answer.</div>')}
  else{const mc=monthCount(),lim=plan().limit,list=all.filter(s=>s.status!=='archived');
-  h=`<h2>Shipments this month</h2><div class="n tnum" style="font-size:28px;margin:6px 0">${mc}${lim===Infinity?'':' / '+lim}</div><p class="sm mute">${esc(plan().name)} plan${lim===Infinity?'':': '+mc+' of '+lim+' shipments used'}</p><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin:10px 0 14px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div>`+kpiList(list)}
+  h=`<h2>Active shipments</h2><div class="n tnum" style="font-size:28px;margin:6px 0">${mc}${lim===Infinity?'':' / '+lim}</div><p class="sm mute">${esc(plan().name)} plan${lim===Infinity?'':': '+mc+' of '+lim+' active shipments in use'}</p><div class="meter ${lim!==Infinity&&mc>=lim?'full':''}" style="margin:10px 0 14px"><i style="width:${lim===Infinity?8:Math.min(100,mc/lim*100)}%"></i></div>`+kpiList(list)}
  return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="go('dashboard')">${icon('back')||'←'}</button></div><div class="card">${h}</div>`}
 
 function addMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Add a shipment</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div><div class="mlist" style="margin-top:0"><button class="mrow2" onclick="closeModal();editShip()">Type it in<span>›</span></button><button class="mrow2" onclick="closeModal();fwdMail()">Paste from email<span>›</span></button></div>`)}
@@ -970,7 +971,7 @@ function vDash(){
   <div class="card metric tap" role="button" tabindex="0" onclick="kpi('prog')"><div class="lab">Shipments in progress</div><div class="mrow"><div class="n tnum">${act.length}</div>${spark(actv.slice(7),'#2563EB')}</div>${trend(actv.slice(7).reduce((x,y)=>x+y,0),actv.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
   <div class="card metric tap" role="button" tabindex="0" onclick="kpi('late')"><div class="lab">Running late</div><div class="mrow"><div class="n tnum" style="color:${pct>=40?'var(--red-tx)':pct>=20?'var(--amber-tx)':'inherit'}">${delayed}</div>${spark(wrn.slice(7),pct>=40?'#DC2626':pct>=20?'#F59E0B':'#10B981')}</div><div class="risk" title="Risk level">${[1,2,3,4,5].map(i=>`<i class="${pct>=i*20-19?(pct>=40?'r':pct>=20?'a':'g'):''}"></i>`).join('')}</div>${trend(wrn.slice(7).reduce((x,y)=>x+y,0),wrn.slice(0,7).reduce((x,y)=>x+y,0),false)}</div>
   <div class="card metric tap" role="button" tabindex="0" onclick="kpi('reply')"><div class="lab">Usually replies in</div><div class="mrow"><div class="n tnum" style="font-size:${avg==null?'16px':'24px'}">${avg==null?'No replies yet':avg<1?'Under 1 hour':(Math.round(avg*10)/10)+' hours'}</div>${spark(rpl.slice(7),'#2563EB')}</div>${trend(rpl.slice(7).reduce((x,y)=>x+y,0),rpl.slice(0,7).reduce((x,y)=>x+y,0),true)}</div>
-  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('month')"><div class="lab">Total shipments this month</div><div class="mrow"><div class="n tnum">${mc}</div></div></div>
+  <div class="card metric tap" role="button" tabindex="0" onclick="kpi('month')"><div class="lab">Active shipments</div><div class="mrow"><div class="n tnum">${mc}</div></div></div>
  </div>
  <div class="card" style="margin-bottom:14px"><h2 style="margin-bottom:4px">Needs your attention</h2><p class="sm mute" style="margin-bottom:6px">Late shipments, shipments held at customs, and transporters who haven't replied.</p>
  ${need.length?`<div class="list">${need.map(s=>`<div class="li"><div style="min-width:0"><div style="font-weight:600">${esc(s.ref)} ${badge(s.status)}</div><div class="sm mute">${esc(tp(s).name)}${s.status==='pending'?' · no reply for '+ago(s.last).replace(' ago',''):''}</div></div><div style="display:flex;gap:8px"><button class="btn sm" onclick="checkIn(${s.id})">Ask now</button><button class="btn sm" onclick="go('shipments');V.open=${s.id};render()">Open</button></div></div>`).join('')}</div>`:`<div class="empty"><b>All good for now!</b>Anything late, or any transporter who goes quiet, will show up here.</div>`}</div>`;
@@ -1032,7 +1033,7 @@ const DOCGB={starter:.2,growth:5,pro:25,enterprise:100};
 const fmtB=b=>b>=1073741824?(b/1073741824).toFixed(2)+' GB':b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round((b||0)/1024))+' KB';
 const docNames=s=>s.mode==='local'?DOCS_LOCAL:DOCS_IMPORT;
 const docCount=s=>docNames(s).filter(n=>(s.docs||{})[n]).length;
-const docUsed=()=>S.shipments.reduce((a,s)=>a+Object.values(s.docs||{}).reduce((x,d)=>x+(d&&d.bytes||0),0),0);
+const docUsed=()=>S.shipments.reduce((a,s)=>a+Object.values(s.docs||{}).reduce((x,d)=>x+(d&&d.bytes||0),0),0)+(S.vault||[]).reduce((a,d)=>a+(d.bytes||0),0);
 const docCap=()=>(DOCGB[S.settings.plan||'starter']||.2)*1073741824;
 function sbPath(p){return p.split('/').map(encodeURIComponent).join('/')}
 async function sbAuthH(extra){if(SESS&&SESS.expires_at-90<Date.now()/1000){try{await refreshSess()}catch(e){}}return Object.assign({apikey:SB_KEY,Authorization:'Bearer '+(SESS&&SESS.access_token)},extra||{})}
@@ -1046,7 +1047,49 @@ function docsTab(s){const names=docNames(s);s.docs=s.docs||{};const can=curRole(
  return`<div class="ins-h"><h3>Documents</h3><span class="xs mute">${docCount(s)} of ${names.length} attached</span></div>
  <p class="xs mute" style="margin:0 0 10px">Drag a PDF onto a row, choose a file, or take a photo of a stamped receipt.</p>`+names.map((n,i)=>{const d=s.docs[n];
  return`<div class="docrow dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="dropDoc(event,${s.id},${i})"><div class="di ${d?'ok':''}">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${n} ${docBadge(d)}</div><div class="xs mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d?esc(d.name)+' · '+(d.bytes?fmtB(d.bytes):d.size)+' · '+fday(d.ts):'Not attached yet'}</div>
- <div class="dact">${d?(d.path?`<button class="btn sm" onclick="previewDoc(${s.id},${i})">Preview</button><button class="btn sm" onclick="dlDoc(${s.id},${i})">Download</button>`:''):''}${can?(d?`<button class="btn sm" onclick="rmDoc(${s.id},${i})">Remove</button>`:`<label class="btn sm" style="cursor:pointer">Upload file<input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label><label class="btn sm" style="cursor:pointer">Take photo<input type="file" hidden accept="image/*" capture="environment" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label>`):''}${d&&d.path&&can&&i<2&&s.mode!=='local'?'<button class="btn sm" disabled title="Coming soon">✨ Extract with AI · soon</button>':''}</div></div></div>`}).join('')}
+ <div class="dact">${d?(d.path?`<button class="btn sm" onclick="previewDoc(${s.id},${i})">Preview</button><button class="btn sm" onclick="dlDoc(${s.id},${i})">Download</button>`:''):''}${can?(d?`<button class="btn sm" onclick="rmDoc(${s.id},${i})">Remove</button>`:`<label class="btn sm" style="cursor:pointer">Upload file<input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label><label class="btn sm" style="cursor:pointer">Take photo<input type="file" hidden accept="image/*" capture="environment" onchange="addDoc(${s.id},${i},this.files[0]);this.value=''"></label>`):''}${d&&d.path&&can&&i<2&&s.mode!=='local'?'<button class="btn sm" disabled title="Coming soon">✨ Extract with AI · soon</button>':''}</div></div></div>`}).join('')+docsExtra(s,can)}
+/* ---- documents you add yourself (with a shipment number, type, document number, date and notes) ---- */
+const DTYPES=['Bill of Lading','Commercial invoice','Packing list','Customs entry form','Delivery note','Invoice','Proof of delivery','Certificate of origin','Insurance','Other'];
+const kindOf=n=>/lading|delivery note|proof/i.test(n)?'bl':/invoice/i.test(n)?'inv':/customs|origin|insurance|packing/i.test(n)?'cus':'oth';
+const docDay=v=>{try{return new Date(v+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch(e){return v}};
+const shipOf=d=>S.shipments.find(x=>x.id===d.sid&&!x.deletedAt)||null;
+function vaultRow(r,inShip){const d=r.d,s=r.s,can=curRole()!=='viewer';
+ const where=d.sid?(s?esc(s.ref):'Shipment removed'):'Not linked to a shipment';
+ return`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.type)}${d.number?' · '+esc(d.number):''}</div><div class="xs mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.name)}</div><div class="xs mute">${inShip?'':where+' · '}${d.date?docDay(d.date)+' · ':''}${fmtB(d.bytes||0)}</div>${d.notes?`<div class="xs mute" style="margin-top:2px">${esc(d.notes)}</div>`:''}
+ <div class="dact"><button class="btn sm" onclick="pvV('${d.id}')">Preview</button><button class="btn sm" onclick="dlV('${d.id}')">Download</button>${!inShip&&s?`<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${s.id};render()">Open shipment</button>`:''}${can?`<button class="btn sm" onclick="rmV('${d.id}')">Remove</button>`:''}</div></div></div>`}
+function docsExtra(s,can){const x=(S.vault||[]).filter(d=>d.sid===s.id);
+ return`<div class="ins-h" style="margin-top:16px"><h3>Other documents</h3>${can?`<button class="btn sm" onclick="openAddDoc(${s.id})">+ Add document</button>`:''}</div>`+(x.length?x.map(d=>vaultRow({d,s},true)).join(''):'<p class="xs mute">Packing lists, certificates, extra invoices and anything else for this shipment.</p>')}
+function openAddDoc(sid){if(blocked())return;V.nd={file:null};
+ const ships=active().slice().sort((a,b)=>(b.created||0)-(a.created||0)),today=new Date().toISOString().slice(0,10);
+ openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2>Add a document</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
+ <div class="field"><label>File</label><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn" style="cursor:pointer">Choose file<input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx" onchange="ndPick(this.files[0]);this.value=''"></label><label class="btn" style="cursor:pointer">Take photo<input type="file" hidden accept="image/*" capture="environment" onchange="ndPick(this.files[0]);this.value=''"></label></div><div id="nd-fn" class="xs mute" style="margin-top:6px">No file chosen. PDF, photo, Word or Excel, up to 15 MB.</div></div>
+ <div class="field"><label for="nd-s">Shipment number</label><select id="nd-s"><option value="">Not linked to a shipment</option>${ships.map(s=>`<option value="${s.id}" ${s.id===sid?'selected':''}>${esc(s.ref)}${ident(s)?' · '+esc(ident(s)):''}</option>`).join('')}</select></div>
+ <div class="field"><label for="nd-t">Document type</label><select id="nd-t">${DTYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+ <div class="row2"><div class="field"><label for="nd-n">Document number</label><input id="nd-n" type="text" maxlength="60" placeholder="Like BL or invoice number" autocomplete="off"></div><div class="field"><label for="nd-d">Document date</label><input id="nd-d" type="date" value="${today}"></div></div>
+ <div class="field"><label for="nd-o">Notes (optional)</label><textarea id="nd-o" maxlength="300" style="min-height:64px" placeholder="Anything you want to find it by later"></textarea></div>
+ <div id="nd-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" id="nd-b" style="width:100%" onclick="saveNewDoc()">Save document</button>`)}
+function ndPick(f){if(!f)return;const er=$('#nd-err');
+ if(!(/\.(pdf|png|jpe?g|webp|heic|docx?|xlsx?)$/i.test(f.name)||/^image\//.test(f.type))){er.textContent='Please choose a PDF, photo, Word or Excel file.';return}
+ if(f.size>15*1024*1024){er.textContent='That file is over 15 MB. Please choose a smaller one.';return}
+ er.textContent='';V.nd.file=f;$('#nd-fn').textContent=f.name+' · '+fmtB(f.size)}
+async function saveNewDoc(){const er=$('#nd-err'),b=$('#nd-b'),f=V.nd&&V.nd.file;
+ if(!f){er.textContent='Please choose a file first.';return}
+ if(docUsed()+f.size>docCap()){er.textContent='You have used all your storage. Remove a file or upgrade your plan.';return}
+ const sidv=$('#nd-s').value,sh=sidv?S.shipments.find(x=>String(x.id)===sidv):null,id='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+  safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=SESS.user.id+'/v/'+id+'-'+safe;
+ b.disabled=true;b.textContent='Saving…';
+ try{await sbUpload(path,f)}catch(e){er.textContent=e.message;b.disabled=false;b.textContent='Save document';return}
+ const d={id,sid:sh?sh.id:null,type:$('#nd-t').value,number:$('#nd-n').value.trim(),date:$('#nd-d').value,notes:$('#nd-o').value.trim(),name:f.name,bytes:f.size,mime:f.type||'',path,ts:Date.now()};
+ (S.vault=S.vault||[]).unshift(d);if(sh)sh.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:d.type+(d.number?' '+d.number:'')+' added by '+S.user.name});
+ save();closeModal();toast('Document saved');render()}
+async function vUrl(id,dl){const d=(S.vault||[]).find(x=>x.id===id);if(!d)return null;try{const u=await sbSign(d.path);return dl?u+'&download='+encodeURIComponent(d.name):u}catch(e){toast(e.message);return null}}
+async function dlV(id){const u=await vUrl(id,true);if(u)window.open(u,'_blank')}
+async function pvV(id){const d=(S.vault||[]).find(x=>x.id===id),u=await vUrl(id);if(!u)return;
+ const img=/^image\//.test(d.mime)||/\.(png|jpe?g|webp)$/i.test(d.name),pdf=/pdf/i.test(d.mime)||/\.pdf$/i.test(d.name),s=shipOf(d);
+ openModal(`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><div style="min-width:0"><h2 style="font-size:17px;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</h2><div class="xs mute">${esc(d.type)}${d.number?' · '+esc(d.number):''}${s?' · '+esc(s.ref):''}</div></div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
+ ${img?`<img src="${u}" alt="${esc(d.name)}" style="width:100%;border-radius:10px;max-height:70vh;object-fit:contain;background:#f4f4f5">`:pdf?`<iframe src="${u}" title="${esc(d.name)}" style="width:100%;height:70vh;border:0;border-radius:10px;background:#f4f4f5"></iframe>`:'<p class="mute">This file type cannot be previewed. Use Download.</p>'}
+ <button class="btn" style="width:100%;margin-top:10px" onclick="dlV('${id}')">Download</button>`)}
+function rmV(id){if(blocked())return;const d=(S.vault||[]).find(x=>x.id===id);if(!d)return;sbRemove(d.path);S.vault=S.vault.filter(x=>x.id!==id);const s=shipOf(d);if(s)s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:d.type+' removed by '+S.user.name});save();toast('Document removed');render()}
 function dropDoc(e,id,i){e.preventDefault();e.currentTarget.classList.remove('drag');const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)addDoc(id,i,f)}
 async function addDoc(id,i,f){const s=byId(id);if(!f||!s)return;if(blocked())return;
  const ok=/\.(pdf|png|jpe?g|webp|heic|docx?|xlsx?)$/i.test(f.name)||/^image\//.test(f.type);
@@ -1072,15 +1115,16 @@ function setDtab(k){V.dtab=k;render()}
 /* documents page */
 function vDocs(){const q=(V.dq||'').toLowerCase(),f=V.df||'all',used=docUsed(),cap=docCap(),pct=Math.min(100,used/cap*100);
  const rows=[];S.shipments.filter(s=>!s.deletedAt).forEach(s=>docNames(s).forEach((n,i)=>{const d=(s.docs||{})[n];if(d)rows.push({s,n,i,d})}));
- const kindOf=n=>/lading|delivery note/i.test(n)?'bl':/invoice/i.test(n)?'inv':'cus';
- let list=rows.filter(r=>(f==='all'||kindOf(r.n)===f)&&(!q||[r.d.name,r.s.ref,r.s.containerId,r.s.supplier,r.n].join(' ').toLowerCase().includes(q)));
+ (S.vault||[]).forEach(d=>rows.push({v:1,s:shipOf(d),n:d.type,d,i:-1}));rows.sort((a,b)=>(b.d.ts||0)-(a.d.ts||0));
+ const hay=r=>[r.d.name,r.d.number,r.d.notes,r.d.type,r.s&&r.s.ref,r.s&&r.s.containerId,r.s&&r.s.vehicle,r.s&&r.s.supplier,r.s&&r.s.bol,r.n].filter(Boolean).join(' ').toLowerCase();
+ let list=rows.filter(r=>(f==='all'||kindOf(r.n)===f)&&(!q||hay(r).includes(q)));
  let miss=[];if(f==='missing'){active().filter(s=>!['delivered','cancelled'].includes(s.status)).forEach(s=>docNames(s).forEach((n,i)=>{if(!(s.docs||{})[n]&&(!q||[s.ref,s.containerId,s.supplier,n].join(' ').toLowerCase().includes(q)))miss.push({s,n,i})}));list=[]}
- const fl=[['all','All'],['bl','Bill of Lading'],['inv','Commercial Invoice'],['cus','Customs'],['missing','Missing docs']];
- return`<div class="topbar"><h1>Documents</h1></div>
+ const fl=[['all','All'],['bl','Bill of Lading'],['inv','Invoices'],['cus','Customs'],['oth','Other'],['missing','Missing docs']];
+ return`<div class="topbar"><h1>Documents</h1>${curRole()!=='viewer'?`<button class="btn pri plusbtn" aria-label="Add a document" onclick="openAddDoc()">${icon('plus')}</button>`:''}</div>
  <div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:10px"><b class="sm">Storage</b><span class="sm mute tnum">${fmtB(used)} of ${cap>=1073741824?(cap/1073741824)+' GB':Math.round(cap/1048576)+' MB'} used</span></div><div class="meter ${pct>=90?'full':''}" style="margin-top:8px"><i style="width:${Math.max(pct,used?2:0)}%"></i></div></div>
- <div style="display:flex;gap:8px;margin-bottom:10px"><input id="dq" type="search" placeholder="Search files..." value="${esc(V.dq||'')}" style="flex:1" oninput="clearTimeout(window._dt);window._dt=setTimeout(()=>{V.dq=document.getElementById('dq').value;render();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},250)">${dd('df',fl,f,'setDf')}</div>
+ <div style="display:flex;gap:8px;margin-bottom:10px"><input id="dq" type="search" placeholder="Search by shipment, number, type, notes..." value="${esc(V.dq||'')}" style="flex:1" oninput="clearTimeout(window._dt);window._dt=setTimeout(()=>{V.dq=document.getElementById('dq').value;render();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},250)">${dd('df',fl,f,'setDf')}</div>
  <div class="card">${f==='missing'?(miss.length?miss.map(m=>`<div class="docrow"><div class="di">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600">${esc(m.s.ref)} ${docBadge(null)}</div><div class="xs mute">${esc(m.n)} · ${esc(m.s.containerId||m.s.vehicle||m.s.supplier||'')}</div></div><button class="btn sm" onclick="V.dtab='documents';openShip(${m.s.id});V.tab='shipments';V.dtab='documents';render()">Upload</button></div>`).join(''):'<div class="empty"><span class="eico">'+icon('documents')+'</span><b>Nothing missing</b>Every active shipment has all its documents.</div>')
- :list.length?list.map(r=>`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.name)}</div><div class="xs mute">${esc(r.n)} · ${esc(r.s.ref)} · ${r.d.bytes?fmtB(r.d.bytes):r.d.size} · ${fday(r.d.ts)}</div><div class="dact">${r.d.path?`<button class="btn sm" onclick="previewDoc(${r.s.id},${r.i})">Preview</button><button class="btn sm" onclick="dlDoc(${r.s.id},${r.i})">Download</button>`:''}<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${r.s.id};render()">Open shipment</button></div></div></div>`).join(''):'<div class="empty"><span class="eico">'+icon('documents')+'</span><b>No documents yet</b>Open a shipment, go to its Documents tab and upload a Bill of Lading or invoice.</div>'}</div>`}
+ :list.length?list.map(r=>r.v?vaultRow(r):`<div class="docrow"><div class="di ok">${icon('file')}</div><div style="flex:1;min-width:0"><div class="sm" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.name)}</div><div class="xs mute">${esc(r.n)} · ${esc(r.s.ref)} · ${r.d.bytes?fmtB(r.d.bytes):r.d.size} · ${fday(r.d.ts)}</div><div class="dact">${r.d.path?`<button class="btn sm" onclick="previewDoc(${r.s.id},${r.i})">Preview</button><button class="btn sm" onclick="dlDoc(${r.s.id},${r.i})">Download</button>`:''}<button class="btn sm" onclick="V.dtab='documents';V.tab='shipments';V.open=${r.s.id};render()">Open shipment</button></div></div></div>`).join(''):'<div class="empty"><span class="eico">'+icon('documents')+'</span><b>No documents yet</b>Tap the + button to add a Bill of Lading, invoice or any other document.</div>'}</div>`}
 function threadHtml(s){const em=tp(s).email||'transporter',ch=s.channel==='both'?'Email and WhatsApp':'Email';
  const items=(s.tl||[]).slice().sort((a,b)=>a.ts-b.ts).filter(e=>['sent','reply'].includes(e.type));
  if(!items.length)return'<p class="sm mute">No messages yet. Use Ping transporter to ask for an update.</p>';
@@ -1162,7 +1206,7 @@ function menu(id){const s=byId(id);openModal(`<div style="display:flex;justify-c
 function editShip(id,pre){
  if(blocked())return;
  const s=Object.assign(id?{...byId(id)}:{mode:mode(),status:'in_transit',freq:mode()==='local'?'12h':(S.settings.rules.sea),channel:'email',transporter:''},pre||{});
- if(!id&&monthCount()>=plan().limit){openModal(`<h2>You have used all your shipments this month</h2><p class="mute" style="margin:8px 0 16px">${plan().name} includes ${plan().limit} new shipments a month. Your count starts again on ${fdate(monthReset())}. You can upgrade now for more room.</p><button class="btn pri" style="width:100%" onclick="closeModal();V.set='billing';go('settings')">See plans</button>`);return}
+ if(!id&&monthCount()>=plan().limit){openModal(`<h2>You have reached your shipment limit</h2><p class="mute" style="margin:8px 0 16px">${plan().name} includes ${plan().limit} active shipments at once. Mark one as delivered or archive it to make room, or upgrade for more.</p><button class="btn pri" style="width:100%" onclick="closeModal();V.set='billing';go('settings')">See plans</button>`);return}
  const L=s.mode==='local',t=(pre&&pre._t)?pre._t:(s.transporter?tp(s):{name:'',email:'',phone:'',lang:S.settings.lang});
  const f=(k,l,v,ph,ty)=>`<div class="field"><label for="f-${k}">${l}</label><input id="f-${k}" type="${ty||'text'}" value="${esc(v)}" placeholder="${esc(ph||'')}"></div>`;
  openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2>${id?'Edit shipment':'New shipment'}</h2><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
@@ -1280,22 +1324,28 @@ function sChan(){const s=S.settings,P=plan();
 function insVar(v){const t=$('#tpl');const p=t.selectionStart??t.value.length;t.value=t.value.slice(0,p)+v+t.value.slice(p);t.dispatchEvent(new Event('input'));setv('tpl',t.value)}
 function rmMember(i){const m=S.team.splice(i,1)[0];save();toast(m.email+' removed');render()}
 function money(n){return priceText(n)}
-function sBill(){const P=plan(),st=S.settings,n=monthCount(),lim=P.limit,paid=P.amt>0;
- const status=!paid?'Free plan. No payment needed.':st.cancelAt?`Ends on ${fdate(st.cancelAt)}. You keep everything until then.`:`Renews on ${fdate(st.renews||Date.now()+30*DAY)}. ${money(P.amt)} a month.`;
- return`<div class="card"><div class="cur-plan"><div><div class="sm mute">Your plan</div><h2 style="font-size:20px;margin-top:2px">${esc(P.name)} ${st.cancelAt?'<span class="badge b-amber">Ending</span>':paid?'<span class="badge b-green">Active</span>':''}</h2><p class="sm mute" style="margin-top:4px">${status}</p></div>
+function sBill(){const P=plan(),st=S.settings,n=monthCount(),lim=P.limit,paid=P.amt>0&&!st.trialEnds;
+ const status=st.trialEnds?`Free trial ends on ${fdate(st.trialEnds)}. After that you go back to Starter unless you upgrade.`:!paid?'Free plan. No payment needed.':st.cancelAt?`Ends on ${fdate(st.cancelAt)}. You keep everything until then.`:`Renews on ${fdate(st.renews||Date.now()+30*DAY)}. ${money(P.amt)} a month.`;
+ return`<div class="card"><div class="cur-plan"><div><div class="sm mute">Your plan</div><h2 style="font-size:20px;margin-top:2px">${esc(P.name)} ${st.cancelAt?'<span class="badge b-amber">Ending</span>':st.trialEnds?'<span class="badge b-green">Free trial</span>':paid?'<span class="badge b-green">Active</span>':''}</h2><p class="sm mute" style="margin-top:4px">${status}</p></div>
 </div>
  ${paid?`<div class="btnrow" style="margin-top:16px">${st.cancelAt?'<button class="btn pri" style="flex:1" onclick="resumePlan()">Keep my plan</button>':'<button class="btn pri" style="flex:1" onclick="document.getElementById(\'plansH\').scrollIntoView({behavior:\'smooth\'})">Change plan</button><button class="btn dng" style="flex:1" onclick="cancelPlan()">Cancel subscription</button>'}</div>`:''}
- <p class="sm mute" style="margin:14px 0 8px">${lim===Infinity?'You have added '+n+' shipments this month':P.name==='Starter'?countedActive().length+' of '+lim+' active shipments in progress':"You've added "+n+' of '+lim+' shipments this month. Resets on '+fdate(monthReset())+'.'}</p><div class="meter ${lim!==Infinity&&(P.name==='Starter'?countedActive().length:n)>=lim?'full':''}"><i style="width:${lim===Infinity?8:Math.min(100,(P.name==='Starter'?countedActive().length:n)/lim*100)}%"></i></div></div>
+ <p class="sm mute" style="margin:14px 0 8px">${lim===Infinity?countedActive().length+' active shipments':countedActive().length+' of '+lim+' active shipments in use'}</p><div class="meter ${lim!==Infinity&&n>=lim?'full':''}"><i style="width:${lim===Infinity?8:Math.min(100,n/lim*100)}%"></i></div></div>
  ${usageCard()}
  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:22px 0 10px"><h2 id="plansH">Change your plan</h2><div class="field" style="margin:0;min-width:200px"><label for="bc" class="xs">Show prices in</label>${combo('bc','cur',curOf(),'cbSetCur')}</div></div>${curOf()==='USD'?'':`<p class="xs mute" style="margin:-4px 0 10px">You are billed in US dollars. ${esc(curOf())} amounts are estimates${LIVE?' using today\'s rates':''} and may differ slightly on your statement.</p>`}
- <p class="sm mute" style="margin:0 0 12px">Paid plans are opening soon. Starter is free and works fully today.</p><div class="plans">${Object.entries(PLANS).map(([k,p])=>`<div class="card plan ${isPlan(k)?'cur':''}"><div class="sm mute">${p.who}</div><h3 style="margin-top:4px">${p.name}${k==='growth'?'<span class="poptag">Most Popular</span>':''}</h3>${p.name==='Enterprise'?`<div class="price">Custom</div><div class="xs mute">From ${priceText(p.amt)}/mo</div>`:`<div class="price">${priceText(p.amt)}<span class="per">/mo</span></div>`}<ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn ${isPlan(k)?'':'pri'}" ${isPlan(k)?'disabled':''} onclick="pickPlan('${k}')">${isPlan(k)?'Current plan':k==='enterprise'?'Talk to us':'Tell me when it opens'}</button></div>`).join('')}</div>
+ <p class="sm mute" style="margin:0 0 8px">${st.trialUsed?'Paid plans are opening soon. Starter is free and works fully today.':'Try Growth or Pro free for 3 days. No card needed. Paid plans are opening soon.'}</p><p class="xs mute swipehint" style="margin:0 0 8px">Swipe to compare plans →</p><div class="plans">${Object.entries(PLANS).map(([k,p])=>`<div class="card plan ${isPlan(k)?'cur':''}"><div class="sm mute">${p.who}</div><h3 style="margin-top:4px">${p.name}${k==='growth'?'<span class="poptag">Most Popular</span>':''}</h3>${p.name==='Enterprise'?`<div class="price">Custom</div><div class="xs mute">From ${priceText(p.amt)}/mo</div>`:`<div class="price">${priceText(p.amt)}<span class="per">/mo</span></div>`}<ul>${p.feat.map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn ${isPlan(k)?'':'pri'}" ${isPlan(k)?'disabled':''} onclick="pickPlan('${k}')">${isPlan(k)?'Current plan':k==='enterprise'?'Talk to us':k==='starter'?'Start Free':(!st.trialUsed?'Start 3-day free trial':'Tell me when it opens')}</button></div>`).join('')}</div>
  <h2 style="margin:22px 0 10px">Invoices</h2><div class="card">${S.invoices.length?`<div class="list">${S.invoices.map(i=>`<div class="li"><div><div style="font-weight:600">${esc(i.desc)}</div><div class="xs mute">${fdate(i.date)}</div></div><b>${money(i.amt)}</b></div>`).join('')}</div>`:'<div class="empty" style="padding:18px"><span class="eico">'+icon('receipt')+'</span><b>No invoices yet</b>Your invoices will appear here when you move to a paid plan.</div>'}</div>`}
 function applyPlan(k){const P=PLANS[k];S.settings.plan=k;
  if(!P.wa)S.shipments.forEach(s=>{if(s.channel==='both')s.channel='email'});
  if(!P.domain&&S.settings.sender==='domain')S.settings.sender='shared';if(!['pro','enterprise'].includes(k))S.integ={};
  if(S.team.length+1>P.seats)S.team=S.team.slice(0,Math.max(0,P.seats-1))}
 function pickPlan(k){if(blocked())return;if(k==='enterprise'){contactSales();return}
+ if(k==='starter'){toast(S.settings.trialEnds?'You go back to Starter when your trial ends.':'To move to Starter, cancel your subscription above.');return}
+ if(!S.settings.trialUsed){trialAsk(k);return}
  const P=PLANS[k];openModal(`<h2>${esc(P.name)} is opening soon</h2><p class="mute" style="margin:8px 0 14px">Paid plans are not open yet. You're on the free Starter plan, and it works fully today. Want us to email you the moment ${esc(P.name)} opens?</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" onclick="planInterest('${k}')">Yes, let me know</button></div>`)}
+function trialAsk(k){const P=PLANS[k];openModal(`<h2>Try ${esc(P.name)} free for 3 days</h2><p class="mute" style="margin:8px 0 14px">No card needed. You get everything in ${esc(P.name)} for 3 days. After that you go back to Starter, and nothing is deleted. You can only do this once.</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" id="tr-b" onclick="trialGo('${k}')">Start my trial</button></div>`)}
+async function trialGo(k){const b=$('#tr-b');if(b)b.disabled=true;
+ try{await api('rpc/start_trial',{method:'POST',body:{p:k}});const r=await api('billing?select=*');applyBilling(r&&r[0]);U.t=0;closeModal();toast('Your 3-day '+PLANS[k].name+' trial has started');render()}
+ catch(e){if(b)b.disabled=false;closeModal();toast(/trial_used/.test(e.message)?'You have already used your free trial.':e.net?'We could not reach Manifest. Please try again.':'Free trials are not switched on yet. Please try again soon.')}}
 function confirmPlan(k){const P=PLANS[k];closeModal();applyPlan(k);S.settings.cancelAt=null;
  if(P.amt){S.settings.renews=Date.now()+30*DAY;S.invoices.unshift({id:Date.now(),date:Date.now(),desc:P.name+' plan, 1 month',amt:P.amt})}else S.settings.renews=null;
  save();toast('You are on the '+P.name+' plan');render()}
@@ -1609,8 +1659,8 @@ function rowsToShips(rows,msgs){const by={};msgs.forEach(m=>{(by[m.shipment_id]=
   const s={...d,uid:r.id,token:r.token,ref:r.ref,status:r.status,created:ms2(r.created_at),last:ms2(r.last_checkin)||ms2(r.created_at),next:ms2(r.next_checkin),lastReply:ms2(r.last_reply),asked:!!r.last_checkin,tl};
   s.respHrs=respH(tl);s.hadDelay=!!(d.hadDelay||['delayed','customs_hold'].includes(r.status)||tl.some(e=>e.type==='warn'));s.archived=!!d.archived;s.deletedAt=d.deletedAt||null;return s});
  const seen=new Set();let mx=0;out.forEach(s=>{if(typeof s.id!=='number'||seen.has(s.id))s.id=null;else{seen.add(s.id);mx=Math.max(mx,s.id)}});out.forEach(s=>{if(s.id==null){s.id=++mx;seen.add(s.id)}});return{out,mx}}
-function profPayload(){const u={...S.user};delete u.email;if(u.photo&&u.photo.length>120000)u.photo='';const st={...S.settings};delete st.plan;
- return{business_name:S.settings.biz||'',settings:{user:u,settings:st,team:S.team,tickets:S.tickets,invoices:S.invoices,sec:S.sec,integ:S.integ,notifSeen:S.notifSeen||0}}}
+function profPayload(){const u={...S.user};delete u.email;if(u.photo&&u.photo.length>120000)u.photo='';const st={...S.settings};delete st.plan;delete st.trialEnds;delete st.trialUsed;
+ return{business_name:S.settings.biz||'',settings:{user:u,settings:st,team:S.team,tickets:S.tickets,invoices:S.invoices,vault:S.vault||[],sec:S.sec,integ:S.integ,notifSeen:S.notifSeen||0}}}
 function trRow(d){return{id:d.uid,name:d.name||'',email:d.email||'',phone:d.phone||'',language:d.lang||'English',data:{id:d.id,kind:d.kind||'transporter'}}}
 function shCols(s){const d=S.dir.find(x=>x.id===s.transporter);return{ref:s.ref||'',transporter_id:d&&d.uid||null,origin:s.origin||'',destination:s.dest||s.zone||'',status:s.status||'pending',freq_hours:FREQH[s.freq]||168,archived:!!(s.archived||s.deletedAt)}}
 function shData(s){const d={...s};['tl','uid','token','created','last','next','lastReply','respHrs','hadDelay','nextNow','asked'].forEach(k=>delete d[k]);return d}
@@ -1621,9 +1671,9 @@ async function loadCloud(){const uid=SESS.user.id;
  let p=pr&&pr[0];
  if(!p){await api('profiles',{method:'POST',body:{id:uid,business_name:''},prefer:'return=minimal'});p={id:uid,business_name:'',plan:'starter',settings:{}}}
  const b=p.settings||{};
- S={user:{name:'',username:'',phone:'',photo:'',...(b.user||{}),email:SESS.user.email},settings:{...defSettings(),...(b.settings||{}),biz:p.business_name||(b.settings&&b.settings.biz)||'',plan:p.plan||'starter'},team:b.team||[],tickets:b.tickets||[],invoices:b.invoices||[],sec:b.sec||{},integ:b.integ||{},notifSeen:b.notifSeen||0,me:'owner',health:'ok',dir:[],shipments:[],nextId:10};
+ S={user:{name:'',username:'',phone:'',photo:'',...(b.user||{}),email:SESS.user.email},settings:{...defSettings(),...(b.settings||{}),biz:p.business_name||(b.settings&&b.settings.biz)||'',plan:p.plan||'starter'},team:b.team||[],tickets:b.tickets||[],invoices:b.invoices||[],sec:b.sec||{},integ:b.integ||{},vault:b.vault||[],notifSeen:b.notifSeen||0,me:'owner',health:'ok',dir:[],shipments:[],nextId:10};
  S.dir=tr.map(d=>({id:(d.data&&d.data.id)||('t'+ms2(d.created_at)),uid:d.id,kind:(d.data&&d.data.kind)||'transporter',name:d.name,email:d.email||'',phone:d.phone||'',lang:d.language||'English'}));
- const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll();setTimeout(devHook,0);api('billing?select=plan').then(r=>{if(r&&r[0]&&PLANS[r[0].plan]&&r[0].plan!==S.settings.plan){S.settings.plan=r[0].plan;render()}}).catch(()=>{})}
+ const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll();setTimeout(devHook,0);api('billing?select=*').then(r=>{if(applyBilling(r&&r[0]))render()}).catch(()=>{})}
 async function doPush(){if(!SESS||!S)return;const uid=SESS.user.id;
  S.dir.forEach(d=>{if(!d.uid)d.uid=uuid()});S.shipments.forEach(s=>{if(!s.uid)s.uid=uuid();if(!s.token)s.token=rtoken();if(!s.created)s.created=Date.now()});
  const pp=profPayload(),ps=JSON.stringify(pp);
