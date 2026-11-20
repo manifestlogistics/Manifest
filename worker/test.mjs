@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { classify, cleanReply, tagFrom, buildCheckin, isSilent, replyTo, silenceHours, isAuto, isBounce } from './lib.mjs';
-import { main, processDeletions, deletionEmail } from './run.mjs';
+import { main, processDeletions, deletionEmail, processInvites, inviteEmail } from './run.mjs';
 import { effPlan, capOf, LIMITS } from './lib.mjs';
 
 test('classify reads simple replies', () => {
@@ -240,4 +240,19 @@ test('email is unlimited, and an expired unpaid trial falls back to Starter', ()
   assert.equal(effPlan({ plan: 'growth', trial_ends: iso(-1), paid: false }, now), 'starter');
   assert.equal(effPlan({ plan: 'growth', trial_ends: iso(-1), paid: true }, now), 'growth');
   assert.equal(effPlan({ plan: 'pro', trial_ends: null, paid: false }, now), 'pro');
+});
+
+test('team invitations are emailed once and marked sent', async () => {
+  const sent = [], patched = [];
+  const db = {
+    get: async p => p.startsWith('team_members') ? [{ owner: 'o1', email: 'ali@x.com', role: 'operator' }] : [{ business_name: 'Acme Imports', settings: { user: { name: 'Hiba' } } }],
+    patch: async (p, b) => { patched.push([p, b]); },
+  };
+  const r = await processInvites({ db, sendMail: async x => sent.push(x), gmail: 'g@x.com', site: 'https://s.app', log: () => {} });
+  assert.equal(r.sent, 1);
+  assert.equal(sent[0].to, 'ali@x.com');
+  assert.match(sent[0].subject, /Hiba invited you to join Acme Imports/);
+  assert.match(sent[0].text, /https:\/\/s\.app\/app\//);
+  assert.deepEqual(patched[0][1], { emailed: true });
+  assert.match(inviteEmail({ role: 'viewer', to: 'a@b.c', site: 's' }).text, /view only/);
 });

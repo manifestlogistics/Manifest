@@ -52,6 +52,31 @@ export async function processDeletions({ db, sendMail, gmail, site, now, log = c
   }
   return out;
 }
+
+export function inviteEmail({ inviter, biz, role, to, site }) {
+  const r = role === 'viewer' ? 'view only' : role === 'admin' ? 'an admin' : 'a team member who can add and edit';
+  const text = `Hi,\n\n${inviter || 'Your colleague'} invited you to join ${biz || 'their team'} on Manifest as ${r}.\n\nTo join: open ${site}/app/ and sign up or log in with this email address (${to}). Then tap "Join team".\n\nManifest tracks shipments by asking transporters for updates and flagging delays. If you were not expecting this, you can ignore this email.`;
+  return { subject: `${inviter || 'Someone'} invited you to join ${biz || 'a team'} on Manifest`, text };
+}
+
+/** Emails people who were invited to a team and have not been emailed yet. */
+export async function processInvites({ db, sendMail, gmail, site, log = console.log }) {
+  const out = { sent: 0, errors: 0 };
+  let rows = [];
+  try { rows = await db.get('team_members?emailed=eq.false&status=eq.invited&select=*&limit=50'); } catch (e) { return out; }
+  if (!Array.isArray(rows)) return out;
+  for (const r of rows) {
+    try {
+      let biz = '', inviter = '';
+      try { const p = await db.get(`profiles?id=eq.${r.owner}&select=business_name,settings`); biz = (p && p[0] && p[0].business_name) || ''; inviter = (p && p[0] && p[0].settings && p[0].settings.user && p[0].settings.user.name) || ''; } catch (e) { /* use defaults */ }
+      const m = inviteEmail({ inviter, biz, role: r.role, to: r.email, site });
+      await sendMail({ from: { name: 'Manifest', address: gmail }, to: r.email, subject: m.subject, text: m.text });
+      await db.patch(`team_members?owner=eq.${r.owner}&email=eq.${encodeURIComponent(r.email)}`, { emailed: true });
+      out.sent++;
+    } catch (e) { out.errors++; log('invite email failed:', e.message); }
+  }
+  return out;
+}
 const inList = ids => '(' + ids.join(',') + ')';
 
 export async function main(env, deps) {
@@ -113,6 +138,9 @@ export async function main(env, deps) {
 
   /* 0. account deletions */
   try { const d = await processDeletions({ db, sendMail, gmail, site, now, log }); stat.errors += d.errors; } catch (e) { /* never block the rest */ }
+
+  /* 0b. team invitations */
+  try { const t = await processInvites({ db, sendMail, gmail, site, log }); stat.errors += t.errors; } catch (e) { /* never block the rest */ }
 
   /* 1. replies */
   if (deps.inbox) {

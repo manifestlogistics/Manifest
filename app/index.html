@@ -558,12 +558,14 @@ const CAPS={starter:{email:Infinity,wa:0,ai:6},growth:{email:Infinity,wa:500,ai:
 const PACKS=[{id:'wa500',kind:'wa',n:500,usd:15,name:'500 WhatsApp check-ins'},{id:'wa2000',kind:'wa',n:2000,usd:50,name:'2,000 WhatsApp check-ins'},{id:'ai500',kind:'ai',n:500,usd:5,name:'500 AI reads'}];
 const UK={email:'Email check-ins',wa:'WhatsApp check-ins',ai:'AI email & PDF reads'};
 let U={ok:null,t:0,email:0,wa:0,ai:0,packs:{}};
+const WSID=()=>S&&S.ws?S.ws.owner:SESS.user.id;
+const billQ=()=>'billing?select=*&owner=eq.'+WSID();
 function effBill(b){if(!b||!PLANS[b.plan])return{plan:'starter',trial:null,used:false};const used=!!b.trial_used;if(b.paid||!b.trial_ends)return{plan:b.plan,trial:null,used};const t=Date.parse(b.trial_ends);return t>Date.now()?{plan:b.plan,trial:t,used}:{plan:'starter',trial:null,used}}
-function applyBilling(b){const e=effBill(b),st=S.settings;let ch=e.plan!==st.plan||e.trial!==st.trialEnds||e.used!==st.trialUsed;st.plan=e.plan;st.trialEnds=e.trial;st.trialUsed=e.used;if(b&&b.region){if(applyRegion({region:b.region,claim:b.region_claim}))ch=true}else{setTimeout(regionSync,0)}return ch}
+function applyBilling(b){const e=effBill(b),st=S.settings;let ch=e.plan!==st.plan||e.trial!==st.trialEnds||e.used!==st.trialUsed;st.plan=e.plan;st.trialEnds=e.trial;st.trialUsed=e.used;if(b&&b.region){if(applyRegion({region:b.region,claim:b.region_claim}))ch=true}else if(!S.ws){setTimeout(regionSync,0)}return ch}
 async function regionGuess(){try{const c=new AbortController();setTimeout(()=>c.abort(),3500);const r=await fetch('https://ipapi.co/country/',{signal:c.signal});const t=(await r.text()).trim();if(/^[A-Z]{2}$/.test(t))return t}catch(e){}return guessLocale().reg||''}
 function applyRegion(r){if(!r||!r.region)return false;const cur=CC2CUR[r.region]||'USD',ch=S.region!==r.region||S.settings.cur!==cur||S.regionClaim!==(r.claim||null);S.region=r.region;S.regionClaim=r.claim||null;S.settings.cur=cur;return ch}
-async function regionSync(){if(!SESS||regionSync.busy||Date.now()-(regionSync.t||0)<300000)return;regionSync.busy=1;regionSync.t=Date.now();try{const g=await regionGuess();const r=await api('rpc/lock_region',{method:'POST',body:{guess:g}});if(applyRegion(r))render()}catch(e){}regionSync.busy=0}
-async function usageLoad(){if(!SESS)return;U.t=Date.now();try{const m=new Date().toISOString().slice(0,7);const [u,p,b]=await Promise.all([api('usage?select=*&month=eq.'+m),api('pack_credits?select=*'),api('billing?select=*')]);const r=(u&&u[0])||{};U.email=r.email||0;U.wa=r.wa||0;U.ai=r.ai||0;U.packs={};(p||[]).forEach(x=>{U.packs[x.kind]=x.credits});U.ok=true;applyBilling(b&&b[0])}catch(e){U.ok=false}render()}
+async function regionSync(){if(!SESS||(S&&S.ws)||regionSync.busy||Date.now()-(regionSync.t||0)<300000)return;regionSync.busy=1;regionSync.t=Date.now();try{const g=await regionGuess();const r=await api('rpc/lock_region',{method:'POST',body:{guess:g}});if(applyRegion(r))render()}catch(e){}regionSync.busy=0}
+async function usageLoad(){if(!SESS)return;U.t=Date.now();try{const m=new Date().toISOString().slice(0,7);const [u,p,b]=await Promise.all([api('usage?select=*&owner=eq.'+WSID()+'&month=eq.'+m),api('pack_credits?select=*&owner=eq.'+WSID()),api(billQ())]);const r=(u&&u[0])||{};U.email=r.email||0;U.wa=r.wa||0;U.ai=r.ai||0;U.packs={};(p||[]).forEach(x=>{U.packs[x.kind]=x.credits});U.ok=true;applyBilling(b&&b[0])}catch(e){U.ok=false}render()}
 function usageReset(){const d=new Date();return Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)}
 function usageCard(){const k=S.settings.plan||'starter',cap=CAPS[k];if(!SESS)return'';
  if(U.ok===null||Date.now()-U.t>60000){if(!U.busy){U.busy=1;usageLoad().finally(()=>{U.busy=0})}}
@@ -582,7 +584,7 @@ function packSend(id){const p=PACKS.find(x=>x.id===id);closeModal();ticket('Pack
 const ST={in_transit:['On the way','b-blue'],delayed:['Delayed','b-red'],customs_hold:['Held at customs','b-amber'],delivered:['Delivered','b-green'],pending:['Waiting for reply','b-gray'],cancelled:['Cancelled','b-gray']};
 const FREQ={'12h':'Every 12 hours',daily:'Daily','3d':'Every 3 days',weekly:'Weekly'};
 const FREQMS={'12h':12*HR,daily:DAY,'3d':3*DAY,weekly:7*DAY};
-const ROLES={owner:'Owner',operator:'Can add and edit',viewer:'View only'};
+const ROLES={owner:'Owner',admin:'Admin',operator:'Can add and edit',viewer:'View only'};
 const TR={
 en:'Hi {{transporter_name}}, could you please send us an update on order {{shipment_id}} ({{container_id}})? Tap one of the buttons below, or just write a short reply. Thank you!',
 ur:'السلام علیکم {{transporter_name}}، کیا آپ آرڈر {{shipment_id}} ({{container_id}}) کی تازہ ترین صورتحال بتا سکتے ہیں؟ نیچے دیے گئے بٹنوں میں سے کوئی ایک دبائیں یا مختصر جواب لکھ دیں۔ شکریہ!',
@@ -905,7 +907,7 @@ function ask(title,msg,label,cb){_cb=cb;openModal(`<h2>${esc(title)}</h2><p clas
 function viewKey(){return 'mf_view_'+(SESS&&SESS.user&&SESS.user.id||'')}
 function viewSave(){try{localStorage.setItem(viewKey(),JSON.stringify({tab:V.tab,open:V.open,dtab:V.dtab,set:V.set,hist:V.hist,filter:V.filter}))}catch(e){}}
 function viewRestore(){try{const v=JSON.parse(localStorage.getItem(viewKey())||'null');if(!v)return;const ok=TABS.some(t=>t[0]===v.tab)||['shipments','history','settings','trash'].includes(v.tab);if(!ok)return;V.tab=v.tab;if(v.set)V.set=v.set;if(v.hist)V.hist=v.hist;if(v.filter)V.filter=v.filter;if(v.open&&S.shipments.some(x=>x.id===v.open)){V.open=v.open;V.dtab=v.dtab||'overview'}}catch(e){}}
-function enter(){ensure();const st=S.settings;if(st.setup===false){AUTH.step=AUTH.step>=2?AUTH.step:2;showWelcome();return}$('#welcome').classList.remove('bk');if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();if(!enter.done){enter.done=1;viewRestore()}render()}
+function enter(){ensure();if(S.invites&&S.invites.length&&!S.ws&&!enter.skipInv){showInviteGate();return}const st=S.settings;if(st.setup===false){AUTH.step=AUTH.step>=2?AUTH.step:2;showWelcome();return}$('#welcome').classList.remove('bk');if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();if(!enter.done){enter.done=1;viewRestore()}render()}
 function purgeTrash(){const c=Date.now()-30*DAY;S.shipments=S.shipments.filter(s=>!(s.deletedAt&&s.deletedAt<c));save()}
 
 /* ============ theme ============ */
@@ -1086,7 +1088,7 @@ async function saveNewDoc(){const er=$('#nd-err'),b=$('#nd-b'),f=V.nd&&V.nd.file
  if(!f){er.textContent='Please choose a file first.';return}
  if(docUsed()+f.size>docCap()){er.textContent='You have used all your storage. Remove a file or upgrade your plan.';return}
  const sidv=$('#nd-s').value,sh=sidv?S.shipments.find(x=>String(x.id)===sidv):null,id='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
-  safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=SESS.user.id+'/v/'+id+'-'+safe;
+  safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=WSID()+'/v/'+id+'-'+safe;
  b.disabled=true;b.textContent='Saving…';
  try{await sbUpload(path,f)}catch(e){er.textContent=e.message;b.disabled=false;b.textContent='Save document';return}
  const d={id,sid:sh?sh.id:null,type:$('#nd-t').value,number:$('#nd-n').value.trim(),date:$('#nd-d').value,notes:$('#nd-o').value.trim(),name:f.name,bytes:f.size,mime:f.type||'',path,ts:Date.now()};
@@ -1106,7 +1108,7 @@ async function addDoc(id,i,f){const s=byId(id);if(!f||!s)return;if(blocked())ret
  if(!ok){toast('Please choose a PDF, photo, Word or Excel file.');return}
  if(f.size>15*1024*1024){toast('That file is over 15 MB. Please choose a smaller one.');return}
  if(docUsed()+f.size>docCap()){toast('You have used all your storage. Remove a file or upgrade your plan.');return}
- const names=docNames(s),slot=names[i];s.docs=s.docs||{};const safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=SESS.user.id+'/'+s.id+'/'+i+'-'+Date.now()+'-'+safe;
+ const names=docNames(s),slot=names[i];s.docs=s.docs||{};const safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-80),path=WSID()+'/'+s.id+'/'+i+'-'+Date.now()+'-'+safe;
  toast('Uploading '+f.name+'...');
  try{await sbUpload(path,f)}catch(e){toast(e.message);return}
  const old=s.docs[slot];if(old&&old.path)sbRemove(old.path);
@@ -1346,15 +1348,14 @@ function sBill(){const P=plan(),st=S.settings,n=monthCount(),lim=P.limit,paid=P.
  <h2 style="margin:22px 0 10px">Invoices</h2><div class="card">${S.invoices.length?`<div class="list">${S.invoices.map(i=>`<div class="li"><div><div style="font-weight:600">${esc(i.desc)}</div><div class="xs mute">${fdate(i.date)}</div></div><b>${money(i.amt)}</b></div>`).join('')}</div>`:'<div class="empty" style="padding:18px"><span class="eico">'+icon('receipt')+'</span><b>No invoices yet</b>Your invoices will appear here when you move to a paid plan.</div>'}</div>`}
 function applyPlan(k){const P=PLANS[k];S.settings.plan=k;
  if(!P.wa)S.shipments.forEach(s=>{if(s.channel==='both')s.channel='email'});
- if(!P.domain&&S.settings.sender==='domain')S.settings.sender='shared';if(!['pro','enterprise'].includes(k))S.integ={};
- if(S.team.length+1>P.seats)S.team=S.team.slice(0,Math.max(0,P.seats-1))}
+ if(!P.domain&&S.settings.sender==='domain')S.settings.sender='shared';if(!['pro','enterprise'].includes(k))S.integ={};}
 function pickPlan(k){if(blocked())return;if(k==='enterprise'){contactSales();return}
  if(k==='starter'){toast(S.settings.trialEnds?'You go back to Starter when your trial ends.':'To move to Starter, cancel your subscription above.');return}
  if(!S.settings.trialUsed){trialAsk(k);return}
  const P=PLANS[k];openModal(`<h2>${esc(P.name)} is opening soon</h2><p class="mute" style="margin:8px 0 14px">Paid plans are not open yet. You're on the free Starter plan, and it works fully today. Want us to email you the moment ${esc(P.name)} opens?</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" onclick="planInterest('${k}')">Yes, let me know</button></div>`)}
 function trialAsk(k){const P=PLANS[k];openModal(`<h2>Try ${esc(P.name)} free for 3 days</h2><p class="mute" style="margin:8px 0 14px">No card needed. You get everything in ${esc(P.name)} for 3 days. After that you go back to Starter, and nothing is deleted. You can only do this once.</p><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="closeModal()">Not now</button><button class="btn pri" style="flex:1" id="tr-b" onclick="trialGo('${k}')">Start my trial</button></div>`)}
 async function trialGo(k){const b=$('#tr-b');if(b)b.disabled=true;
- try{await api('rpc/start_trial',{method:'POST',body:{p:k}});const r=await api('billing?select=*');applyBilling(r&&r[0]);U.t=0;closeModal();toast('Your 3-day '+PLANS[k].name+' trial has started');render()}
+ try{await api('rpc/start_trial',{method:'POST',body:{p:k}});const r=await api(billQ());applyBilling(r&&r[0]);U.t=0;closeModal();toast('Your 3-day '+PLANS[k].name+' trial has started');render()}
  catch(e){if(b)b.disabled=false;closeModal();toast(/trial_used/.test(e.message)?'You have already used your free trial.':e.net?'We could not reach Manifest. Please try again.':'Free trials are not switched on yet. Please try again soon.')}}
 function confirmPlan(k){const P=PLANS[k];closeModal();applyPlan(k);S.settings.cancelAt=null;
  if(P.amt){S.settings.renews=Date.now()+30*DAY;S.invoices.unshift({id:Date.now(),date:Date.now(),desc:P.name+' plan, 1 month',amt:P.amt})}else S.settings.renews=null;
@@ -1401,15 +1402,15 @@ const maskEmail=e=>{e=String(e||'');const i=e.indexOf('@');return i<1?e:e.slice(
 const mName=m=>m.name||(m.email||'').split('@')[0].replace(/[._]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 function dkModal(h){openModal(h);$('#sheet').classList.add('dk');$('#modal').classList.add('ctr')}
 const MENU=[['Personal Profile','profile'],['Business Profile','org'],['Team','team'],['Security','security'],['Plan and Billing','billing'],['History','hist'],['Trash','trash']];
-function menuItems(){const a=isAdmin();return MENU.filter(([l,k])=>k==='profile'||k==='security'||(a&&(k!=='team'||isTeamPlan())))}
+function menuItems(){const a=isAdmin(),m=!!(S&&S.ws);return MENU.filter(([l,k])=>k==='profile'||k==='security'||(m?k==='team':(a&&(k!=='team'||isTeamPlan()))))}
 function openMenu(){openModal(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="brand">${LOGO}Manifest</div><button class="icon-btn" aria-label="Close" onclick="closeModal()">${icon('x')}</button></div>
  <div class="mlist">${menuItems().map(([l,k])=>`<button class="mrow2" onclick="menuGo('${k}')">${l}<span>›</span></button>`).join('')}</div>`);$('#sheet').classList.add('mdrawer')}
 function menuGo(k){closeModal();V.sec=null;V.tm=null;if(k==='hist'||k==='trash'){V.hist=k==='trash'?'trash':'archive';go('history')}else{V.set=k;go('settings')}}
 function sHub(){return`<div class="card" style="padding:4px 16px">${menuItems().filter(([l,k])=>k!=='profile').map(([l,k])=>`<button class="srow" onclick="menuGo('${k}')"><div><b>${l}</b></div><span>›</span></button>`).join('')}</div>`}
 function setBack(){if(V.set==='security'&&V.sec){const f=V.sec==='forgot'&&V.sf&&V.sf.from;V.sec=f==='pw'||f==='email'?f:null;V.em=0;V.dsel=false;V.dpick=new Set()}else if(V.set==='team'&&V.tm!=null)V.tm=null;else if(matchMedia('(min-width:900px)').matches&&!['hub','profile'].includes(V.set))V.set='hub';else return go('dashboard');render()}
 function vSet(){const admin=isAdmin();
- const need=['org','team','dev','billing','channels'].includes(V.set)&&!admin;
- const body=need?`<div class="card empty"><b>Only an admin can see this</b>Please ask the account owner.</div>`:({hub:sHub,profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
+ const need=(['org','dev','billing','channels'].includes(V.set)&&(!admin||!!S.ws))||(V.set==='team'&&!admin&&!S.ws);
+ const body=need?`<div class="card empty"><b>Only the account owner can see this</b>Please ask the person who invited you.</div>`:({hub:sHub,profile:sProfile,org:sOrg,channels:sChan,team:sTeam,dev:sDev,security:sSec,billing:sBill})[V.set]();
  const sub=V.set==='security'&&V.sec?({pw:'Reset password',forgot:'Forgot password',email:'Email address',devices:'Active sessions and devices'})[V.sec]:V.set==='team'&&V.tm!=null&&S.team[V.tm]?mName(S.team[V.tm]):V.set==='team'&&V.tm===-1?mName({email:S.user.email,name:S.user.name}):'';
  const ttl=sub||({hub:'Settings',profile:'Personal Profile',org:'Business Profile',channels:'Messages',security:'Security',billing:'Plan and Billing',team:'Team',dev:'Developers'})[V.set]||'Settings';
  return`<div class="topbar" style="justify-content:flex-start;gap:10px"><button class="icon-btn" aria-label="Back" onclick="setBack()">${icon('back')||'←'}</button><h1>${esc(ttl)}</h1></div>
@@ -1557,37 +1558,57 @@ function setLogo(inp){const f=inp.files[0];if(!f)return;if(!/^image\//.test(f.ty
 /* ============ team ============ */
 ROLES.admin='Admin';
 const activeOf=em=>active().filter(s=>!['delivered','cancelled'].includes(s.status)&&asg(s).toLowerCase()===String(em).toLowerCase());
-function sTeam(){const P=plan(),used=1+S.team.length;
+function sTeam(){const P=plan(),used=1+S.team.length,mem=!!S.ws,adm=isAdmin();
  if(V.tm!=null)return tmDetail(V.tm);
- const card=(m,i)=>`<button class="srow" onclick="V.tm=${i};render()"><div><b>${esc(mName(m))}${m.suspended?' <span class="badge b-amber">Suspended</span>':''}</b><div class="xs mute">${esc(ROLES[m.role]||m.role)}</div></div><span>›</span></button>`;
+ const mine=(S.user.email||'').toLowerCase();
+ const card=(m,i)=>`<button class="srow" onclick="V.tm=${i};render()"><div><b>${esc(mName(m))}${m.suspended?' <span class="badge b-amber">Suspended</span>':''}${i>=0&&!m.joined&&!m.suspended?' <span class="badge b-amber">Invited</span>':''}</b><div class="xs mute">${esc(ROLES[m.role]||m.role)}</div></div><span>›</span></button>`;
+ const rows=S.team.map((m,i)=>m.email.toLowerCase()===mine?'':card(m,i)).join('');
+ const top=mem?`<div class="srow" style="cursor:default"><div><b>${esc(S.ws.biz||'Workspace owner')}</b><div class="xs mute">Owner</div></div></div>${card({email:S.user.email,name:S.user.name+' (you)',role:S.me},-1)}`:card({email:S.user.email,name:S.user.name+' (you)',role:'owner'},-1);
+ const inviteBox=!adm?'':`<div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Invite someone</h2>
+ ${used>=P.seats?`<p class="sm mute" style="margin-bottom:10px">${P.seats===1?'Only Pro and bigger plans can have a team.':'All the spots on your team are taken.'}</p>${lockNote(P.seats===1?'Pro':'next')}`:`<div class="field"><label for="iv-e">Email</label><input id="iv-e" type="email" placeholder="colleague@company.com"></div><div class="field"><label for="iv-r">Role</label><select id="iv-r"><option value="operator">Can add and edit</option>${mem?'':'<option value="admin">Admin</option>'}<option value="viewer">View only</option></select></div><div id="iv-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" id="iv-btn" onclick="invite()">Send invite</button><p class="xs mute" style="margin-top:8px">They get an email. They sign up or log in with that same address and tap Join team.</p>`}</div>`;
+ const tail=mem?`<div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">Leave this team</h3><p class="sm mute" style="margin-bottom:10px">You stop seeing ${esc(S.ws.biz||'their')} shipments. Your own account stays.</p><button class="btn dng" onclick="leaveAsk()">Leave team</button></div>`
+  :`<div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">See what they'll see</h3><p class="sm mute" style="margin-bottom:10px">Try the app the way a team member would see it.</p><div class="seg">${['owner','admin','operator','viewer'].map(r=>`<button class="${curRole()===r?'on':''}" onclick="S.me='${r}';toast('Viewing as ${ROLES[r]}');if(!isAdmin()){V.set='profile'}render()">${ROLES[r]}</button>`).join('')}</div></div>`;
  return`<div class="card" style="padding:4px 16px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0 4px"><h2>Your team</h2><span class="sm mute">${used} of ${P.seats>100?'unlimited':P.seats} people</span></div>
- ${card({email:S.user.email,name:S.user.name+' (you)',role:'owner'},-1)}${S.team.map(card).join('')}</div>
- <div class="card" style="margin-top:14px"><h2 style="margin-bottom:12px">Invite someone</h2>
- ${used>=P.seats?`<p class="sm mute" style="margin-bottom:10px">${P.seats===1?'Starter is for one person.':'All the spots on your team are taken.'}</p>${lockNote(P.seats===1?'Growth':'next')}`:`<div class="field"><label for="iv-e">Email</label><input id="iv-e" type="email" placeholder="colleague@company.com"></div><div class="field"><label for="iv-r">Role</label><select id="iv-r"><option value="operator">Can add and edit</option><option value="admin">Admin</option><option value="viewer">View only</option></select></div><div id="iv-err" class="sm" style="color:var(--red-tx);min-height:18px" role="alert"></div><button class="btn pri" onclick="invite()">Send invite</button>`}</div>
- <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">See what they'll see</h3><p class="sm mute" style="margin-bottom:10px">Try the app the way a team member would see it.</p><div class="seg">${['owner','admin','operator','viewer'].map(r=>`<button class="${curRole()===r?'on':''}" onclick="S.me='${r}';toast('Viewing as ${ROLES[r]}');if(!isAdmin()){V.set='profile'}render()">${ROLES[r]}</button>`).join('')}</div></div>`}
-function tmDetail(i){const me=i===-1,m=me?{email:S.user.email,name:S.user.name,title:S.user.title,phone:S.user.phone,role:'owner',joined:S.user.joined,last:Date.now()}:S.team[i];if(!m)return'<div class="card empty"><b>Not found</b></div>';
+ ${top}${rows}</div>${inviteBox}${tail}`}
+function tmDetail(i){const me=i===-1,m=me?{email:S.user.email,name:S.user.name,title:S.user.title,phone:S.user.phone,role:S.ws?S.me:'owner',joined:S.user.joined,last:Date.now()}:S.team[i];if(!m)return'<div class="card empty"><b>Not found</b></div>';
  const mine=activeOf(m.email),late=mine.filter(s=>s.status==='delayed').length;
  const acts=[];S.shipments.forEach(s=>(s.tl||[]).forEach(e=>{if(e.by&&e.by.toLowerCase()===m.email.toLowerCase())acts.push({ref:s.ref,ts:e.ts,text:e.text})}));acts.sort((a,b)=>b.ts-a.ts);
  const kv=(k,v)=>`<div class="li"><div class="sm mute">${k}</div><div style="font-weight:600;text-align:right;word-break:break-word">${v||'<span class="mute" style="font-weight:400">Not added</span>'}</div></div>`;
  return`<div class="card"><div class="list">${kv('Full name',esc(mName(m)))}${kv('Job title',esc(m.title))}${kv('Email',esc(m.email))}${kv('Phone',esc(m.phone))}${kv('Role',esc(ROLES[m.role]||m.role))}${kv('Join date',m.joined?fdate(m.joined):(me?'':'Invited, not joined yet'))}${kv('Last active',m.last?ago(m.last):'Not active yet')}</div></div>
  <div class="card" style="margin-top:14px"><h3>Workload</h3><p class="sm" style="margin:6px 0 10px">Handling <b>${mine.length}</b> active shipment${mine.length===1?'':'s'}, <b>${late}</b> delayed</p><button class="btn" onclick="tmView('${esc(m.email)}')">View their shipments</button></div>
- ${me?'':`<div class="card" style="margin-top:14px"><h3 style="margin-bottom:10px">Access</h3><div class="field"><label for="tm-r">Role</label><select id="tm-r" onchange="setRole(${i},this.value)">${['admin','operator','viewer'].map(r=>`<option value="${r}" ${m.role===r?'selected':''}>${r==='viewer'?'View only':ROLES[r]}</option>`).join('')}</select></div><div class="btnrow"><button class="btn" onclick="tmSuspend(${i})">${m.suspended?'Reactivate login':'Suspend login'}</button><button class="btn dng" onclick="tmRemove(${i})">Remove from team</button></div><p class="xs mute" style="margin-top:8px">Suspending keeps their history. Nothing is deleted.</p></div>`}
+ ${me||!isAdmin()||(m.role==='admin'&&S.ws)?'':`<div class="card" style="margin-top:14px"><h3 style="margin-bottom:10px">Access</h3><div class="field"><label for="tm-r">Role</label><select id="tm-r" onchange="setRole(${i},this.value)">${['admin','operator','viewer'].filter(r=>!S.ws||r!=='admin').map(r=>`<option value="${r}" ${m.role===r?'selected':''}>${r==='viewer'?'View only':ROLES[r]}</option>`).join('')}</select></div><div class="btnrow"><button class="btn" onclick="tmSuspend(${i})">${m.suspended?'Reactivate login':'Suspend login'}</button><button class="btn dng" onclick="tmRemove(${i})">Remove from team</button></div><p class="xs mute" style="margin-top:8px">Suspending keeps their history. Nothing is deleted.</p></div>`}
  <div class="card" style="margin-top:14px"><h3 style="margin-bottom:8px">Activity</h3>${acts.length?`<div class="list">${acts.slice(0,40).map(a=>`<div class="li"><div style="min-width:0"><div class="sm">${esc(a.text)}</div><div class="xs mute">${esc(a.ref)} · ${fts(a.ts)}</div></div></div>`).join('')}</div>`:'<div class="empty" style="padding:14px"><b>No activity yet</b>Their actions on shipments will show up here.</div>'}</div>`}
 function tmView(em){V.asg=em;go('shipments')}
-function setRole(i,r){S.team[i].role=r;save();toast('Role updated');render()}
-function tmSuspend(i){const m=S.team[i];m.suspended=!m.suspended;save();toast(m.suspended?mName(m)+' is suspended':mName(m)+' is active again');render()}
+async function setRole(i,r){const m=S.team[i];try{await api('rpc/team_set_role',{method:'POST',body:{o:WSID(),e:m.email,r}});m.role=r;toast('Role updated')}catch(x){toast(teamErr(x))}render()}
+async function tmSuspend(i){const m=S.team[i],sus=!m.suspended;try{await api('rpc/team_set_suspended',{method:'POST',body:{o:WSID(),e:m.email,s:sus}});m.suspended=sus;toast(sus?mName(m)+' is suspended':mName(m)+' is active again')}catch(x){toast(teamErr(x))}render()}
+function teamErr(x){return x&&x.net?x.message:(x&&x.status===404?'Teams are not switched on yet. Please try again soon.':(x&&x.message)||'Something went wrong. Please try again.')}
 function tmRemove(i){const m=S.team[i],mine=activeOf(m.email);
  if(!mine.length){openModal(`<h2>Remove ${esc(mName(m))}?</h2><p class="mute" style="margin:8px 0 14px">They lose access. Their history stays in your audit trail.</p><div class="mbtns"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn dng" onclick="tmDo(${i},[])">Remove</button></div>`);return}
  const others=[{email:S.user.email,name:S.user.name+' (you)'},...S.team.filter((x,j)=>j!==i&&!x.suspended).map(x=>({email:x.email,name:mName(x)}))];
  openModal(`<h2>Reassign ${esc(mName(m))}'s ${mine.length} active shipment${mine.length===1?'':'s'}</h2><p class="mute" style="margin:8px 0 10px">Choose who takes them over, so no container goes unmonitored. Pick more than one to share them out.</p><div class="dwl">${others.map((o,k)=>`<label class="dw lt"><input type="checkbox" class="tm-o" value="${esc(o.email)}" ${k===0?'checked':''}><span>${esc(o.name)}</span></label>`).join('')}</div><div id="tm-err" class="sm" style="color:var(--red-tx);min-height:18px"></div><div class="mbtns"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn dng" onclick="tmReassign(${i})">Reassign and remove</button></div>`)}
 function tmReassign(i){const to=[...document.querySelectorAll('.tm-o:checked')].map(x=>x.value);if(!to.length){$('#tm-err').textContent='Please choose at least one person.';return}tmDo(i,to)}
-function tmDo(i,to){const m=S.team[i];if(to.length)activeOf(m.email).forEach((s,k)=>{s.assignee=to[k%to.length];s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Reassigned from '+mName(m)+' to '+s.assignee+' by '+S.user.name})});
+async function tmDo(i,to){const m=S.team[i];
+ try{await api('rpc/team_remove',{method:'POST',body:{o:WSID(),e:m.email}})}catch(x){closeModal();toast(teamErr(x));return}
+ if(to.length)activeOf(m.email).forEach((s,k)=>{s.assignee=to[k%to.length];s.tl.unshift({by:S.user.email,ts:Date.now(),type:'rep',text:'Reassigned from '+mName(m)+' to '+s.assignee+' by '+S.user.name})});
  S.team.splice(i,1);V.tm=null;save();closeModal();toast(mName(m)+' was removed');render()}
-function invite(){const e=$('#iv-e').value.trim().toLowerCase(),r=$('#iv-r').value,er=$('#iv-err');
+async function invite(){const e=$('#iv-e').value.trim().toLowerCase(),r=$('#iv-r').value,er=$('#iv-err'),btn=$('#iv-btn');
  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){er.textContent="That email doesn't look right. Please check it.";return}
  if(e===S.user.email.toLowerCase()||S.team.some(m=>m.email===e)){er.textContent='That person is already on your team.';return}
  const ws=S.settings.ws;if(ws&&ws.on&&ws.domains.length&&!ws.domains.includes('@'+e.split('@')[1])&&!(ws.allow||[]).includes(e)){er.innerHTML=esc('Only '+ws.domains.join(' or ')+' email addresses can be invited to this workplace.')+` <a href="#" class="lnk" onclick="event.preventDefault();wsAllow('${esc(e)}')">Allow this person anyway</a>`;return}
- S.team.push({email:e,role:r,joined:null,invited:Date.now()});save();toast('Invite sent to '+e);render()}
+ btn.disabled=true;btn.textContent='Sending…';er.textContent='';
+ try{await api('rpc/team_invite',{method:'POST',body:{o:WSID(),e,r}});S.team.push({email:e,role:r,joined:null,invited:Date.now()});render();inviteShare(e,r)}
+ catch(x){er.textContent=teamErr(x);btn.disabled=false;btn.textContent='Send invite'}}
+function inviteShare(e,r){const link=location.origin+'/app/',who=S.user.name||'Your colleague',biz=S.settings.biz||'our team';
+ const msg=`${who} invited you to join ${biz} on Manifest as ${r==='viewer'?'view only':r==='admin'?'an admin':'a team member (can add and edit)'}.\n\nOpen ${link} and sign up or log in with ${e}. Then tap Join team.`;
+ openModal(`<h2>Invite sent</h2><p class="mute" style="margin:8px 0 12px">We are emailing ${esc(e)}. You can also send them this message yourself, for example on WhatsApp.</p><div class="card" style="padding:12px;white-space:pre-wrap;font-size:14px">${esc(msg)}</div><div class="mbtns" style="margin-top:12px"><button class="btn" onclick="closeModal()">Done</button><button class="btn pri" onclick="copy(${esc(JSON.stringify(msg))})">Copy message</button></div>`)}
+function leaveAsk(){openModal(`<h2>Leave ${esc(S.ws.biz||'this team')}?</h2><p class="mute" style="margin:8px 0 14px">You will stop seeing their shipments and contacts. They can invite you again.</p><div class="mbtns"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn dng" onclick="leaveGo()">Leave team</button></div>`)}
+async function leaveGo(){try{await flush();await api('rpc/team_leave',{method:'POST',body:{}});closeModal();V={tab:'dashboard',filter:'all',q:'',sel:new Set(),selMode:false,open:null,hist:'archive',hq:'',set:'profile'};await loadCloud();enter.skipInv=1;enter()}catch(x){closeModal();toast(teamErr(x))}}
+function showInviteGate(){$('#app').classList.add('hide');bkOn();const w=$('#welcome'),i=S.invites[0];
+ w.innerHTML=`<header class="bk-top"><a class="brand" href="/">${bkLogo()}Manifest</a><button class="lnk" onclick="signOut()">Log out</button></header><main class="bk-main"><div class="bk-box"><div class="bk-card"><h1>Join ${esc(i.biz)}?</h1><p class="bk-sub">You were invited to work in their Manifest as <b>${esc(ROLES[i.role]||i.role)}</b>. You will see their shipments and contacts. Your own account stays safe, and you can leave the team any time.</p><div id="inv-err" class="bk-err" role="alert"></div><button class="bk-pri" id="inv-btn" onclick="joinTeam('${esc(i.owner)}')">Join team</button><button class="bk-ghost" onclick="skipInvite()">Not now</button></div></div></main>`}
+async function joinTeam(o){const b=$('#inv-btn'),er=$('#inv-err');b.disabled=true;b.textContent='Joining…';er.textContent='';
+ try{await flush();await api('rpc/accept_invite',{method:'POST',body:{o,nm:S.user.name||''}});await loadCloud();enter()}
+ catch(e){er.textContent=teamErr(e);b.disabled=false;b.textContent='Join team'}}
+function skipInvite(){enter.skipInv=1;enter()}
 function wsAllow(e){const ws=S.settings.ws;(ws.allow=ws.allow||[]).push(e);save();invite()}
 
 /* ============ help and support ============ */
@@ -1670,30 +1691,37 @@ function rowsToShips(rows,msgs){const by={};msgs.forEach(m=>{(by[m.shipment_id]=
   s.respHrs=respH(tl);s.hadDelay=!!(d.hadDelay||['delayed','customs_hold'].includes(r.status)||tl.some(e=>e.type==='warn'));s.archived=!!d.archived;s.deletedAt=d.deletedAt||null;return s});
  const seen=new Set();let mx=0;out.forEach(s=>{if(typeof s.id!=='number'||seen.has(s.id))s.id=null;else{seen.add(s.id);mx=Math.max(mx,s.id)}});out.forEach(s=>{if(s.id==null){s.id=++mx;seen.add(s.id)}});return{out,mx}}
 function profPayload(){const u={...S.user};delete u.email;if(u.photo&&u.photo.length>120000)u.photo='';const st={...S.settings};delete st.plan;delete st.trialEnds;delete st.trialUsed;
- return{business_name:S.settings.biz||'',settings:{user:u,settings:st,team:S.team,tickets:S.tickets,invoices:S.invoices,vault:S.vault||[],sec:S.sec,integ:S.integ,notifSeen:S.notifSeen||0}}}
+ if(S.ws)return{settings:{user:u,tickets:S.tickets,sec:S.sec,notifSeen:S.notifSeen||0}};
+ return{business_name:S.settings.biz||'',settings:{user:u,settings:st,tickets:S.tickets,invoices:S.invoices,vault:S.vault||[],sec:S.sec,integ:S.integ,notifSeen:S.notifSeen||0}}}
 function trRow(d){return{id:d.uid,name:d.name||'',email:d.email||'',phone:d.phone||'',language:d.lang||'English',data:{id:d.id,kind:d.kind||'transporter'}}}
 function shCols(s){const d=S.dir.find(x=>x.id===s.transporter);return{ref:s.ref||'',transporter_id:d&&d.uid||null,origin:s.origin||'',destination:s.dest||s.zone||'',status:s.status||'pending',freq_hours:FREQH[s.freq]||168,archived:!!(s.archived||s.deletedAt)}}
 function shData(s){const d={...s};['tl','uid','token','created','last','next','lastReply','respHrs','hadDelay','nextNow','asked'].forEach(k=>delete d[k]);return d}
-function snapAll(){SNAP={prof:JSON.stringify(profPayload()),tr:{},sh:{}};S.dir.forEach(d=>{if(d.uid)SNAP.tr[d.uid]=JSON.stringify(trRow(d))});S.shipments.forEach(s=>{if(s.uid)SNAP.sh[s.uid]={cols:shCols(s),data:JSON.stringify(shData(s))}})}
+function snapAll(){SNAP={prof:JSON.stringify(profPayload()),vault:JSON.stringify(S.vault||[]),tr:{},sh:{}};S.dir.forEach(d=>{if(d.uid)SNAP.tr[d.uid]=JSON.stringify(trRow(d))});S.shipments.forEach(s=>{if(s.uid)SNAP.sh[s.uid]={cols:shCols(s),data:JSON.stringify(shData(s))}})}
 async function fetchAll(path){let all=[],from=0;for(;;){const rows=await api(path+(path.includes('?')?'&':'?')+'limit=1000&offset='+from)||[];all=all.concat(rows);if(rows.length<1000||from>20000)break;from+=1000}return all}
+const mapTeam=m=>({email:m.email,role:m.role,name:m.name||'',joined:ms2(m.joined_at)||null,invited:ms2(m.invited_at),last:ms2(m.last_seen)||null,suspended:m.status==='suspended'});
 async function loadCloud(){const uid=SESS.user.id;
- const [pr,tr,sh,ms]=await Promise.all([api('profiles?id=eq.'+uid+'&select=*'),fetchAll('transporters?select=*&order=created_at.asc'),fetchAll('shipments?select=*&order=created_at.desc'),fetchAll('messages?select=*&order=created_at.asc')]);
- let p=pr&&pr[0];
- if(!p){await api('profiles',{method:'POST',body:{id:uid,business_name:''},prefer:'return=minimal'});p={id:uid,business_name:'',plan:'starter',settings:{}}}
- const b=p.settings||{};
- S={user:{name:'',username:'',phone:'',photo:'',...(b.user||{}),email:SESS.user.email},settings:{...defSettings(),...(b.settings||{}),biz:p.business_name||(b.settings&&b.settings.biz)||'',plan:p.plan||'starter'},team:b.team||[],tickets:b.tickets||[],invoices:b.invoices||[],sec:b.sec||{},integ:b.integ||{},vault:b.vault||[],notifSeen:b.notifSeen||0,me:'owner',health:'ok',dir:[],shipments:[],nextId:10};
+ let w=null;try{w=await api('rpc/my_workspace',{method:'POST',body:{}});if(!w||!w.owner)w=null}catch(e){if(e.net)throw e}
+ const wid=(w&&w.owner)||uid;
+ const [pr,po,tr,sh,ms,tm,inv]=await Promise.all([api('profiles?id=eq.'+wid+'&select=*'),w?api('profiles?id=eq.'+uid+'&select=*'):null,fetchAll('transporters?select=*&owner=eq.'+wid+'&order=created_at.asc'),fetchAll('shipments?select=*&owner=eq.'+wid+'&order=created_at.desc'),fetchAll('messages?select=*&owner=eq.'+wid+'&order=created_at.asc'),api('team_members?select=*&owner=eq.'+wid+'&order=invited_at.asc').catch(()=>[]),w?null:api('rpc/my_invites',{method:'POST',body:{}}).catch(()=>[])]);
+ let p=pr&&pr[0],q=w?(po&&po[0]):p;
+ if(!q){await api('profiles',{method:'POST',body:{id:uid,business_name:''},prefer:'return=minimal'});q={id:uid,business_name:'',plan:'starter',settings:{}};if(!w)p=q}
+ if(!p)p={id:wid,business_name:(w&&w.biz)||'',plan:'starter',settings:{}};
+ const b=p.settings||{},bo=q.settings||{};
+ S={user:{name:'',username:'',phone:'',photo:'',...(bo.user||{}),email:SESS.user.email},settings:{...defSettings(),...(b.settings||{}),biz:p.business_name||(b.settings&&b.settings.biz)||'',plan:p.plan||'starter'},team:(tm||[]).map(mapTeam),tickets:bo.tickets||[],invoices:b.invoices||[],sec:bo.sec||{},integ:b.integ||{},vault:b.vault||[],notifSeen:bo.notifSeen||0,me:w?w.role:'owner',ws:w?{owner:wid,role:w.role,biz:w.biz||p.business_name||''}:null,invites:Array.isArray(inv)?inv:[],health:'ok',dir:[],shipments:[],nextId:10};
+ if(S.ws)S.settings.setup=true;
  S.dir=tr.map(d=>({id:(d.data&&d.data.id)||('t'+ms2(d.created_at)),uid:d.id,kind:(d.data&&d.data.kind)||'transporter',name:d.name,email:d.email||'',phone:d.phone||'',lang:d.language||'English'}));
- const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll();setTimeout(devHook,0);api('billing?select=*').then(r=>{if(applyBilling(r&&r[0]))render()}).catch(()=>{})}
+ const r=rowsToShips(sh,ms);S.shipments=r.out;S.nextId=Math.max(10,r.mx+1);ensure();snapAll();setTimeout(devHook,0);api(billQ()).then(r=>{if(applyBilling(r&&r[0]))render()}).catch(()=>{})}
 async function doPush(){if(!SESS||!S)return;const uid=SESS.user.id;
  S.dir.forEach(d=>{if(!d.uid)d.uid=uuid()});S.shipments.forEach(s=>{if(!s.uid)s.uid=uuid();if(!s.token)s.token=rtoken();if(!s.created)s.created=Date.now()});
  const pp=profPayload(),ps=JSON.stringify(pp);
  if(ps!==SNAP.prof){await api('profiles?id=eq.'+uid,{method:'PATCH',body:pp,prefer:'return=minimal'});SNAP.prof=ps}
+ if(S.ws){const vs=JSON.stringify(S.vault||[]);if(vs!==SNAP.vault){await api('rpc/ws_vault_set',{method:'POST',body:{o:WSID(),v:S.vault||[]}});SNAP.vault=vs}}
  const trs=S.dir.filter(d=>SNAP.tr[d.uid]!==JSON.stringify(trRow(d)));
- if(trs.length){await api('transporters?on_conflict=id',{method:'POST',body:trs.map(trRow),prefer:'resolution=merge-duplicates,return=minimal'});trs.forEach(d=>{SNAP.tr[d.uid]=JSON.stringify(trRow(d))})}
+ if(trs.length){await api('transporters?on_conflict=id',{method:'POST',body:trs.map(d=>({...trRow(d),owner:WSID()})),prefer:'resolution=merge-duplicates,return=minimal'});trs.forEach(d=>{SNAP.tr[d.uid]=JSON.stringify(trRow(d))})}
  const liveT=new Set(S.dir.map(d=>d.uid));
  for(const k of Object.keys(SNAP.tr)){if(!liveT.has(k)){await api('transporters?id=eq.'+k,{method:'DELETE',prefer:'return=minimal'});delete SNAP.tr[k]}}
  for(const s of S.shipments.slice()){const cols=shCols(s),data=JSON.stringify(shData(s)),old=SNAP.sh[s.uid];
-  if(!old){try{await api('shipments',{method:'POST',body:{id:s.uid,token:s.token,created_at:iso(s.created),next_checkin:iso(s.next||Date.now()),...cols,data:shData(s)},prefer:'return=minimal'})}
+  if(!old){try{await api('shipments',{method:'POST',body:{id:s.uid,owner:WSID(),token:s.token,created_at:iso(s.created),next_checkin:iso(s.next||Date.now()),...cols,data:shData(s)},prefer:'return=minimal'})}
    catch(e){if(e.status>=400&&e.status<500){S.shipments=S.shipments.filter(x=>x!==s);toast('We could not save '+s.ref+'. '+e.message);render();continue}throw e}
    SNAP.sh[s.uid]={cols,data}}
   else{const ch={};Object.keys(cols).forEach(k=>{if(cols[k]!==old.cols[k])ch[k]=cols[k]});if(data!==old.data)ch.data=shData(s);
@@ -1703,7 +1731,7 @@ async function doPush(){if(!SESS||!S)return;const uid=SESS.user.id;
   delete s.nextNow}
  const liveS=new Set(S.shipments.map(s=>s.uid));
  for(const k of Object.keys(SNAP.sh)){if(!liveS.has(k)){await api('shipments?id=eq.'+k,{method:'DELETE',prefer:'return=minimal'});delete SNAP.sh[k]}}
- const rows=[],pend=[];S.shipments.forEach(s=>s.tl.forEach(e=>{if(!e.mid){e.mid=uuid();pend.push(e);rows.push({id:e.mid,shipment_id:s.uid,direction:e.type==='reply'?'in':'out',channel:'email',body:e.text||'',kind:e.type||'rep',created_at:iso(e.ts)})}}));
+ const rows=[],pend=[];S.shipments.forEach(s=>s.tl.forEach(e=>{if(!e.mid){e.mid=uuid();pend.push(e);rows.push({id:e.mid,owner:WSID(),shipment_id:s.uid,direction:e.type==='reply'?'in':'out',channel:'email',body:e.text||'',kind:e.type||'rep',created_at:iso(e.ts)})}}));
  if(rows.length){try{await api('messages',{method:'POST',body:rows,prefer:'return=minimal'})}catch(e){pend.forEach(x=>{delete x.mid});throw e}}}
 function setSync(bad){let el=document.getElementById('sync');if(!el){el=document.createElement('div');el.id='sync';el.setAttribute('role','status');el.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:76px;background:var(--amber-bg);color:var(--amber-tx);border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;z-index:60;display:none;max-width:92vw;text-align:center';el.textContent='Offline. We will save your changes when you are back online.';document.body.appendChild(el)}el.style.display=bad&&S?'block':'none'}
 function load(){}
@@ -1715,10 +1743,14 @@ async function pushCloud(){if(PUSH.busy||!PUSH.dirty)return;PUSH.busy=true;PUSH.
 async function flush(){clearTimeout(PUSH.t);for(let i=0;i<20&&(PUSH.busy||PUSH.dirty);i++){if(!PUSH.busy)await pushCloud();else await new Promise(r=>setTimeout(r,200))}}
 window.addEventListener('beforeunload',e=>{if(S&&SESS&&(PUSH.dirty||PUSH.busy)){e.preventDefault();e.returnValue=''}});
 async function pollCloud(){if(!S||!SESS||PUSH.busy||PUSH.dirty||document.hidden)return;
- try{const [sh,ms]=await Promise.all([fetchAll('shipments?select=*&order=created_at.desc'),fetchAll('messages?select=*&order=created_at.asc')]);
-  if(!S||PUSH.busy||PUSH.dirty)return;const r=rowsToShips(sh,ms);
-  if(JSON.stringify(S.shipments)===JSON.stringify(r.out))return;
-  S.shipments=r.out;S.nextId=Math.max(S.nextId,r.mx+1);snapAll();
+ try{const [sh,ms,pf,tm]=await Promise.all([fetchAll('shipments?select=*&owner=eq.'+WSID()+'&order=created_at.desc'),fetchAll('messages?select=*&owner=eq.'+WSID()+'&order=created_at.asc'),api('profiles?id=eq.'+WSID()+'&select=settings').catch(()=>null),api('team_members?select=*&owner=eq.'+WSID()+'&order=invited_at.asc').catch(()=>null)]);
+  if(!S||PUSH.busy||PUSH.dirty)return;let ch=false;
+  const v=pf&&pf[0]&&pf[0].settings&&pf[0].settings.vault;
+  if(Array.isArray(v)&&JSON.stringify(v)!==JSON.stringify(S.vault||[])){S.vault=v;SNAP.vault=JSON.stringify(v);if(!S.ws)SNAP.prof=JSON.stringify(profPayload());ch=true}
+  if(Array.isArray(tm)){const t=tm.map(mapTeam);if(JSON.stringify(t)!==JSON.stringify(S.team)){S.team=t;ch=true}}
+  const r=rowsToShips(sh,ms);
+  if(JSON.stringify(S.shipments)!==JSON.stringify(r.out)){S.shipments=r.out;S.nextId=Math.max(S.nextId,r.mx+1);snapAll();ch=true}
+  if(!ch)return;
   const typing=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   if(!$('#modal').classList.contains('show')&&!typing&&!$('#app').classList.contains('hide'))render()}catch(e){}}
 setInterval(pollCloud,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollCloud()});
