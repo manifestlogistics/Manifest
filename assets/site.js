@@ -30,7 +30,7 @@ if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es
 /* resolve */
 document.querySelectorAll('[data-resolve]').forEach(function(b){b.onclick=function(){var r=b.closest('.al');r.classList.add('done');var d=r.querySelector('.pd');d.className='pd g';b.outerHTML='<span class="bdg" style="margin:0;color:#34D399;border-color:#12382c">Resolved</span>';var s=r.querySelector('small');if(s)s.textContent='Resolved just now'}});
 /* kanban */
-var K={sea:{cols:[['In Transit',[['MSKU 4821937','Karachi → Rotterdam']]],['Customs',[['CMAU 7730215','Jebel Ali → Karachi']]],['Delivered',[['HLXU 6092274','Shanghai → Karachi']]]],docs:['Bill of Lading.pdf','Commercial Invoice.pdf']},
+var K={sea:{cols:[['In Transit',[['MSKU 4821937','Karachi → Rotterdam']]],['Customs',[['CMAU 7730215','Jebel Ali → Karachi']]],['Delivered',[['HLXU 6092274','Singapore → Karachi']]]],docs:['Bill of Lading.pdf','Commercial Invoice.pdf']},
  truck:{cols:[['In Transit',[['TRK-4471','Karachi → Lahore'],['TRK-2290','Port Qasim → Faisalabad']]],['Customs',[['TRK-8815','Torkham → Peshawar']]],['Delivered',[['TRK-1034','Lahore → Multan']]]],docs:['Driver: Replied 2h ago','Delivery note.pdf']}};
 var kb=document.getElementById('kb');
 function rk(m){if(!kb)return;var k=K[m];kb.innerHTML='<div class="kb">'+k.cols.map(function(c){return'<div class="kc"><h4>'+c[0]+'</h4>'+c[1].map(function(s){return'<div class="kk"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'}).join('')+'</div>'}).join('')+'</div><div class="docs">Attached docs: '+k.docs.map(function(d){return'<em>'+d+'</em>'}).join('')+'</div>';
