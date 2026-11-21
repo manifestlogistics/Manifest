@@ -1,14 +1,19 @@
-// The real Gmail connections. Kept small, because they cannot be tested without a mailbox.
+// The real mailbox connections. Kept small, because they cannot be tested without a mailbox.
+// Gmail addresses use Gmail's servers; any other address (for example Namecheap Private Email) uses privateemail.com.
+// MAIL_SMTP_HOST and MAIL_IMAP_HOST can override either.
+const isGmail = u => /@(gmail|googlemail)\.com$/i.test(String(u || ''));
+export const smtpHost = u => process.env.MAIL_SMTP_HOST || (isGmail(u) ? 'smtp.gmail.com' : 'smtp.privateemail.com');
+export const imapHost = u => process.env.MAIL_IMAP_HOST || (isGmail(u) ? 'imap.gmail.com' : 'imap.privateemail.com');
 export async function makeMailer(user, pass) {
   const nodemailer = (await import('nodemailer')).default;
-  const t = nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user, pass } });
+  const t = nodemailer.createTransport({ host: smtpHost(user), port: 465, secure: true, auth: { user, pass } });
   return { send: m => t.sendMail(m), close: () => t.close() };
 }
 
 export async function makeInbox(user, pass) {
   const { ImapFlow } = await import('imapflow');
   const { simpleParser } = await import('mailparser');
-  const c = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user, pass }, logger: false });
+  const c = new ImapFlow({ host: imapHost(user), port: 993, secure: true, auth: { user, pass }, logger: false });
   await c.connect();
   const lock = await c.getMailboxLock('INBOX');
   return {

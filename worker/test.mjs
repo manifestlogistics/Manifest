@@ -256,3 +256,9 @@ test('team invitations are emailed once and marked sent', async () => {
   assert.deepEqual(patched[0][1], { emailed: true });
   assert.match(inviteEmail({ role: 'viewer', to: 'a@b.c', site: 's' }).text, /view only/);
 });
+
+test('reply address is plain for non-Gmail mailboxes and tagged for Gmail', async () => {
+  const { replyTo } = await import('./lib.mjs');
+  assert.equal(replyTo('updates@manifestlogistics.app', 'a1b2c3d4e5f6a7'), 'updates@manifestlogistics.app');
+  assert.match(replyTo('x.y@gmail.com', 'a1b2c3d4e5f6a7'), /^x\.y\+.+@gmail\.com$/);
+});

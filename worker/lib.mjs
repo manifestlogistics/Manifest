@@ -23,7 +23,14 @@ export function messageFor(lang, tpl, vars) {
 export const isRtl = lang => RTL.includes(LCODE[lang]);
 
 export const replyTag = token => String(token).slice(0, 12);
-export function replyTo(gmail, token) { const [l, d] = String(gmail).split('@'); return `${l}+${replyTag(token)}@${d}`; }
+// Gmail understands "name+tag@gmail.com". Other mailboxes may not, so they get the plain address and the
+// reply is matched by the [MF-...] tag in the subject. Set PLUS_ADDRESSING=1 once you have tested that your mailbox accepts it.
+export function replyTo(gmail, token) {
+  const e = (typeof process !== 'undefined' && process.env) || {};
+  const plus = e.PLUS_ADDRESSING ? e.PLUS_ADDRESSING === '1' : /@(gmail|googlemail)\.com$/i.test(String(gmail));
+  if (!plus) return String(gmail);
+  const [l, d] = String(gmail).split('@'); return `${l}+${replyTag(token)}@${d}`;
+}
 
 export function identOf(data) { return data && data.mode === 'local' ? (data.vehicle || '') : ((data && data.containerId) || ''); }
 

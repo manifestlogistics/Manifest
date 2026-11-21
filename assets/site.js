@@ -1,6 +1,6 @@
 (function(){
 var LOGO='<svg viewBox="0 0 400 400" aria-hidden="true"><g stroke-width="9" stroke-linejoin="round" stroke="#000"><polygon points="200,50 330,125 200,200 70,125" fill="#9CC2FF"/><polygon points="70,125 200,200 200,350 70,275" fill="#2F6BF0"/><polygon points="200,200 330,125 330,275 200,350" fill="#0F2A5E"/></g></svg>';
-var MAIL='manifesttracking.updates@gmail.com';
+var MAIL='support@manifestlogistics.app';
 var hd=document.getElementById('hd');
 if(hd){hd.className='hd';hd.innerHTML='<div class="wrap"><a class="brand" href="/">'+LOGO+'Manifest</a><div class="hr"><a class="pill sm" href="/app/">Start now</a><button class="burger" id="bg" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div></div>';
  var d=document.createElement('div');d.className='drawer';d.id='dr';
