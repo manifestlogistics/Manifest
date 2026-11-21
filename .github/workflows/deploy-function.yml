@@ -1,0 +1,20 @@
+name: Deploy payment function
+# Manual: GitHub -> Actions -> "Deploy payment function" -> Run workflow.
+# Needs one repo secret: SUPABASE_ACCESS_TOKEN (Supabase -> Account -> Access Tokens).
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Deploy polar-webhook (login check off, Polar signs its own calls)
+        run: supabase functions deploy polar-webhook --project-ref ohrixskulpuqifnbbaxl --no-verify-jwt
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
