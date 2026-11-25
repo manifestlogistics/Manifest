@@ -55,7 +55,7 @@ export async function processDeletions({ db, sendMail, gmail, site, now, log = c
 
 export function inviteEmail({ inviter, biz, role, to, site }) {
   const r = role === 'viewer' ? 'view only' : role === 'admin' ? 'an admin' : 'a team member who can add and edit';
-  const text = `Hi,\n\n${inviter || 'Your colleague'} invited you to join ${biz || 'their team'} on Manifest as ${r}.\n\nTo join: open ${site}/app/ and sign up or log in with this email address (${to}). Then tap "Join team".\n\nManifest tracks shipments by asking transporters for updates and flagging delays. If you were not expecting this, you can ignore this email.`;
+  const text = `Hi,\n\n${inviter || 'Your colleague'} invited you to join ${biz || 'their team'} on Manifest as ${r}.\n\nTo join: open ${site}/app/?invite=${encodeURIComponent(to)} and sign up or log in with this email address (${to}). Then tap "Join team".\n\nManifest tracks shipments by asking transporters for updates and flagging delays. If you were not expecting this, you can ignore this email.`;
   return { subject: `${inviter || 'Someone'} invited you to join ${biz || 'a team'} on Manifest`, text };
 }
 
