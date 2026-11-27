@@ -817,6 +817,7 @@ function bkEmailGo(e){e.preventDefault();const v=$('#e-email').value.trim();if(!
 function bkLogin(){return`<form class="bk-card" novalidate onsubmit="return signin(event)"><h1>Welcome back</h1><p class="bk-sub">Log in to your Manifest account.</p>
  <div class="bk-f"><label for="si-email">Username or email</label><input id="si-email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
  <div class="bk-f" style="margin-bottom:6px"><label for="si-pw">Password</label><input id="si-pw" type="password" autocomplete="current-password" required></div>
+ <label class="bk-keep" style="display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-size:14px;cursor:pointer"><input id="si-keep" type="checkbox" checked style="width:16px;height:16px;accent-color:#000"> Keep me logged in on this device</label>
  <p class="bk-forgot"><button type="button" onclick="forgot()">Forgot password?</button></p>
  <div id="si-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="si-btn">Log in</button>
@@ -828,7 +829,7 @@ function bkCreds(){const w=AUTH.w||{};return`<form class="bk-card" novalidate on
  <div class="bk-f"><label for="c-pw">Password</label><input id="c-pw" type="password" autocomplete="new-password"><span class="phint">${PWHELP}</span><small>1 capital letter, 4 small letters, 1 number and 1 symbol. Example: Logec2#</small></div>
  <div id="c-err" class="bk-err" role="alert"></div>
  <button class="bk-pri" id="c-btn">Continue</button><button type="button" class="bk-ghost" onclick="bkGo(0)">Back</button></form>${bkTail(true)}`}
-async function bkSignup(e){e.preventDefault();
+async function bkSignup(e){e.preventDefault();try{localStorage.setItem('manifest_remember','1')}catch(x){}
  const email=$('#c-email').value.trim(),un=$('#c-user').value.trim(),pw=$('#c-pw').value;AUTH.w={...(AUTH.w||{}),email,user:un};
  const ok=[fieldErr('c-email',vEmail(email)),fieldErr('c-user',/^[A-Za-z0-9_.]{3,20}$/.test(un)?'':'Use 3 to 20 letters, numbers, dots or underscores.'),fieldErr('c-pw',vPass(pw))];
  if(ok.includes(false)){const f=document.querySelector('#welcome .bad');if(f)f.focus();return false}
@@ -911,7 +912,7 @@ function ask(title,msg,label,cb){_cb=cb;openModal(`<h2>${esc(title)}</h2><p clas
 function viewKey(){return 'mf_view_'+(SESS&&SESS.user&&SESS.user.id||'')}
 function viewSave(){try{localStorage.setItem(viewKey(),JSON.stringify({tab:V.tab,open:V.open,dtab:V.dtab,set:V.set,hist:V.hist,filter:V.filter}))}catch(e){}}
 function viewRestore(){try{const v=JSON.parse(localStorage.getItem(viewKey())||'null');if(!v)return;const ok=TABS.some(t=>t[0]===v.tab)||['shipments','history','settings','trash'].includes(v.tab);if(!ok)return;V.tab=v.tab;if(v.set)V.set=v.set;if(v.hist)V.hist=v.hist;if(v.filter)V.filter=v.filter;if(v.open&&S.shipments.some(x=>x.id===v.open)){V.open=v.open;V.dtab=v.dtab||'overview'}}catch(e){}}
-function enter(){ensure();if(S.invites&&S.invites.length&&!S.ws&&!enter.skipInv){showInviteGate();return}const st=S.settings;if(st.setup===false){AUTH.step=AUTH.step>=2?AUTH.step:2;showWelcome();return}$('#welcome').classList.remove('bk');if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();if(!enter.done){enter.done=1;viewRestore()}render()}
+function enter(){if(/[?&](start|invite)=/.test(location.search)){try{history.replaceState(null,'',location.pathname)}catch(x){}}ensure();if(S.invites&&S.invites.length&&!S.ws&&!enter.skipInv){showInviteGate();return}const st=S.settings;if(st.setup===false){AUTH.step=AUTH.step>=2?AUTH.step:2;showWelcome();return}$('#welcome').classList.remove('bk');if(st.cancelAt&&st.cancelAt<=Date.now()){applyPlan('starter');st.renews=null;st.cancelAt=null;save()}$('#welcome').classList.add('hide');$('#app').classList.remove('hide');applyTheme();purgeTrash();if(!enter.done){enter.done=1;viewRestore()}render()}
 function purgeTrash(){const c=Date.now()-30*DAY;S.shipments=S.shipments.filter(s=>!(s.deletedAt&&s.deletedAt<c));save()}
 
 /* ============ theme ============ */
@@ -1675,8 +1676,8 @@ const uuid=()=>(window.crypto&&crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-x
 const rtoken=()=>(uuid()+uuid()).replace(/-/g,'').slice(0,32);
 const FREQH={'12h':12,daily:24,'3d':72,weekly:168};
 const iso=ms=>new Date(ms).toISOString(),ms2=t=>t?new Date(t).getTime():0;
-function sessLoad(){try{SESS=JSON.parse(localStorage.getItem(SKEY))}catch(e){SESS=null}}
-function sessSave(){try{if(SESS)localStorage.setItem(SKEY,JSON.stringify(SESS));else localStorage.removeItem(SKEY)}catch(e){}}
+function sessLoad(){SESS=null;try{SESS=JSON.parse(sessionStorage.getItem(SKEY))}catch(e){}if(!SESS){try{SESS=JSON.parse(localStorage.getItem(SKEY))}catch(e){SESS=null}}}
+function sessSave(){try{const keep=localStorage.getItem('manifest_remember')!=='0';if(SESS){const v=JSON.stringify(SESS);if(keep){localStorage.setItem(SKEY,v);sessionStorage.removeItem(SKEY)}else{sessionStorage.setItem(SKEY,v);localStorage.removeItem(SKEY)}}else{localStorage.removeItem(SKEY);sessionStorage.removeItem(SKEY)}}catch(e){}}
 function setSess(j){SESS={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:{id:j.user&&j.user.id||'',email:j.user&&j.user.email||''}};sessSave()}
 async function gotrue(path,o){o=o||{};
  const h={apikey:SB_KEY,'Content-Type':'application/json'};if(o.token)h.Authorization='Bearer '+o.token;else if(o.auth&&SESS)h.Authorization='Bearer '+SESS.access_token;
@@ -1780,7 +1781,7 @@ function showLoading(){$('#app').classList.add('hide');bkOn();const w=$('#welcom
 function pickMode(b){[...b.parentElement.children].forEach(x=>x.classList.toggle('on',x===b))}
 function authTab(m){AUTH.mode=m;AUTH.step=0;showWelcome()}
 function uname(e){return String(e||'user').split('@')[0].toLowerCase().replace(/[^a-z0-9_.]/g,'').slice(0,20)||'user'}
-async function signin(e){e.preventDefault();const er=$('#si-err'),btn=$('#si-btn');er.textContent='';
+async function signin(e){e.preventDefault();const er=$('#si-err'),btn=$('#si-btn');er.textContent='';try{localStorage.setItem('manifest_remember',$('#si-keep')&&!$('#si-keep').checked?'0':'1')}catch(x){}
  let email=$('#si-email').value.trim();const pw=$('#si-pw').value;
  if(!email||!pw){er.textContent='Please enter your username and password.';return false}
  btn.disabled=true;btn.textContent='Logging in…';
@@ -1859,6 +1860,7 @@ function planInterest(k){closeModal();ticket('Plan interest: '+PLANS[k].name,'Bi
  if(h.get('error_description')){history.replaceState(null,'',location.pathname);sessLoad();AUTH.mode='signin';showWelcome(h.get('error_description').replace(/\+/g,' '));return}
  if(h.get('access_token')&&!h.get('type')){try{await oauthReturn(h);return}catch(e){SESS=null;sessSave();S=null;AUTH.mode='signin';showWelcome(e.net?e.message:'We could not finish signing you in. Please try again.');return}}
  sessLoad();
+ {const qq=new URLSearchParams(location.search);if(qq.get('start')==='1'||qq.get('invite'))SESS=null} /* Start now always opens sign-up, never an old dashboard */
  if(!SESS){AUTH.mode=/[?&]mode=signin/.test(location.search)?'signin':'signup';AUTH.step=0;const iv=new URLSearchParams(location.search).get('invite');if(iv&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(iv)){AUTH.w=Object.assign(AUTH.w||{},{email:iv.toLowerCase()})}showWelcome();return}
  showLoading();
  try{if(SESS.expires_at-60<Date.now()/1000)await refreshSess();await loadCloud();enter();checkoutReturn()}
